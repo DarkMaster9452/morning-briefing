@@ -44,6 +44,16 @@
   #login-screen .google-btn:hover{box-shadow:0 4px 16px rgba(0,0,0,.5)}
   #login-screen .google-btn svg{width:20px;height:20px}
   #login-screen .access-denied{color:#ff4757;font-size:13px;display:none}
+  #login-screen .setup-notice{
+    background:rgba(255,165,2,.12);border:1px solid rgba(255,165,2,.3);
+    border-radius:10px;padding:14px 18px;max-width:360px;font-size:12px;
+    color:#ffa502;line-height:1.6;display:none;
+  }
+  #login-screen .setup-notice code{
+    background:rgba(255,165,2,.2);padding:1px 5px;border-radius:4px;
+    font-family:monospace;font-size:11px;
+  }
+  #g-signin-btn{min-height:44px}
 
   /* ══════════════════════════════════════════
      APP (hidden until logged in)
@@ -314,12 +324,17 @@
 <div id="login-screen">
   <div class="login-logo">🌅</div>
   <h1>Morning Briefing</h1>
-  <p>Prihlás sa cez Google účet na pokračovanie. Prístup je obmedzený na povolený účet.</p>
-  <button class="google-btn" onclick="signIn()">
-    <svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.07 17.77 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
-    Prihlásiť sa cez Google
-  </button>
+  <p>Prihlás sa cez Google účet na pokračovanie. Prístup je obmedzený na <strong>strananekm@gmail.com</strong>.</p>
+  <!-- Google renders its own button here -->
+  <div id="g-signin-btn"></div>
   <div id="access-denied" class="access-denied">⛔ Prístup zamietnutý. Tento dashboard je súkromný.</div>
+  <div id="setup-notice" class="setup-notice">
+    ⚙️ <strong>Google Client ID nie je nastavené.</strong><br/>
+    Choď na <strong>console.cloud.google.com → APIs &amp; Services → Credentials</strong><br/>
+    Vytvor <strong>OAuth 2.0 Client ID</strong> (Web application)<br/>
+    Authorized origin: <code>https://darkmaster9452.github.io</code><br/>
+    Potom nahraď <code>YOUR_GOOGLE_CLIENT_ID</code> v kóde.
+  </div>
 </div>
 
 <!-- ═══════════════════════════════════════════
@@ -580,16 +595,10 @@
    5. Copy Client ID here
 ══════════════════════════════════════════ */
 const ALLOWED_EMAIL = 'strananekm@gmail.com';
+// !! REPLACE THIS with your real Client ID from console.cloud.google.com !!
 const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
 
-function signIn() {
-  google.accounts.id.initialize({
-    client_id: GOOGLE_CLIENT_ID,
-    callback: handleCredentialResponse,
-    auto_select: false,
-  });
-  google.accounts.id.prompt();
-}
+const IS_CONFIGURED = !GOOGLE_CLIENT_ID.startsWith('YOUR_');
 
 function handleCredentialResponse(response) {
   const payload = parseJwt(response.credential);
@@ -598,7 +607,6 @@ function handleCredentialResponse(response) {
       email: payload.email,
       name: payload.name,
       picture: payload.picture,
-      token: response.credential
     }));
     showApp(payload);
   } else {
@@ -616,7 +624,7 @@ function showApp(user) {
   document.getElementById('login-screen').style.display = 'none';
   const app = document.getElementById('app');
   app.style.display = 'flex';
-  if (user.picture) {
+  if (user && user.picture) {
     const av = document.getElementById('user-avatar');
     av.src = user.picture; av.style.display = 'block';
   }
@@ -624,27 +632,62 @@ function showApp(user) {
 
 function signOut() {
   sessionStorage.removeItem('mb_user');
+  if (IS_CONFIGURED && window.google) {
+    google.accounts.id.disableAutoSelect();
+  }
   document.getElementById('app').style.display = 'none';
   document.getElementById('login-screen').style.display = 'flex';
 }
 
-// Auto-login if session exists
+// Init on load
 window.addEventListener('load', () => {
+  // Auto-login from session
   const stored = sessionStorage.getItem('mb_user');
-  if (stored) {
-    showApp(JSON.parse(stored));
+  if (stored) { showApp(JSON.parse(stored)); return; }
+
+  if (!IS_CONFIGURED) {
+    // Show setup instructions
+    document.getElementById('setup-notice').style.display = 'block';
+    document.getElementById('g-signin-btn').innerHTML =
+      '<p style="color:#ff4757;font-size:12px;text-align:center">⛔ Client ID nie je nastavené — pozri pokyny nižšie</p>';
+    return;
   }
-  // GSI library ready callback
-  window.onGoogleLibraryLoad = () => {
+
+  // Wait for GSI library to load, then render button
+  function initGSI() {
     google.accounts.id.initialize({
       client_id: GOOGLE_CLIENT_ID,
       callback: handleCredentialResponse,
-      auto_select: true,
+      auto_select: false,
+      cancel_on_tap_outside: false,
     });
-    if (!sessionStorage.getItem('mb_user')) {
-      google.accounts.id.prompt();
-    }
-  };
+    // Render official Google Sign-In button
+    google.accounts.id.renderButton(
+      document.getElementById('g-signin-btn'),
+      {
+        theme: 'outline',
+        size: 'large',
+        text: 'signin_with',
+        shape: 'rectangular',
+        logo_alignment: 'left',
+        width: 280,
+      }
+    );
+    // Also try One Tap
+    google.accounts.id.prompt();
+  }
+
+  if (window.google && window.google.accounts) {
+    initGSI();
+  } else {
+    // Poll until GSI script loads (it's async)
+    const poll = setInterval(() => {
+      if (window.google && window.google.accounts) {
+        clearInterval(poll);
+        initGSI();
+      }
+    }, 100);
+  }
 });
 
 /* ══════════════════════════════════════════
