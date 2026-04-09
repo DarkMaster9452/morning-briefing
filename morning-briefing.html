@@ -274,6 +274,18 @@
     .notion-task:last-child { border-bottom: none; }
     .notion-link { font-size: var(--fs-xs); color: var(--indigo); margin-top: 5px; display: inline-block; }
 
+    /* ── REFRESH BUTTON ──────────────────────────────────── */
+    #refresh-btn {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--surface2); border: 1px solid var(--border2);
+      border-radius: 6px; padding: 5px 13px;
+      font-size: var(--fs-xs); font-weight: 700; color: var(--muted2);
+      cursor: pointer; transition: all .15s; white-space: nowrap;
+    }
+    #refresh-btn:hover { background: var(--indigo); border-color: var(--indigo); color: #fff; }
+    #refresh-btn.spinning { color: var(--teal); border-color: rgba(62,201,167,.4); animation: spin .6s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
     /* ── SCROLLBAR ────────────────────────────────────────── */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -295,6 +307,9 @@
     <div class="chip"><span class="chip-dot" style="background:var(--teal)"></span>5 world</div>
     <div class="chip"><span class="chip-dot" style="background:var(--orange)"></span>5 AI · 4 tech</div>
     <div class="chip"><span class="chip-dot" style="background:var(--amber)"></span>2 open tasks</div>
+    <button id="refresh-btn" onclick="refreshBriefing()" title="Load the latest generated briefing from disk">
+      ↻ Refresh
+    </button>
   </div>
 </div>
 
@@ -628,6 +643,7 @@
 </div>
 
 <script>
+  // Auto-refresh at 6 AM
   (function () {
     function msUntil6AM() {
       const now = new Date(), next = new Date(now);
@@ -637,6 +653,16 @@
     }
     setTimeout(function () { location.reload(); }, msUntil6AM());
   })();
+
+  // Manual refresh button
+  function refreshBriefing() {
+    const btn = document.getElementById('refresh-btn');
+    btn.textContent = '↻ Loading…';
+    btn.classList.add('spinning');
+    btn.disabled = true;
+    // Hard reload — bypasses cache, picks up latest generated file
+    setTimeout(function () { location.reload(true); }, 400);
+  }
 </script>
 </body>
 </html>
