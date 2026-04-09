@@ -1,0 +1,9 @@
+{
+  "name": "morning-briefing",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "deploy": "npx vercel --yes",
+    "deploy:prod": "npx vercel --prod --yes"
+  }
+}
