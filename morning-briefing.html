@@ -4,234 +4,338 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Morning Briefing — Thursday, April 9, 2026</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌅</text></svg>"/>
   <style>
     :root {
-      --bg:#0f1117; --surface:#1a1d27; --surface2:#22263a; --border:#2e3250;
-      --accent:#6c63ff; --accent2:#ff6584; --green:#43d9ad; --yellow:#ffd166;
-      --text:#e2e8f0; --muted:#8892b0;
+      --bg:        #0f1117;
+      --surface:   #1a1d27;
+      --surface2:  #22263a;
+      --border:    #2e3250;
+      --text:      #e2e8f0;
+      --muted:     #8892b0;
+
+      /* Section accent colours */
+      --c-urgent:  #ff6584;
+      --c-cal:     #6c63ff;
+      --c-email:   #ff9f43;
+      --c-world:   #54a0ff;
+      --c-ai:      #43d9ad;
+      --c-tech:    #ffd166;
+      --c-action:  #a29bfe;
+      --c-green:   #43d9ad;
     }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    html, body {
-      height: 100%;
-      overflow: hidden;
+    body {
       background: var(--bg);
       color: var(--text);
       font-family: 'Segoe UI', system-ui, sans-serif;
     }
 
-    /* ── OUTER WRAPPER ── */
-    .wrapper {
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      padding: 10px 16px 8px;
-      gap: 8px;
+    /* ════════════════════════════
+       PC LAYOUT  (≥ 1024 px)
+       full-viewport, no page scroll
+    ════════════════════════════ */
+    @media (min-width: 1024px) {
+      html, body { height: 100%; overflow: hidden; }
+
+      .wrapper {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        padding: 10px 14px 8px;
+        gap: 8px;
+      }
+
+      /* Header */
+      .header {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 4px 2px 8px;
+        border-bottom: 1px solid var(--border);
+      }
+      .header-left .greeting { font-size: 11px; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; }
+      .header-left h1 { font-size: 21px; font-weight: 700; margin-top: 2px; }
+      .header-right { text-align: right; font-size: 11px; color: var(--muted); }
+
+      /* Grid */
+      .grid {
+        flex: 1;
+        min-height: 0;
+        display: grid;
+        grid-template-columns: 2fr 1.15fr 1.15fr 1.5fr;
+        grid-template-rows: 1fr 1fr 0.55fr;
+        gap: 9px;
+      }
+
+      /* Card base */
+      .card {
+        border-radius: 12px;
+        padding: 11px 13px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        border-left-width: 3px;
+        border-left-style: solid;
+        border-top: 1px solid rgba(255,255,255,.06);
+        border-right: 1px solid rgba(255,255,255,.06);
+        border-bottom: 1px solid rgba(255,255,255,.06);
+        transition: filter .15s;
+      }
+      .card:hover { filter: brightness(1.07); }
+
+      /* Card colour themes */
+      .card-urgent  { background: rgba(255,101,132,.10); border-left-color: var(--c-urgent);  grid-column: 1 / 3; }
+      .card-cal     { background: rgba(108,99,255,.10);  border-left-color: var(--c-cal);     grid-column: 3; grid-row: 1; }
+      .card-email   { background: rgba(255,159,67,.10);  border-left-color: var(--c-email);   grid-column: 4; grid-row: 1; }
+      .card-world   { background: rgba(84,160,255,.10);  border-left-color: var(--c-world);   grid-column: 1 / 3; grid-row: 2; }
+      .card-ai      { background: rgba(67,217,173,.10);  border-left-color: var(--c-ai);      grid-column: 3; grid-row: 2; }
+      .card-tech    { background: rgba(255,209,102,.10); border-left-color: var(--c-tech);    grid-column: 4; grid-row: 2; }
+      .card-actions { background: rgba(162,155,254,.08); border-left-color: var(--c-action);  grid-column: 1 / -1; grid-row: 3; }
+
+      /* Card header */
+      .card-header {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        flex-shrink: 0;
+        margin-bottom: 8px;
+      }
+      .card-icon { font-size: 15px; line-height: 1; }
+      .card-title { font-size: 10px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; }
+      .badge {
+        margin-left: auto;
+        border-radius: 20px;
+        font-size: 10px; font-weight: 700;
+        padding: 1px 8px;
+        border: 1px solid;
+      }
+
+      /* Per-colour badge + title */
+      .card-urgent  .card-title { color: var(--c-urgent); }
+      .card-urgent  .badge      { color: var(--c-urgent); border-color: var(--c-urgent); background: rgba(255,101,132,.12); }
+      .card-cal     .card-title { color: var(--c-cal); }
+      .card-cal     .badge      { color: var(--c-cal);    border-color: var(--c-cal);    background: rgba(108,99,255,.12); }
+      .card-email   .card-title { color: var(--c-email); }
+      .card-email   .badge      { color: var(--c-email);  border-color: var(--c-email);  background: rgba(255,159,67,.12); }
+      .card-world   .card-title { color: var(--c-world); }
+      .card-world   .badge      { color: var(--c-world);  border-color: var(--c-world);  background: rgba(84,160,255,.12); }
+      .card-ai      .card-title { color: var(--c-ai); }
+      .card-ai      .badge      { color: var(--c-ai);     border-color: var(--c-ai);     background: rgba(67,217,173,.12); }
+      .card-tech    .card-title { color: var(--c-tech); }
+      .card-tech    .badge      { color: var(--c-tech);   border-color: var(--c-tech);   background: rgba(255,209,102,.12); }
+      .card-actions .card-title { color: var(--c-action); }
+
+      /* Scrollable body inside card */
+      .card-body {
+        flex: 1;
+        overflow-y: auto;
+        min-height: 0;
+        scrollbar-width: thin;
+        scrollbar-color: var(--border) transparent;
+      }
+      .card-body::-webkit-scrollbar { width: 3px; }
+      .card-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+      /* ── Actions: horizontal strip ── */
+      .actions-strip {
+        display: flex;
+        gap: 9px;
+        height: 100%;
+        align-items: stretch;
+      }
+      .action-tile {
+        flex: 1;
+        background: var(--surface2);
+        border: 1px solid rgba(162,155,254,.2);
+        border-radius: 9px;
+        padding: 8px 11px;
+        display: flex;
+        align-items: flex-start;
+        gap: 9px;
+      }
+      .action-num {
+        width: 20px; height: 20px; border-radius: 50%;
+        background: var(--c-action); color: #fff;
+        font-size: 10px; font-weight: 800;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0; margin-top: 1px;
+      }
+      .action-tile .a-label { font-size: 12px; font-weight: 600; line-height: 1.3; color: var(--text); }
+      .action-tile .a-sub   { font-size: 10px; color: var(--muted); margin-top: 2px; line-height: 1.3; }
+
+      /* Footer */
+      .footer {
+        flex-shrink: 0;
+        text-align: center;
+        font-size: 10px;
+        color: var(--muted);
+        padding: 2px 0;
+        border-top: 1px solid var(--border);
+      }
+      .footer a { color: var(--c-cal); text-decoration: none; }
+
+      /* Hide mobile-only elements */
+      .mobile-only { display: none; }
     }
 
-    /* ── HEADER ── */
-    .header {
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 6px 4px;
-      border-bottom: 1px solid var(--border);
+    /* ════════════════════════════
+       MOBILE LAYOUT  (< 1024 px)
+       traditional scrollable cards
+    ════════════════════════════ */
+    @media (max-width: 1023px) {
+      body { padding: 20px 14px 50px; }
+
+      .wrapper { display: block; }
+
+      .header { text-align: center; margin-bottom: 28px; }
+      .header-left .greeting { font-size: 12px; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 6px; }
+      .header-left h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+      .header-right  { font-size: 12px; color: var(--muted); margin-top: 4px; }
+      .header-left, .header-right { display: block; }
+
+      .grid { display: flex; flex-direction: column; gap: 14px; }
+
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-left-width: 4px;
+        border-left-style: solid;
+        border-radius: 12px;
+        padding: 16px;
+      }
+      .card-urgent  { border-left-color: var(--c-urgent); }
+      .card-cal     { border-left-color: var(--c-cal); }
+      .card-email   { border-left-color: var(--c-email); }
+      .card-world   { border-left-color: var(--c-world); }
+      .card-ai      { border-left-color: var(--c-ai); }
+      .card-tech    { border-left-color: var(--c-tech); }
+      .card-actions { border-left-color: var(--c-action); }
+
+      .card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+      .card-icon   { font-size: 18px; }
+      .card-title  { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+      .badge { margin-left: auto; border-radius: 20px; font-size: 11px; font-weight: 700; padding: 2px 9px; border: 1px solid; }
+
+      .card-urgent  .card-title, .card-urgent  .badge { color: var(--c-urgent); border-color: var(--c-urgent); }
+      .card-cal     .card-title, .card-cal     .badge { color: var(--c-cal);    border-color: var(--c-cal); }
+      .card-email   .card-title, .card-email   .badge { color: var(--c-email);  border-color: var(--c-email); }
+      .card-world   .card-title, .card-world   .badge { color: var(--c-world);  border-color: var(--c-world); }
+      .card-ai      .card-title, .card-ai      .badge { color: var(--c-ai);     border-color: var(--c-ai); }
+      .card-tech    .card-title, .card-tech    .badge { color: var(--c-tech);   border-color: var(--c-tech); }
+      .card-actions .card-title                       { color: var(--c-action); }
+
+      .card-body { display: block; }
+
+      .actions-strip { display: flex; flex-direction: column; gap: 10px; }
+      .action-tile {
+        background: var(--surface2);
+        border: 1px solid rgba(162,155,254,.2);
+        border-radius: 9px;
+        padding: 12px;
+        display: flex; align-items: flex-start; gap: 10px;
+      }
+      .action-num {
+        width: 22px; height: 22px; border-radius: 50%;
+        background: var(--c-action); color: #fff;
+        font-size: 11px; font-weight: 800;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0; margin-top: 1px;
+      }
+      .action-tile .a-label { font-size: 13px; font-weight: 600; line-height: 1.3; }
+      .action-tile .a-sub   { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+      .footer { text-align: center; margin-top: 30px; font-size: 11px; color: var(--muted); }
+      .footer a { color: var(--c-cal); text-decoration: none; }
+      .pc-only { display: none; }
     }
-    .header-left .greeting { font-size: 11px; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; }
-    .header-left h1 { font-size: 20px; font-weight: 700; margin-top: 1px; }
-    .header-right { text-align: right; }
-    .header-right .timestamp { font-size: 11px; color: var(--muted); }
-    .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--green); margin-right: 5px; animation: pulse 2s infinite; }
+
+    /* ── Shared item styles ── */
+    .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--c-green); margin-right: 5px; animation: pulse 2s infinite; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
 
-    /* ── MAIN GRID ── */
-    .grid {
-      flex: 1;
-      min-height: 0;
-      display: grid;
-      grid-template-columns: 2fr 1.2fr 1.2fr 1.6fr;
-      grid-template-rows: 1fr 1fr 0.6fr;
-      gap: 9px;
-    }
-
-    /* ── CARD BASE ── */
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 11px 13px;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      transition: border-color .2s;
-    }
-    .card:hover { border-color: var(--accent); }
-    .card.urgent {
-      background: rgba(255,101,132,.07);
-      border-color: rgba(255,101,132,.35);
-      grid-column: 1 / 3;
-    }
-    .card.schedule { grid-column: 3; grid-row: 1; }
-    .card.emails   { grid-column: 4; grid-row: 1; }
-    .card.world    { grid-column: 1 / 3; grid-row: 2; }
-    .card.ai-news  { grid-column: 3; grid-row: 2; }
-    .card.tech     { grid-column: 4; grid-row: 2; }
-    .card.actions  { grid-column: 1 / -1; grid-row: 3; }
-
-    /* ── CARD HEADER ── */
-    .card-header {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      margin-bottom: 8px;
-      flex-shrink: 0;
-    }
-    .card-icon { font-size: 15px; line-height: 1; }
-    .card-title { font-size: 10px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); }
-    .badge {
-      margin-left: auto;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      font-size: 10px;
-      font-weight: 600;
-      color: var(--muted);
-      padding: 1px 8px;
-    }
-    .badge.red { background: rgba(255,101,132,.15); border-color: var(--accent2); color: var(--accent2); }
-    .badge.green { background: rgba(67,217,173,.1); border-color: var(--green); color: var(--green); }
-
-    /* ── SCROLLABLE CARD BODY ── */
-    .card-body {
-      flex: 1;
-      overflow-y: auto;
-      min-height: 0;
-      scrollbar-width: thin;
-      scrollbar-color: var(--border) transparent;
-    }
-    .card-body::-webkit-scrollbar { width: 4px; }
-    .card-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-
-    /* ── URGENT ── */
-    .urgent-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      padding: 7px 0;
-      border-bottom: 1px solid var(--border);
-    }
+    /* Urgent */
+    .urgent-item { display: flex; align-items: flex-start; gap: 10px; padding: 7px 0; border-bottom: 1px solid rgba(255,101,132,.15); }
     .urgent-item:last-child { border-bottom: none; }
-    .urgent-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent2); margin-top: 5px; flex-shrink: 0; }
-    .urgent-item .label { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
-    .urgent-item .sub   { font-size: 11px; color: var(--muted); }
+    .u-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--c-urgent); flex-shrink: 0; margin-top: 5px; }
+    .u-label { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+    .u-sub   { font-size: 11px; color: var(--muted); }
 
-    /* ── SCHEDULE ── */
-    .event { display: flex; align-items: flex-start; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border); }
+    /* Calendar */
+    .event { display: flex; align-items: flex-start; gap: 10px; padding: 7px 0; border-bottom: 1px solid rgba(108,99,255,.15); }
     .event:last-child { border-bottom: none; }
-    .event-time { font-size: 11px; font-weight: 700; color: var(--accent); min-width: 46px; padding-top: 1px; }
-    .event-body .ev-title { font-size: 13px; font-weight: 500; }
-    .event-body .ev-sub   { font-size: 11px; color: var(--muted); margin-top: 2px; }
-    .bday-tag { display: inline-block; font-size: 10px; font-weight: 600; color: var(--yellow); background: rgba(255,209,102,.1); border: 1px solid rgba(255,209,102,.3); border-radius: 4px; padding: 1px 5px; margin-left: 6px; }
+    .ev-time { font-size: 11px; font-weight: 700; color: var(--c-cal); min-width: 46px; padding-top: 2px; }
+    .ev-title { font-size: 13px; font-weight: 500; }
+    .ev-sub   { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .tag { display: inline-block; font-size: 10px; font-weight: 600; border-radius: 4px; padding: 1px 5px; margin-left: 6px; }
+    .tag-bday { color: var(--c-tech); background: rgba(255,209,102,.1); border: 1px solid rgba(255,209,102,.3); }
 
-    /* ── EMAILS ── */
-    .email-group-label { font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); margin: 4px 0 5px; }
-    .email-item { padding: 6px 0; border-bottom: 1px solid var(--border); }
+    /* Emails */
+    .email-group { font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); margin: 6px 0 5px; }
+    .email-item  { padding: 6px 0; border-bottom: 1px solid rgba(255,159,67,.1); }
     .email-item:last-child { border-bottom: none; }
-    .email-sender  { font-size: 12px; font-weight: 600; }
-    .email-subject { font-size: 11px; color: var(--muted); margin-top: 1px; }
-    .email-summary { font-size: 11px; margin-top: 3px; opacity: .75; }
+    .em-sender  { font-size: 12px; font-weight: 700; color: var(--c-email); }
+    .em-subject { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .em-summary { font-size: 11px; margin-top: 3px; opacity: .8; }
 
-    /* ── NEWS ── */
-    .news-item { padding: 7px 0; border-bottom: 1px solid var(--border); }
+    /* News */
+    .news-item { padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,.05); }
     .news-item:last-child { border-bottom: none; }
-    .news-headline { font-size: 13px; font-weight: 500; line-height: 1.35; margin-bottom: 3px; }
-    .news-summary  { font-size: 11px; color: var(--muted); line-height: 1.4; }
-    .news-source   { font-size: 10px; color: var(--accent); margin-top: 3px; font-weight: 600; letter-spacing: .04em; }
-
-    /* ── ACTIONS (horizontal row) ── */
-    .actions-row {
-      display: flex;
-      gap: 10px;
-      height: 100%;
-      align-items: stretch;
-    }
-    .action-item {
-      flex: 1;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 9px;
-      padding: 9px 12px;
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-    }
-    .action-num {
-      width: 20px; height: 20px; border-radius: 50%;
-      background: var(--accent); color: #fff;
-      font-size: 10px; font-weight: 700;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0; margin-top: 1px;
-    }
-    .action-item .label { font-size: 12px; font-weight: 600; line-height: 1.3; }
-    .action-item .sub   { font-size: 11px; color: var(--muted); margin-top: 2px; }
-
-    /* ── FOOTER ── */
-    .footer {
-      flex-shrink: 0;
-      text-align: center;
-      font-size: 10px;
-      color: var(--muted);
-      padding: 2px 0;
-      border-top: 1px solid var(--border);
-    }
-    .footer a { color: var(--accent); text-decoration: none; }
+    .n-headline { font-size: 13px; font-weight: 500; line-height: 1.35; margin-bottom: 3px; }
+    .n-summary  { font-size: 11px; color: var(--muted); line-height: 1.4; }
+    .n-source   { font-size: 10px; font-weight: 700; margin-top: 3px; letter-spacing: .04em; }
+    .card-world .n-source { color: var(--c-world); }
+    .card-ai    .n-source { color: var(--c-ai); }
+    .card-tech  .n-source { color: var(--c-tech); }
   </style>
 </head>
 <body>
 <div class="wrapper">
 
-  <!-- HEADER -->
+  <!-- ══════════ HEADER ══════════ -->
   <div class="header">
     <div class="header-left">
       <div class="greeting">Good morning, Martin</div>
       <h1>🌅 Thursday, April 9, 2026</h1>
     </div>
     <div class="header-right">
-      <div class="timestamp"><span class="dot"></span>Last updated at 06:06 PM · Auto-refreshes daily</div>
+      <span class="dot"></span>Last updated at 06:06 PM · Auto-refreshes daily
     </div>
   </div>
 
-  <!-- GRID -->
+  <!-- ══════════ GRID ══════════ -->
   <div class="grid">
 
     <!-- ⚡ URGENT -->
-    <div class="card urgent">
+    <div class="card card-urgent">
       <div class="card-header">
         <span class="card-icon">⚡</span>
         <span class="card-title">Urgent — needs immediate attention</span>
-        <span class="badge red">2 items</span>
+        <span class="badge">2 items</span>
       </div>
       <div class="card-body">
         <div class="urgent-item">
-          <span class="urgent-dot"></span>
+          <span class="u-dot"></span>
           <div>
-            <div class="label">🔒 Microsoft account password changed today</div>
-            <div class="sub">Your Microsoft account password was changed on Apr 9, 2026 at 12:06 CET. If this wasn't you, secure your account immediately and revoke active sessions.</div>
+            <div class="u-label">🔒 Microsoft account password changed today</div>
+            <div class="u-sub">Your password was changed on Apr 9 at 12:06 CET. If this wasn't you — change it immediately and revoke all active sessions.</div>
           </div>
         </div>
         <div class="urgent-item">
-          <span class="urgent-dot"></span>
+          <span class="u-dot"></span>
           <div>
-            <div class="label">🔑 Microsoft app passwords must be updated</div>
-            <div class="sub">Because 2-step verification is enabled, all apps and devices using the old password will stop working. Update app-specific passwords now.</div>
+            <div class="u-label">🔑 App passwords must be updated</div>
+            <div class="u-sub">With 2FA enabled, all apps using the old password will stop working. Go to account.microsoft.com → Security → App passwords.</div>
           </div>
         </div>
       </div>
     </div>
 
     <!-- 📅 SCHEDULE -->
-    <div class="card schedule">
+    <div class="card card-cal">
       <div class="card-header">
         <span class="card-icon">📅</span>
         <span class="card-title">Today's Schedule</span>
@@ -239,9 +343,9 @@
       </div>
       <div class="card-body">
         <div class="event">
-          <div class="event-time">All day</div>
-          <div class="event-body">
-            <div class="ev-title">Majo Strba — narodeniny <span class="bday-tag">🎂 BIRTHDAY</span></div>
+          <div class="ev-time">All day</div>
+          <div>
+            <div class="ev-title">Majo Strba — narodeniny <span class="tag tag-bday">🎂 BIRTHDAY</span></div>
             <div class="ev-sub">Don't forget to send a birthday message!</div>
           </div>
         </div>
@@ -249,40 +353,40 @@
     </div>
 
     <!-- 📧 EMAILS -->
-    <div class="card emails">
+    <div class="card card-email">
       <div class="card-header">
         <span class="card-icon">📧</span>
         <span class="card-title">Emails</span>
         <span class="badge">5 unread</span>
       </div>
       <div class="card-body">
-        <div class="email-group-label">⚠️ Needs action</div>
+        <div class="email-group">⚠️ Needs action</div>
         <div class="email-item">
-          <div class="email-sender">Microsoft Account Team</div>
-          <div class="email-subject">Zmena hesla konta Microsoft</div>
-          <div class="email-summary">Password changed at 12:06 CET — verify this was you.</div>
+          <div class="em-sender">Microsoft Account</div>
+          <div class="em-subject">Zmena hesla konta Microsoft</div>
+          <div class="em-summary">Password changed Apr 9 at 12:06 CET — verify this was you.</div>
         </div>
         <div class="email-item">
-          <div class="email-sender">Microsoft Account Team</div>
-          <div class="email-subject">Heslá aplikácií konta Microsoft treba aktualizovať</div>
-          <div class="email-summary">App passwords need refreshing after the password change.</div>
+          <div class="em-sender">Microsoft Account</div>
+          <div class="em-subject">Heslá aplikácií treba aktualizovať</div>
+          <div class="em-summary">App passwords need refreshing after the change.</div>
         </div>
-        <div class="email-group-label" style="margin-top:8px;">FYI / No action needed</div>
+        <div class="email-group" style="margin-top:8px;">FYI — no action needed</div>
         <div class="email-item">
-          <div class="email-sender">GitHub</div>
-          <div class="email-subject">Fine-grained PAT "Claude" added</div>
-          <div class="email-summary">New token added to your account (Cowork setup).</div>
+          <div class="em-sender">GitHub</div>
+          <div class="em-subject">Fine-grained PAT "Claude" added</div>
+          <div class="em-summary">New Cowork token added to your account.</div>
         </div>
         <div class="email-item">
-          <div class="email-sender">GitHub</div>
-          <div class="email-subject">Classic PAT "claude-cowork" added &amp; regenerated</div>
-          <div class="email-summary">Token with full admin scopes created and refreshed.</div>
+          <div class="em-sender">GitHub</div>
+          <div class="em-subject">Classic PAT "claude-cowork" added &amp; regenerated</div>
+          <div class="em-summary">Token with admin scopes was created and refreshed.</div>
         </div>
       </div>
     </div>
 
     <!-- 🌍 WORLD NEWS -->
-    <div class="card world">
+    <div class="card card-world">
       <div class="card-header">
         <span class="card-icon">🌍</span>
         <span class="card-title">World News</span>
@@ -290,30 +394,30 @@
       </div>
       <div class="card-body">
         <div class="news-item">
-          <div class="news-headline">🕊️ US-Iran ceasefire reached — but Israel bombs Lebanon hours later</div>
-          <div class="news-summary">A last-minute US-Iran deal was struck before Trump's deadline, yet Israeli forces launched devastating strikes across Lebanon, killing at least 203 people and wounding 1,000 within hours of the ceasefire announcement.</div>
-          <div class="news-source">Al Jazeera</div>
+          <div class="n-headline">🕊️ US-Iran ceasefire reached — Israel bombs Lebanon hours later</div>
+          <div class="n-summary">A last-minute US-Iran deal was struck before Trump's deadline, yet Israeli forces launched devastating strikes on Lebanon, killing 203+ and wounding 1,000.</div>
+          <div class="n-source">Al Jazeera</div>
         </div>
         <div class="news-item">
-          <div class="news-headline">🗳️ Democrats overperform in Wisconsin Supreme Court election</div>
-          <div class="news-summary">Wisconsin voters chose a new liberal justice, expanding the court's progressive majority in a sign that Democrats continue to outperform expectations in special elections.</div>
-          <div class="news-source">NPR</div>
+          <div class="n-headline">🗳️ Democrats overperform in Wisconsin Supreme Court election</div>
+          <div class="n-summary">Wisconsin voters elected a new liberal justice, expanding the court's progressive majority and continuing Democratic outperformance in special elections.</div>
+          <div class="n-source">NPR</div>
         </div>
         <div class="news-item">
-          <div class="news-headline">📺 OpenAI acquires Silicon Valley insider talk show</div>
-          <div class="news-summary">OpenAI purchased a niche talk show popular with Silicon Valley insiders, a strategic move to shape public narrative around artificial intelligence.</div>
-          <div class="news-source">NBC News</div>
+          <div class="n-headline">📺 OpenAI acquires Silicon Valley insider talk show</div>
+          <div class="n-summary">OpenAI purchased a niche tech-insider talk show as a strategic move to shape public narrative around artificial intelligence.</div>
+          <div class="n-source">NBC News</div>
         </div>
         <div class="news-item">
-          <div class="news-headline">🕵️ ICE using spyware to intercept encrypted messages of fentanyl traffickers</div>
-          <div class="news-summary">The agency's top official revealed to members of Congress that ICE has deployed a spyware tool to break into encrypted communications as part of drug trafficking investigations.</div>
-          <div class="news-source">NBC News</div>
+          <div class="n-headline">🕵️ ICE using spyware to intercept encrypted fentanyl trafficker messages</div>
+          <div class="n-summary">ICE's top official revealed to Congress that the agency has deployed spyware to break into encrypted communications in drug investigations.</div>
+          <div class="n-source">NBC News</div>
         </div>
       </div>
     </div>
 
     <!-- 🤖 AI NEWS -->
-    <div class="card ai-news">
+    <div class="card card-ai">
       <div class="card-header">
         <span class="card-icon">🤖</span>
         <span class="card-title">AI News</span>
@@ -321,30 +425,30 @@
       </div>
       <div class="card-body">
         <div class="news-item">
-          <div class="news-headline">Utah first state to let AI renew drug prescriptions</div>
-          <div class="news-summary">A landmark law now allows AI systems to autonomously renew prescriptions — the first state to move AI beyond diagnosis into actual treatment decisions.</div>
-          <div class="news-source">HumAI Blog</div>
+          <div class="n-headline">Utah is first state to authorize AI prescription renewals</div>
+          <div class="n-summary">A new law lets AI systems autonomously renew drug prescriptions — the first state to extend AI authority beyond diagnosis.</div>
+          <div class="n-source">HumAI Blog</div>
         </div>
         <div class="news-item">
-          <div class="news-headline">Meta releases Muse Spark — ranks #4 on AI Intelligence Index</div>
-          <div class="news-summary">Closed-source Muse Spark scores 52 on the Artificial Analysis Index v4, excelling at figure understanding and medical reasoning but struggling with abstract tasks.</div>
-          <div class="news-source">Artificial Analysis</div>
+          <div class="n-headline">Meta releases Muse Spark — ranks #4 on AI Intelligence Index</div>
+          <div class="n-summary">Closed-source Muse Spark scores 52 on the Artificial Analysis Index v4, strong at figure understanding and medical reasoning.</div>
+          <div class="n-source">Artificial Analysis</div>
         </div>
         <div class="news-item">
-          <div class="news-headline">AI industry enters consolidation phase in April 2026</div>
-          <div class="news-summary">Deployments from Q1 are now delivering their first real-world results as the sector shifts from hype to measurable outcomes and pragmatic enterprise use.</div>
-          <div class="news-source">TechCrunch</div>
+          <div class="n-headline">AI industry enters consolidation phase — hype gives way to results</div>
+          <div class="n-summary">Q1 deployments are delivering their first real outcomes; the sector shifts toward pragmatic enterprise use over speculative launches.</div>
+          <div class="n-source">TechCrunch</div>
         </div>
         <div class="news-item">
-          <div class="news-headline">Physical AI robots accelerate solar farm buildouts</div>
-          <div class="news-summary">AI-powered field robots like Maximo and Aigen's solar-driven weed rovers are cutting installation time and herbicide use at scale across renewable energy sites.</div>
-          <div class="news-source">NVIDIA Blog</div>
+          <div class="n-headline">Physical AI robots accelerate solar farm buildouts</div>
+          <div class="n-summary">AI-powered field robots (Maximo, Aigen) cut installation time and herbicide use dramatically across renewable energy projects.</div>
+          <div class="n-source">NVIDIA Blog</div>
         </div>
       </div>
     </div>
 
-    <!-- 📱 TECH / ELECTRONICS -->
-    <div class="card tech">
+    <!-- 📱 TECH & ELECTRONICS -->
+    <div class="card card-tech">
       <div class="card-header">
         <span class="card-icon">📱</span>
         <span class="card-title">Electronics &amp; Tech Brands</span>
@@ -352,68 +456,68 @@
       </div>
       <div class="card-body">
         <div class="news-item">
-          <div class="news-headline">Apple confirms US Mac manufacturing starting in 2026</div>
-          <div class="news-summary">Apple officially announced plans to produce select Mac models domestically in the United States this year, in response to ongoing tariff pressures.</div>
-          <div class="news-source">Engadget</div>
+          <div class="n-headline">Apple confirms US Mac manufacturing starting in 2026</div>
+          <div class="n-summary">Apple officially plans to produce select Mac models domestically this year, responding to tariff pressure.</div>
+          <div class="n-source">Engadget</div>
         </div>
         <div class="news-item">
-          <div class="news-headline">Sony unveils "True RGB" — its own display technology brand</div>
-          <div class="news-summary">Sony introduced the "True RGB" name for its proprietary display pipeline, positioning it against competitors like Samsung's QD-OLED and LG's WRGB technologies.</div>
-          <div class="news-source">TechRadar</div>
+          <div class="n-headline">Sony unveils "True RGB" display technology brand</div>
+          <div class="n-summary">Sony introduced its proprietary "True RGB" display pipeline name to compete against Samsung QD-OLED and LG WRGB.</div>
+          <div class="n-source">TechRadar</div>
         </div>
         <div class="news-item">
-          <div class="news-headline">Meta launches improved WhatsApp for CarPlay</div>
-          <div class="news-summary">The new WhatsApp CarPlay update brings much deeper integration with Apple's in-car system, including hands-free messaging and better audio routing.</div>
-          <div class="news-source">Engadget</div>
+          <div class="n-headline">Meta launches improved WhatsApp for CarPlay</div>
+          <div class="n-summary">New WhatsApp CarPlay update brings deeper Apple integration including hands-free messaging and better audio routing.</div>
+          <div class="n-source">Engadget</div>
         </div>
         <div class="news-item">
-          <div class="news-headline">Wearable AI market: smartwatches dominate in 2026</div>
-          <div class="news-summary">North America leads global wearable AI device adoption, with the smartwatch segment holding the largest share driven by health monitoring, payments, and AI voice assistants.</div>
-          <div class="news-source">Yahoo Finance</div>
+          <div class="n-headline">Smartwatches dominate wearable AI market in 2026</div>
+          <div class="n-summary">North America leads global wearable AI adoption; smartwatches hold the largest share with health, payments, and voice AI.</div>
+          <div class="n-source">Yahoo Finance</div>
         </div>
       </div>
     </div>
 
     <!-- 📝 ACTIONS -->
-    <div class="card actions">
+    <div class="card card-actions">
       <div class="card-header">
         <span class="card-icon">📝</span>
         <span class="card-title">Suggested Actions — what to tackle first</span>
       </div>
-      <div class="actions-row">
-        <div class="action-item">
+      <div class="actions-strip">
+        <div class="action-tile">
           <div class="action-num">1</div>
           <div>
-            <div class="label">🔒 Verify Microsoft account security</div>
-            <div class="sub">Check if you changed the password at 12:06 CET. If not — change it immediately &amp; revoke sessions.</div>
+            <div class="a-label">🔒 Verify Microsoft account</div>
+            <div class="a-sub">Check if YOU changed the password at 12:06 CET. If not — secure immediately.</div>
           </div>
         </div>
-        <div class="action-item">
+        <div class="action-tile">
           <div class="action-num">2</div>
           <div>
-            <div class="label">🔑 Update Microsoft app passwords</div>
-            <div class="sub">Required after a password change when 2FA is enabled. Go to account.microsoft.com → Security.</div>
+            <div class="a-label">🔑 Update app passwords</div>
+            <div class="a-sub">Required after password change with 2FA. account.microsoft.com → Security</div>
           </div>
         </div>
-        <div class="action-item">
+        <div class="action-tile">
           <div class="action-num">3</div>
           <div>
-            <div class="label">🎂 Wish Majo Strba happy birthday!</div>
-            <div class="sub">Today is their birthday — send a message so you don't miss it.</div>
+            <div class="a-label">🎂 Wish Majo Strba happy birthday</div>
+            <div class="a-sub">Today is their birthday — send a message now.</div>
           </div>
         </div>
-        <div class="action-item">
+        <div class="action-tile">
           <div class="action-num">4</div>
           <div>
-            <div class="label">🐙 Review GitHub PAT scopes</div>
-            <div class="sub">Two new tokens were created (claude-cowork classic + Claude fine-grained). Verify scopes are appropriate.</div>
+            <div class="a-label">🐙 Review GitHub PAT scopes</div>
+            <div class="a-sub">Two new tokens created today. Verify access levels are appropriate.</div>
           </div>
         </div>
-        <div class="action-item">
+        <div class="action-tile">
           <div class="action-num">5</div>
           <div>
-            <div class="label">🌍 Follow Middle East developments</div>
-            <div class="sub">US-Iran ceasefire is fragile — Israeli strikes on Lebanon are ongoing. Monitor for rapid changes today.</div>
+            <div class="a-label">🌍 Monitor Middle East situation</div>
+            <div class="a-sub">US-Iran ceasefire is fragile; Israeli strikes on Lebanon are ongoing.</div>
           </div>
         </div>
       </div>
@@ -421,10 +525,9 @@
 
   </div><!-- /grid -->
 
-  <!-- FOOTER -->
   <div class="footer">
     Generated by Claude · Thursday, April 9, 2026 at 06:06 PM ·
-    <a href="https://github.com/DarkMaster9452/morning-briefing">GitHub ↗</a>
+    <a href="https://github.com/DarkMaster9452/morning-briefing" target="_blank">GitHub ↗</a>
   </div>
 
 </div><!-- /wrapper -->
