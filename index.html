@@ -1579,13 +1579,30 @@
       margin-top: 4px;
       text-align: center
     }
-    .sleep-gfit-btn{
-      width:100%;margin-top:6px;padding:4px 8px;border-radius:6px;
-      border:1px solid rgba(66,133,244,.4);background:rgba(66,133,244,.1);
-      color:#4285f4;font-size:9px;font-weight:700;cursor:pointer;transition:background .15s;
+
+    .sleep-gfit-btn {
+      width: 100%;
+      margin-top: 6px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(66, 133, 244, .4);
+      background: rgba(66, 133, 244, .1);
+      color: #4285f4;
+      font-size: 9px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .15s;
     }
-    .sleep-gfit-btn:hover{background:rgba(66,133,244,.22)}
-    .sleep-gfit-btn.synced{border-color:var(--c-ai);background:rgba(67,217,173,.1);color:var(--c-ai)}
+
+    .sleep-gfit-btn:hover {
+      background: rgba(66, 133, 244, .22)
+    }
+
+    .sleep-gfit-btn.synced {
+      border-color: var(--c-ai);
+      background: rgba(67, 217, 173, .1);
+      color: var(--c-ai)
+    }
 
     /* ══════════════════════════════════════════
      VERCEL UPTIME CARD
@@ -1936,7 +1953,8 @@
           </div>
           <div class="sleep-history" id="sleep-history"></div>
           <div class="sleep-today-label" id="sleep-today-label"></div>
-          <button class="sleep-gfit-btn" id="sleep-gfit-btn" onclick="gfitSleepSync()">🔗 Sync zo Zepp / Google Fit</button>
+          <button class="sleep-gfit-btn" id="sleep-gfit-btn" onclick="gfitSleepSync()">🔗 Sync zo Zepp / Google
+            Fit</button>
         </div>
 
         <!-- Pomodoro -->
@@ -2306,7 +2324,8 @@
                 <div class="task-pri pri-ok">OK</div>
               </div>
               <div class="task-empty" style="margin-top:8px;font-size:10px">Všetky ostatné overené úlohy sú
-                <strong>Done</strong> ✓</div>
+                <strong>Done</strong> ✓
+              </div>
             </div>
             <div class="rh rh-r"></div>
             <div class="rh rh-b"></div>
@@ -2659,10 +2678,10 @@
        DRAG-AND-DROP LAYOUT CUSTOMIZATION
     ══════════════════════════════════════════ */
     const CARD_SIZES = {
-      'card-weather': {cols:2,rows:1}, 'card-urgent': {cols:3,rows:1}, 'card-cal': {cols:1,rows:1},
-      'card-world': {cols:2,rows:1}, 'card-ai': {cols:2,rows:1}, 'card-tech': {cols:2,rows:1},
-      'card-notion': {cols:2,rows:2}, 'card-tasks': {cols:2,rows:1}, 'card-email': {cols:2,rows:1},
-      'card-clients': {cols:2,rows:1}, 'card-bday': {cols:2,rows:1}, 'card-vercel': {cols:2,rows:1},
+      'card-weather': { cols: 2, rows: 1 }, 'card-urgent': { cols: 3, rows: 1 }, 'card-cal': { cols: 1, rows: 1 },
+      'card-world': { cols: 2, rows: 1 }, 'card-ai': { cols: 2, rows: 1 }, 'card-tech': { cols: 2, rows: 1 },
+      'card-notion': { cols: 2, rows: 2 }, 'card-tasks': { cols: 2, rows: 1 }, 'card-email': { cols: 2, rows: 1 },
+      'card-clients': { cols: 2, rows: 1 }, 'card-bday': { cols: 2, rows: 1 }, 'card-vercel': { cols: 2, rows: 1 },
     };
     const LAYOUT_KEY = 'mb_layout_v2';
 
@@ -2671,7 +2690,7 @@
       document.querySelectorAll('.grid .card').forEach(card => {
         const key = card.dataset.card;
         if (!key) return;
-        const def = CARD_SIZES[key] || {cols:2,rows:1};
+        const def = CARD_SIZES[key] || { cols: 2, rows: 1 };
         const s = (saved.sizes && saved.sizes[key]) || def;
         card.style.gridColumn = 'span ' + (s.cols || def.cols);
         const rows = s.rows || def.rows;
@@ -2685,8 +2704,8 @@
         const key = card.dataset.card; if (!key) return;
         order.push(key);
         const colM = (card.style.gridColumn || '').match(/span\s+(\d+)/);
-        const rowM = (card.style.gridRow    || '').match(/span\s+(\d+)/);
-        const def  = CARD_SIZES[key] || {cols:2,rows:1};
+        const rowM = (card.style.gridRow || '').match(/span\s+(\d+)/);
+        const def = CARD_SIZES[key] || { cols: 2, rows: 1 };
         sizes[key] = {
           cols: colM ? parseInt(colM[1]) : def.cols,
           rows: rowM ? parseInt(rowM[1]) : def.rows,
@@ -2696,7 +2715,7 @@
     }
 
     function getSavedLayout() {
-      try { return JSON.parse(localStorage.getItem(LAYOUT_KEY)) || {}; } catch(e) { return {}; }
+      try { return JSON.parse(localStorage.getItem(LAYOUT_KEY)) || {}; } catch (e) { return {}; }
     }
 
     function loadLayout() {
@@ -2718,7 +2737,7 @@
 
     function resizeCard(btn, dir, axis) {
       const card = btn.closest('.card'); if (!card) return;
-      const def = CARD_SIZES[card.dataset.card] || {cols:2,rows:1};
+      const def = CARD_SIZES[card.dataset.card] || { cols: 2, rows: 1 };
       if (axis === 'row') {
         const rowM = (card.style.gridRow || '').match(/span\s+(\d+)/);
         let rows = rowM ? parseInt(rowM[1]) : def.rows;
@@ -2737,8 +2756,8 @@
     function getGridMetrics() {
       const grid = document.querySelector('.grid');
       const style = getComputedStyle(grid);
-      const gap   = parseFloat(style.columnGap) || 7;
-      const colW  = (grid.offsetWidth - gap * 5) / 6;
+      const gap = parseFloat(style.columnGap) || 7;
+      const colW = (grid.offsetWidth - gap * 5) / 6;
       // measure actual row height from first card
       const firstCard = grid.querySelector('.card');
       const rowH = firstCard ? (firstCard.offsetHeight + gap) : (90 + gap);
@@ -2756,9 +2775,9 @@
     function startEdgeResize(e, card, mode) {
       e.preventDefault(); e.stopPropagation();
       const { colW, rowH, gap } = getGridMetrics();
-      const def = CARD_SIZES[card.dataset.card] || {cols:2,rows:1};
+      const def = CARD_SIZES[card.dataset.card] || { cols: 2, rows: 1 };
       const colM = (card.style.gridColumn || '').match(/span\s+(\d+)/);
-      const rowM = (card.style.gridRow    || '').match(/span\s+(\d+)/);
+      const rowM = (card.style.gridRow || '').match(/span\s+(\d+)/);
       const startCols = colM ? parseInt(colM[1]) : def.cols;
       const startRows = rowM ? parseInt(rowM[1]) : def.rows;
       const startX = e.clientX, startY = e.clientY;
@@ -2808,7 +2827,7 @@
     }
 
     const _origShowApp = showApp;
-    window.showApp = function(user) { _origShowApp(user); setTimeout(initLayout, 50); };
+    window.showApp = function (user) { _origShowApp(user); setTimeout(initLayout, 50); };
     if (sessionStorage.getItem('mb_user')) {
       document.addEventListener('DOMContentLoaded', () => setTimeout(initLayout, 50));
     }
@@ -2827,7 +2846,7 @@
           SPOTIFY_CLIENT_ID = cfg.spotifyClientId;
           localStorage.setItem('mb_sp_client_id', SPOTIFY_CLIENT_ID); // cache locally too
         }
-      } catch(e) { /* /api/config might not be deployed — use localStorage */ }
+      } catch (e) { /* /api/config might not be deployed — use localStorage */ }
     }
 
     /* ══════════════════════════════════════════
@@ -2842,7 +2861,7 @@
           stars.forEach(s => s.classList.toggle('active', parseInt(s.dataset.v) <= sleepQuality));
         });
       });
-      const todayKey = 'mb_sleep_' + new Date().toISOString().slice(0,10);
+      const todayKey = 'mb_sleep_' + new Date().toISOString().slice(0, 10);
       const todayData = JSON.parse(localStorage.getItem(todayKey) || 'null');
       if (todayData) {
         document.getElementById('sleep-hours').value = todayData.hours;
@@ -2855,7 +2874,7 @@
     function sleepSave() {
       const hours = parseFloat(document.getElementById('sleep-hours').value);
       if (isNaN(hours) || hours < 0) return;
-      const key = 'mb_sleep_' + new Date().toISOString().slice(0,10);
+      const key = 'mb_sleep_' + new Date().toISOString().slice(0, 10);
       localStorage.setItem(key, JSON.stringify({ hours, quality: sleepQuality }));
       renderSleepHistory();
     }
@@ -2867,7 +2886,7 @@
       const days = [];
       for (let i = 6; i >= 0; i--) {
         const d = new Date(); d.setDate(d.getDate() - i);
-        const key = 'mb_sleep_' + d.toISOString().slice(0,10);
+        const key = 'mb_sleep_' + d.toISOString().slice(0, 10);
         const data = JSON.parse(localStorage.getItem(key) || 'null');
         days.push({ dayName: d.toLocaleDateString('sk', { weekday: 'short' }), data, isToday: i === 0 });
       }
@@ -2879,7 +2898,7 @@
         const op = d.isToday ? '1' : '0.5';
         return `<div class="sleep-bar-wrap" title="${d.dayName}: ${h}h">
           <div class="sleep-bar" style="height:${pct}%;background:${col};opacity:${op}"></div>
-          <div class="sleep-bar-label">${d.dayName.slice(0,2)}</div>
+          <div class="sleep-bar-label">${d.dayName.slice(0, 2)}</div>
         </div>`;
       }).join('');
       const today = days[6];
@@ -2930,8 +2949,8 @@
           </div>`;
         await Promise.all(projects.map(p => checkVercelProject(p, token)));
         const checkEl = document.getElementById('vercel-last-check');
-        if (checkEl) checkEl.textContent = 'Aktualizované: ' + new Date().toLocaleTimeString('sk', {hour:'2-digit',minute:'2-digit'});
-      } catch(e) {
+        if (checkEl) checkEl.textContent = 'Aktualizované: ' + new Date().toLocaleTimeString('sk', { hour: '2-digit', minute: '2-digit' });
+      } catch (e) {
         el.innerHTML = `<div style="font-size:10px;color:var(--c-urgent)">${e.message}</div>
           <button onclick="vercelReset()" style="margin-top:6px;font-size:9px;color:var(--muted);background:none;border:none;cursor:pointer;">Skúsiť znova</button>`;
       }
@@ -2957,7 +2976,7 @@
           meta.className = 'uptime-meta'; meta.textContent = dep.url;
           row.insertBefore(meta, state);
         }
-      } catch(e) {
+      } catch (e) {
         const dot = row.querySelector('.uptime-dot'); const state = row.querySelector('.uptime-state');
         if (dot) dot.className = 'uptime-dot up-err';
         if (state) { state.className = 'uptime-state err'; state.textContent = 'ERR'; }
@@ -2979,11 +2998,11 @@
     const SPOTIFY_REDIRECT = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
       ? window.location.origin
       : 'https://morning-briefing-rouge.vercel.app';
-    const SPOTIFY_SCOPES   = 'user-read-currently-playing user-read-playback-state';
+    const SPOTIFY_SCOPES = 'user-read-currently-playing user-read-playback-state';
     let spotifyToken = null, spotifyRefreshTimer = null;
 
     function spotifyBase64url(bytes) {
-      return btoa(String.fromCharCode(...bytes)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+      return btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
     }
     async function spotifyGeneratePKCE() {
       const verifier = spotifyBase64url(crypto.getRandomValues(new Uint8Array(32)));
@@ -3029,7 +3048,7 @@
           if (data.refresh_token) localStorage.setItem('mb_sp_refresh', data.refresh_token);
           spotifyToken = data.access_token; return true;
         }
-      } catch(e) {}
+      } catch (e) { }
       return false;
     }
 
@@ -3049,7 +3068,7 @@
           localStorage.setItem('mb_sp_expiry', Date.now() + (data.expires_in - 60) * 1000);
           spotifyToken = data.access_token; return true;
         }
-      } catch(e) {}
+      } catch (e) { }
       return false;
     }
 
@@ -3122,7 +3141,7 @@
         if (res.status === 401) { spotifyToken = null; return null; }
         if (!res.ok) return null;
         return await res.json();
-      } catch(e) { return null; }
+      } catch (e) { return null; }
     }
 
     async function spotifyRender() {
@@ -3138,8 +3157,8 @@
       const track = data.item;
       const artist = track.artists.map(a => a.name).join(', ');
       const art = track.album.images[2] ? track.album.images[2].url : '';
-      const pct = Math.round(((data.progress_ms||0) / (track.duration_ms||1)) * 100);
-      const fmt = ms => `${Math.floor(ms/60000)}:${String(Math.floor((ms%60000)/1000)).padStart(2,'0')}`;
+      const pct = Math.round(((data.progress_ms || 0) / (track.duration_ms || 1)) * 100);
+      const fmt = ms => `${Math.floor(ms / 60000)}:${String(Math.floor((ms % 60000) / 1000)).padStart(2, '0')}`;
       widget.innerHTML = `
         <div class="spotify-track">
           ${art ? `<img class="spotify-art" src="${art}" alt="art"/>` : '<div class="spotify-art-placeholder">🎵</div>'}
@@ -3151,7 +3170,7 @@
         <div class="spotify-bar"><div class="spotify-bar-fill" style="width:${pct}%"></div></div>
         <div class="spotify-status">
           <span class="spotify-playing-dot"></span>
-          <span>${fmt(data.progress_ms||0)} / ${fmt(track.duration_ms||0)}</span>
+          <span>${fmt(data.progress_ms || 0)} / ${fmt(track.duration_ms || 0)}</span>
           <button class="spotify-disconnect" onclick="spotifyDisconnect()">Odpojiť</button>
         </div>`;
     }
@@ -3163,7 +3182,7 @@
 
     function spotifyDisconnect() {
       clearInterval(spotifyRefreshTimer); spotifyToken = null;
-      ['mb_sp_token','mb_sp_expiry','mb_sp_refresh'].forEach(k => localStorage.removeItem(k));
+      ['mb_sp_token', 'mb_sp_expiry', 'mb_sp_refresh'].forEach(k => localStorage.removeItem(k));
       spotifyShowSetup();
     }
 
@@ -3179,7 +3198,7 @@
     function gfitSleepSync() {
       const btn = document.getElementById('sleep-gfit-btn');
       if (!window.google || !window.google.accounts || !window.google.accounts.oauth2) {
-        if (btn) { btn.textContent = '⚠️ Skús znova o chvíľu'; setTimeout(() => { if(btn) btn.textContent = '🔗 Sync zo Zepp / Google Fit'; }, 3000); }
+        if (btn) { btn.textContent = '⚠️ Skús znova o chvíľu'; setTimeout(() => { if (btn) btn.textContent = '🔗 Sync zo Zepp / Google Fit'; }, 3000); }
         return;
       }
       if (btn) btn.textContent = '⏳ Autorizácia…';
@@ -3188,7 +3207,7 @@
         scope: 'https://www.googleapis.com/auth/fitness.sleep.read',
         callback: (response) => {
           if (response.error) {
-            if (btn) { btn.textContent = '❌ ' + (response.error_description || response.error); setTimeout(() => { if(btn) btn.textContent = '🔗 Sync zo Zepp / Google Fit'; }, 4000); }
+            if (btn) { btn.textContent = '❌ ' + (response.error_description || response.error); setTimeout(() => { if (btn) btn.textContent = '🔗 Sync zo Zepp / Google Fit'; }, 4000); }
             return;
           }
           gfitToken = response.access_token;
@@ -3209,7 +3228,7 @@
 
       // Time window: yesterday 6pm → today noon (covers a full night)
       const now = new Date();
-      const endMs   = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 14, 0, 0).getTime();
+      const endMs = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 14, 0, 0).getTime();
       const startMs = endMs - (22 * 3600 * 1000);
 
       try {
@@ -3273,7 +3292,7 @@
         }
 
         if (totalSleepMs < 60000) {
-          if (btn) { btn.textContent = '⚠️ Žiadne sleep dáta (synkuj Zepp app)'; setTimeout(() => { if(btn) btn.textContent = '🔗 Sync zo Zepp / Google Fit'; }, 4000); }
+          if (btn) { btn.textContent = '⚠️ Žiadne sleep dáta (synkuj Zepp app)'; setTimeout(() => { if (btn) btn.textContent = '🔗 Sync zo Zepp / Google Fit'; }, 4000); }
           return;
         }
 
@@ -3287,8 +3306,8 @@
         const goodSleepRatio = totalSleepMs > 0 ? (deepMs + remMs) / totalSleepMs : 0;
         const quality = hours >= 8 && goodSleepRatio > 0.25 ? 5
           : hours >= 7 ? 4
-          : hours >= 6 ? 3
-          : hours >= 5 ? 2 : 1;
+            : hours >= 6 ? 3
+              : hours >= 5 ? 2 : 1;
         sleepQuality = quality;
         document.querySelectorAll('.sleep-star').forEach(s =>
           s.classList.toggle('active', parseInt(s.dataset.v) <= sleepQuality));
@@ -3297,19 +3316,19 @@
         sleepSave();
 
         if (btn) {
-          btn.textContent = `✅ ${hours}h (deep ${Math.round(deepMs/60000)}min, REM ${Math.round(remMs/60000)}min)`;
+          btn.textContent = `✅ ${hours}h (deep ${Math.round(deepMs / 60000)}min, REM ${Math.round(remMs / 60000)}min)`;
           btn.classList.add('synced');
-          setTimeout(() => { if(btn) { btn.textContent = '🔄 Sync zo Zepp'; btn.classList.remove('synced'); } }, 5000);
+          setTimeout(() => { if (btn) { btn.textContent = '🔄 Sync zo Zepp'; btn.classList.remove('synced'); } }, 5000);
         }
 
-      } catch(e) {
-        if (btn) { btn.textContent = '❌ Chyba: ' + e.message; setTimeout(() => { if(btn) btn.textContent = '🔗 Sync zo Zepp / Google Fit'; }, 4000); }
+      } catch (e) {
+        if (btn) { btn.textContent = '❌ Chyba: ' + e.message; setTimeout(() => { if (btn) btn.textContent = '🔗 Sync zo Zepp / Google Fit'; }, 4000); }
       }
     }
 
     // Auto-sync sleep from Google Fit on page load if no manual entry today
     function gfitAutoSync() {
-      const todayKey = 'mb_sleep_' + new Date().toISOString().slice(0,10);
+      const todayKey = 'mb_sleep_' + new Date().toISOString().slice(0, 10);
       const hasData = !!localStorage.getItem(todayKey);
       // Invalidate expired token
       if (gfitToken && Date.now() > gfitTokenExpiry) {
@@ -3325,7 +3344,7 @@
 
     /* Init Spotify after login */
     const _origShowApp2 = window.showApp;
-    window.showApp = function(user) {
+    window.showApp = function (user) {
       _origShowApp2(user);
       setTimeout(spotifyInit, 200);
       setTimeout(gfitAutoSync, 1000);
@@ -3344,4 +3363,5 @@
     }
   </script>
 </body>
+
 </html>
