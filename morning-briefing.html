@@ -1,109 +1,237 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sk">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Morning Briefing — Thursday, April 9, 2026</title>
+<title>Morning Briefing — Martin</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌅</text></svg>"/>
+<!-- Google Identity Services -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
+  /* ══════════════════════════════════════════
+     TOKENS
+  ══════════════════════════════════════════ */
   :root{
-    --bg:#0f1117;--surface:#1a1d27;--border:#2e3250;--text:#e2e8f0;--muted:#8892b0;
+    --bg:#0f1117;--surface:#1a1d27;--surface2:#22263a;--border:#2e3250;
+    --text:#e2e8f0;--muted:#8892b0;--muted2:#4a5280;
     --c-urgent:#ff6584;--c-cal:#6c63ff;--c-email:#ff9f43;--c-world:#54a0ff;
     --c-ai:#43d9ad;--c-tech:#ffd166;--c-weather:#00d2ff;
     --c-bday:#ff6b9d;--c-notion:#ffa502;--c-tasks:#ff7675;--c-clients:#7bed9f;
+    --sidebar-w:220px;
   }
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif}
-  @media (min-width:1024px){
-    html,body{height:100%;overflow:hidden}
-    .wrapper{height:100vh;display:flex;flex-direction:column;padding:8px 12px 6px;gap:6px}
-    .header{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding-bottom:6px;border-bottom:1px solid var(--border);gap:14px}
-    .header-left .greeting{font-size:9px;color:var(--muted);letter-spacing:.13em;text-transform:uppercase}
-    .header-left h1{font-size:18px;font-weight:700;margin-top:1px}
-    .header-center{display:flex;gap:8px;flex:1;justify-content:center;flex-wrap:wrap}
-    .chip{display:flex;align-items:center;gap:6px;padding:5px 11px;border-radius:20px;background:var(--surface);border:1px solid var(--border);font-size:11px;font-weight:600}
-    .chip .chip-label{color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-right:2px}
-    .chip-bd{border-color:var(--c-bday);color:var(--c-bday);background:rgba(255,107,157,.08)}
-    .chip-bd .chip-label{color:var(--c-bday)}
-    .header-right{font-size:10px;color:var(--muted);text-align:right;line-height:1.5}
-    .grid{flex:1;min-height:0;display:grid;grid-template-columns:1.1fr 1.1fr 1.2fr 1.2fr 1.2fr 1.1fr;grid-template-rows:auto 1.1fr 1.3fr auto;gap:7px}
-    .card{border-radius:11px;padding:9px 12px;display:flex;flex-direction:column;overflow:hidden;border-left:3px solid transparent;border-top:1px solid rgba(255,255,255,.055);border-right:1px solid rgba(255,255,255,.055);border-bottom:1px solid rgba(255,255,255,.055);transition:filter .15s}
-    .card:hover{filter:brightness(1.08)}
-    .card-weather{background:rgba(0,210,255,.10);border-left-color:var(--c-weather);grid-column:1/3;grid-row:1}
-    .card-urgent{background:rgba(255,101,132,.10);border-left-color:var(--c-urgent);grid-column:3/6;grid-row:1}
-    .card-cal{background:rgba(108,99,255,.10);border-left-color:var(--c-cal);grid-column:6;grid-row:1}
-    .card-world{background:rgba(84,160,255,.10);border-left-color:var(--c-world);grid-column:1/3;grid-row:2}
-    .card-ai{background:rgba(67,217,173,.10);border-left-color:var(--c-ai);grid-column:3/5;grid-row:2}
-    .card-tech{background:rgba(255,209,102,.10);border-left-color:var(--c-tech);grid-column:5/7;grid-row:2}
-    .card-notion{background:rgba(255,165,2,.09);border-left-color:var(--c-notion);grid-column:1/3;grid-row:3/5}
-    .card-tasks{background:rgba(255,118,117,.10);border-left-color:var(--c-tasks);grid-column:3/5;grid-row:3}
-    .card-email{background:rgba(255,159,67,.10);border-left-color:var(--c-email);grid-column:5/7;grid-row:3}
-    .card-clients{background:rgba(123,237,159,.08);border-left-color:var(--c-clients);grid-column:3/5;grid-row:4}
-    .card-bday{background:rgba(255,107,157,.09);border-left-color:var(--c-bday);grid-column:5/7;grid-row:4}
-    .card-header{display:flex;align-items:center;gap:6px;flex-shrink:0;margin-bottom:6px}
-    .card-icon{font-size:14px;line-height:1}
-    .card-title{font-size:9px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
-    .badge{margin-left:auto;border-radius:20px;font-size:9px;font-weight:700;padding:1px 7px;border:1px solid}
-    .card-weather .card-title,.card-weather .badge{color:var(--c-weather);border-color:var(--c-weather);background:rgba(0,210,255,.12)}
-    .card-urgent .card-title,.card-urgent .badge{color:var(--c-urgent);border-color:var(--c-urgent);background:rgba(255,101,132,.12)}
-    .card-cal .card-title,.card-cal .badge{color:var(--c-cal);border-color:var(--c-cal);background:rgba(108,99,255,.12)}
-    .card-world .card-title,.card-world .badge{color:var(--c-world);border-color:var(--c-world);background:rgba(84,160,255,.12)}
-    .card-ai .card-title,.card-ai .badge{color:var(--c-ai);border-color:var(--c-ai);background:rgba(67,217,173,.12)}
-    .card-tech .card-title,.card-tech .badge{color:var(--c-tech);border-color:var(--c-tech);background:rgba(255,209,102,.12)}
-    .card-email .card-title,.card-email .badge{color:var(--c-email);border-color:var(--c-email);background:rgba(255,159,67,.12)}
-    .card-notion .card-title,.card-notion .badge{color:var(--c-notion);border-color:var(--c-notion);background:rgba(255,165,2,.12)}
-    .card-tasks .card-title,.card-tasks .badge{color:var(--c-tasks);border-color:var(--c-tasks);background:rgba(255,118,117,.12)}
-    .card-clients .card-title,.card-clients .badge{color:var(--c-clients);border-color:var(--c-clients);background:rgba(123,237,159,.12)}
-    .card-bday .card-title,.card-bday .badge{color:var(--c-bday);border-color:var(--c-bday);background:rgba(255,107,157,.12)}
-    .card-body{flex:1;overflow-y:auto;min-height:0;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
-    .card-body::-webkit-scrollbar{width:3px}
-    .card-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-    .footer{flex-shrink:0;text-align:center;font-size:9px;color:var(--muted);padding-top:2px;border-top:1px solid var(--border)}
-    .footer a{color:var(--c-cal);text-decoration:none}
+  a{color:inherit;text-decoration:none}
+
+  /* ══════════════════════════════════════════
+     LOGIN SCREEN
+  ══════════════════════════════════════════ */
+  #login-screen{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    height:100vh;gap:24px;
   }
-  @media (max-width:1023px){
-    body{padding:18px 14px 50px}
-    .wrapper{display:block}
-    .header{text-align:center;margin-bottom:20px}
-    .header-left .greeting{font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
-    .header-left h1{font-size:22px;font-weight:700}
-    .header-center{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px}
-    .chip{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;background:var(--surface);border:1px solid var(--border);font-size:12px;font-weight:600}
-    .chip-bd{border-color:var(--c-bday);color:var(--c-bday);background:rgba(255,107,157,.08)}
-    .chip .chip-label{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-right:2px}
-    .header-right{font-size:11px;color:var(--muted);margin-top:10px}
-    .grid{display:flex;flex-direction:column;gap:14px}
-    .card{background:var(--surface);border:1px solid var(--border);border-left:4px solid transparent;border-radius:12px;padding:16px}
-    .card-weather{border-left-color:var(--c-weather)}.card-urgent{border-left-color:var(--c-urgent)}
-    .card-cal{border-left-color:var(--c-cal)}.card-world{border-left-color:var(--c-world)}
-    .card-ai{border-left-color:var(--c-ai)}.card-tech{border-left-color:var(--c-tech)}
-    .card-email{border-left-color:var(--c-email)}.card-bday{border-left-color:var(--c-bday)}
-    .card-notion{border-left-color:var(--c-notion)}.card-tasks{border-left-color:var(--c-tasks)}
-    .card-clients{border-left-color:var(--c-clients)}
-    .card-header{display:flex;align-items:center;gap:8px;margin-bottom:14px}
-    .card-icon{font-size:18px}.card-title{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
-    .badge{margin-left:auto;border-radius:20px;font-size:11px;font-weight:700;padding:2px 9px;border:1px solid}
-    .card-weather .card-title,.card-weather .badge{color:var(--c-weather);border-color:var(--c-weather)}
-    .card-urgent .card-title,.card-urgent .badge{color:var(--c-urgent);border-color:var(--c-urgent)}
-    .card-cal .card-title,.card-cal .badge{color:var(--c-cal);border-color:var(--c-cal)}
-    .card-world .card-title,.card-world .badge{color:var(--c-world);border-color:var(--c-world)}
-    .card-ai .card-title,.card-ai .badge{color:var(--c-ai);border-color:var(--c-ai)}
-    .card-tech .card-title,.card-tech .badge{color:var(--c-tech);border-color:var(--c-tech)}
-    .card-email .card-title,.card-email .badge{color:var(--c-email);border-color:var(--c-email)}
-    .card-notion .card-title,.card-notion .badge{color:var(--c-notion);border-color:var(--c-notion)}
-    .card-tasks .card-title,.card-tasks .badge{color:var(--c-tasks);border-color:var(--c-tasks)}
-    .card-clients .card-title,.card-clients .badge{color:var(--c-clients);border-color:var(--c-clients)}
-    .card-bday .card-title,.card-bday .badge{color:var(--c-bday);border-color:var(--c-bday)}
-    .card-body{display:block}
-    .footer{text-align:center;margin-top:30px;font-size:11px;color:var(--muted)}
-    .footer a{color:var(--c-cal);text-decoration:none}
+  #login-screen .login-logo{font-size:52px}
+  #login-screen h1{font-size:22px;font-weight:700;color:var(--text)}
+  #login-screen p{font-size:13px;color:var(--muted);text-align:center;max-width:280px;line-height:1.5}
+  #login-screen .google-btn{
+    display:flex;align-items:center;gap:10px;
+    background:#fff;color:#3c4043;
+    border:none;border-radius:8px;padding:10px 20px;
+    font-size:14px;font-weight:600;cursor:pointer;
+    box-shadow:0 2px 8px rgba(0,0,0,.35);
+    transition:box-shadow .2s;
   }
-  /* shared */
+  #login-screen .google-btn:hover{box-shadow:0 4px 16px rgba(0,0,0,.5)}
+  #login-screen .google-btn svg{width:20px;height:20px}
+  #login-screen .access-denied{color:#ff4757;font-size:13px;display:none}
+
+  /* ══════════════════════════════════════════
+     APP (hidden until logged in)
+  ══════════════════════════════════════════ */
+  #app{display:none;height:100vh;flex-direction:column}
+
+  /* ══════════════════════════════════════════
+     HEADER
+  ══════════════════════════════════════════ */
+  .header{
+    flex-shrink:0;display:flex;align-items:center;
+    justify-content:space-between;padding:7px 14px 7px;
+    border-bottom:1px solid var(--border);gap:14px;
+  }
+  .header-left .greeting{font-size:9px;color:var(--muted);letter-spacing:.13em;text-transform:uppercase}
+  .header-left h1{font-size:17px;font-weight:700;margin-top:1px}
+  .header-center{display:flex;gap:7px;flex:1;justify-content:center;flex-wrap:wrap}
+  .chip{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;
+    background:var(--surface);border:1px solid var(--border);font-size:11px;font-weight:600}
+  .chip .chip-label{color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-right:2px}
+  .chip-bd{border-color:var(--c-bday);color:var(--c-bday);background:rgba(255,107,157,.08)}
+  .chip-bd .chip-label{color:var(--c-bday)}
+  .header-right{display:flex;align-items:center;gap:10px;font-size:10px;color:var(--muted)}
+  .avatar{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);cursor:pointer}
+  .logout-btn{font-size:9px;color:var(--muted);border:1px solid var(--border);
+    background:transparent;border-radius:6px;padding:3px 8px;cursor:pointer;transition:border-color .15s}
+  .logout-btn:hover{border-color:var(--c-urgent);color:var(--c-urgent)}
+
+  /* ══════════════════════════════════════════
+     BODY ROW = sidebar + main
+  ══════════════════════════════════════════ */
+  .body-row{
+    flex:1;min-height:0;display:flex;overflow:hidden;
+  }
+
+  /* ══════════════════════════════════════════
+     SIDEBAR
+  ══════════════════════════════════════════ */
+  .sidebar{
+    width:var(--sidebar-w);flex-shrink:0;
+    border-right:1px solid var(--border);
+    display:flex;flex-direction:column;
+    overflow-y:auto;padding:10px 10px;
+    gap:10px;
+    scrollbar-width:thin;scrollbar-color:var(--border) transparent;
+  }
+  .sidebar::-webkit-scrollbar{width:3px}
+  .sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+  .sb-section{background:var(--surface);border-radius:10px;padding:10px;border:1px solid var(--border)}
+  .sb-title{font-size:9px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:5px}
+  .sb-title span{font-size:12px}
+
+  /* Quick Links */
+  .ql-list{display:flex;flex-direction:column;gap:4px}
+  .ql-item{
+    display:flex;align-items:center;gap:8px;
+    padding:5px 8px;border-radius:7px;font-size:11px;font-weight:500;
+    background:var(--surface2);border:1px solid transparent;
+    transition:border-color .15s, background .15s;cursor:pointer;
+  }
+  .ql-item:hover{border-color:var(--border);background:#2a2f47}
+  .ql-icon{font-size:14px;width:18px;text-align:center;flex-shrink:0}
+  .ql-label{color:var(--text);font-size:11px}
+
+  /* Daily Focus */
+  .focus-input{
+    width:100%;background:var(--surface2);border:1px solid var(--border);
+    border-radius:7px;color:var(--text);font-size:12px;font-weight:600;
+    padding:7px 9px;outline:none;resize:none;line-height:1.4;
+    font-family:inherit;
+  }
+  .focus-input:focus{border-color:var(--c-cal)}
+  .focus-input::placeholder{color:var(--muted2);font-weight:400}
+
+  /* Scratchpad */
+  .scratch-input{
+    width:100%;background:var(--surface2);border:1px solid var(--border);
+    border-radius:7px;color:var(--text);font-size:11px;
+    padding:7px 9px;outline:none;resize:none;line-height:1.5;
+    font-family:inherit;min-height:80px;
+  }
+  .scratch-input:focus{border-color:var(--c-ai)}
+  .scratch-input::placeholder{color:var(--muted2)}
+
+  /* Habits */
+  .habit-list{display:flex;flex-direction:column;gap:5px}
+  .habit-item{display:flex;align-items:center;gap:8px;padding:3px 0}
+  .habit-cb{
+    width:15px;height:15px;border-radius:4px;border:1.5px solid var(--muted2);
+    background:transparent;appearance:none;cursor:pointer;flex-shrink:0;
+    transition:background .15s, border-color .15s;
+  }
+  .habit-cb:checked{background:var(--c-ai);border-color:var(--c-ai)}
+  .habit-label{font-size:11px;color:var(--text);flex:1;cursor:pointer}
+  .habit-label.done{color:var(--muted);text-decoration:line-through}
+
+  /* Pomodoro */
+  .pomo-display{
+    text-align:center;font-size:28px;font-weight:700;
+    color:var(--c-urgent);letter-spacing:.05em;margin:6px 0;
+  }
+  .pomo-mode{font-size:9px;text-align:center;color:var(--muted);margin-bottom:8px;letter-spacing:.06em;text-transform:uppercase}
+  .pomo-btns{display:flex;gap:6px}
+  .pomo-btn{
+    flex:1;padding:5px;border-radius:7px;border:1px solid var(--border);
+    background:var(--surface2);color:var(--text);font-size:10px;font-weight:700;
+    cursor:pointer;transition:border-color .15s,background .15s;
+  }
+  .pomo-btn:hover{border-color:var(--c-urgent);background:rgba(255,101,132,.1)}
+  .pomo-btn.active{border-color:var(--c-urgent);background:rgba(255,101,132,.15);color:var(--c-urgent)}
+
+  /* Meniny */
+  .meniny-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:11px}
+  .meniny-day{color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.06em}
+  .meniny-name{font-weight:600;color:var(--text)}
+  .meniny-today .meniny-name{color:var(--c-bday)}
+  .meniny-today .meniny-day{color:var(--c-bday)}
+
+  /* Currency */
+  .cur-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:11px;border-bottom:1px solid var(--border)}
+  .cur-row:last-child{border-bottom:none}
+  .cur-sym{font-weight:700;color:var(--text)}
+  .cur-val{color:var(--c-ai);font-weight:600}
+  .cur-chg{font-size:9px;font-weight:700}
+  .cur-up{color:#2ed573}.cur-dn{color:#ff4757}
+  .cur-loading{font-size:10px;color:var(--muted);font-style:italic;padding:4px 0}
+
+  /* ══════════════════════════════════════════
+     MAIN CONTENT (grid area)
+  ══════════════════════════════════════════ */
+  .main{
+    flex:1;min-width:0;display:flex;flex-direction:column;
+    padding:8px 10px 6px;gap:6px;overflow:hidden;
+  }
+  .grid{
+    flex:1;min-height:0;display:grid;
+    grid-template-columns:1.1fr 1.1fr 1.2fr 1.2fr 1.2fr 1.1fr;
+    grid-template-rows:auto 1.1fr 1.3fr auto;
+    gap:7px;
+  }
+  .card{border-radius:11px;padding:9px 12px;display:flex;flex-direction:column;overflow:hidden;
+    border-left:3px solid transparent;border-top:1px solid rgba(255,255,255,.055);
+    border-right:1px solid rgba(255,255,255,.055);border-bottom:1px solid rgba(255,255,255,.055);
+    transition:filter .15s}
+  .card:hover{filter:brightness(1.08)}
+  .card-weather{background:rgba(0,210,255,.10);border-left-color:var(--c-weather);grid-column:1/3;grid-row:1}
+  .card-urgent{background:rgba(255,101,132,.10);border-left-color:var(--c-urgent);grid-column:3/6;grid-row:1}
+  .card-cal{background:rgba(108,99,255,.10);border-left-color:var(--c-cal);grid-column:6;grid-row:1}
+  .card-world{background:rgba(84,160,255,.10);border-left-color:var(--c-world);grid-column:1/3;grid-row:2}
+  .card-ai{background:rgba(67,217,173,.10);border-left-color:var(--c-ai);grid-column:3/5;grid-row:2}
+  .card-tech{background:rgba(255,209,102,.10);border-left-color:var(--c-tech);grid-column:5/7;grid-row:2}
+  .card-notion{background:rgba(255,165,2,.09);border-left-color:var(--c-notion);grid-column:1/3;grid-row:3/5}
+  .card-tasks{background:rgba(255,118,117,.10);border-left-color:var(--c-tasks);grid-column:3/5;grid-row:3}
+  .card-email{background:rgba(255,159,67,.10);border-left-color:var(--c-email);grid-column:5/7;grid-row:3}
+  .card-clients{background:rgba(123,237,159,.08);border-left-color:var(--c-clients);grid-column:3/5;grid-row:4}
+  .card-bday{background:rgba(255,107,157,.09);border-left-color:var(--c-bday);grid-column:5/7;grid-row:4}
+
+  .card-header{display:flex;align-items:center;gap:6px;flex-shrink:0;margin-bottom:6px}
+  .card-icon{font-size:14px;line-height:1}
+  .card-title{font-size:9px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
+  .badge{margin-left:auto;border-radius:20px;font-size:9px;font-weight:700;padding:1px 7px;border:1px solid}
+  .card-weather .card-title,.card-weather .badge{color:var(--c-weather);border-color:var(--c-weather);background:rgba(0,210,255,.12)}
+  .card-urgent .card-title,.card-urgent .badge{color:var(--c-urgent);border-color:var(--c-urgent);background:rgba(255,101,132,.12)}
+  .card-cal .card-title,.card-cal .badge{color:var(--c-cal);border-color:var(--c-cal);background:rgba(108,99,255,.12)}
+  .card-world .card-title,.card-world .badge{color:var(--c-world);border-color:var(--c-world);background:rgba(84,160,255,.12)}
+  .card-ai .card-title,.card-ai .badge{color:var(--c-ai);border-color:var(--c-ai);background:rgba(67,217,173,.12)}
+  .card-tech .card-title,.card-tech .badge{color:var(--c-tech);border-color:var(--c-tech);background:rgba(255,209,102,.12)}
+  .card-email .card-title,.card-email .badge{color:var(--c-email);border-color:var(--c-email);background:rgba(255,159,67,.12)}
+  .card-notion .card-title,.card-notion .badge{color:var(--c-notion);border-color:var(--c-notion);background:rgba(255,165,2,.12)}
+  .card-tasks .card-title,.card-tasks .badge{color:var(--c-tasks);border-color:var(--c-tasks);background:rgba(255,118,117,.12)}
+  .card-clients .card-title,.card-clients .badge{color:var(--c-clients);border-color:var(--c-clients);background:rgba(123,237,159,.12)}
+  .card-bday .card-title,.card-bday .badge{color:var(--c-bday);border-color:var(--c-bday);background:rgba(255,107,157,.12)}
+  .card-body{flex:1;overflow-y:auto;min-height:0;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+  .card-body::-webkit-scrollbar{width:3px}
+  .card-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+  .footer{flex-shrink:0;text-align:center;font-size:9px;color:var(--muted);padding-top:4px;border-top:1px solid var(--border)}
+  .footer a{color:var(--c-cal)}
+
+  /* ══════════════════════════════════════════
+     SHARED card item styles
+  ══════════════════════════════════════════ */
   .weather-main{display:flex;align-items:center;gap:10px;margin-bottom:4px}
   .w-emoji{font-size:30px;line-height:1}
   .w-temp{font-size:26px;font-weight:700;color:var(--c-weather);line-height:1}
   .w-sub{font-size:10px;color:var(--muted);margin-top:2px}
-  .w-details{display:flex;gap:9px;font-size:10px;color:var(--muted);flex-wrap:wrap;margin-top:5px}
+  .w-details{display:flex;gap:8px;font-size:10px;color:var(--muted);flex-wrap:wrap;margin-top:5px}
   .w-details span strong{color:var(--text);font-weight:600}
   .u-row{display:flex;align-items:flex-start;gap:9px;padding:5px 0;border-bottom:1px solid rgba(255,101,132,.14)}
   .u-row:last-child{border-bottom:none}
@@ -155,10 +283,51 @@
   .client-num{font-size:10px;font-weight:700;color:var(--c-clients);min-width:16px;flex-shrink:0;padding-top:1px}
   .client-text{font-size:11px;line-height:1.35}
   .client-sub{font-size:9px;color:var(--muted);margin-top:1px}
+
+  /* ══════════════════════════════════════════
+     MOBILE
+  ══════════════════════════════════════════ */
+  @media (max-width:1023px){
+    #app{height:auto}
+    .body-row{flex-direction:column}
+    .sidebar{width:100%;border-right:none;border-bottom:1px solid var(--border);flex-direction:row;flex-wrap:wrap;gap:8px;padding:10px}
+    .sb-section{min-width:200px;flex:1}
+    .main{padding:10px 14px 50px}
+    .grid{display:flex;flex-direction:column;gap:14px}
+    .card{background:var(--surface);border:1px solid var(--border);border-left:4px solid transparent;border-radius:12px;padding:16px}
+    .card-weather{border-left-color:var(--c-weather)}.card-urgent{border-left-color:var(--c-urgent)}
+    .card-cal{border-left-color:var(--c-cal)}.card-world{border-left-color:var(--c-world)}
+    .card-ai{border-left-color:var(--c-ai)}.card-tech{border-left-color:var(--c-tech)}
+    .card-email{border-left-color:var(--c-email)}.card-bday{border-left-color:var(--c-bday)}
+    .card-notion{border-left-color:var(--c-notion)}.card-tasks{border-left-color:var(--c-tasks)}
+    .card-clients{border-left-color:var(--c-clients)}
+    .card-body{display:block}
+    .card-title{font-size:11px}.card-icon{font-size:18px}.badge{font-size:11px;padding:2px 9px}
+  }
 </style>
 </head>
 <body>
-<div class="wrapper">
+
+<!-- ═══════════════════════════════════════════
+  LOGIN SCREEN
+═══════════════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-logo">🌅</div>
+  <h1>Morning Briefing</h1>
+  <p>Prihlás sa cez Google účet na pokračovanie. Prístup je obmedzený na povolený účet.</p>
+  <button class="google-btn" onclick="signIn()">
+    <svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.07 17.77 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
+    Prihlásiť sa cez Google
+  </button>
+  <div id="access-denied" class="access-denied">⛔ Prístup zamietnutý. Tento dashboard je súkromný.</div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+  MAIN APP
+═══════════════════════════════════════════ -->
+<div id="app">
+
+  <!-- HEADER -->
   <header class="header">
     <div class="header-left">
       <div class="greeting">Good morning, Martin ☀️</div>
@@ -167,308 +336,428 @@
     <div class="header-center">
       <div class="chip"><span>📅</span><span class="chip-label">Týždeň</span>15</div>
       <div class="chip"><span>📍</span><span class="chip-label">Miesto</span>Rajec, SK</div>
-      <div class="chip chip-bd"><span>🎂</span><span class="chip-label">Narodeniny za</span>320 dní</div>
+      <div class="chip chip-bd"><span>🎂</span><span class="chip-label">B-day za</span>320 dní</div>
     </div>
-    <div class="header-right">Open-Meteo · Gmail · GCal · Notion<br/>Vygenerované 06:30 CET</div>
+    <div class="header-right">
+      <img id="user-avatar" class="avatar" src="" alt="avatar" style="display:none"/>
+      <button class="logout-btn" onclick="signOut()">Odhlásiť</button>
+    </div>
   </header>
 
-  <div class="grid">
+  <!-- BODY ROW -->
+  <div class="body-row">
 
-    <!-- WEATHER — real Open-Meteo API -->
-    <div class="card card-weather">
-      <div class="card-header"><span class="card-icon">☀️</span><span class="card-title">Počasie · Rajec, SK</span><span class="badge">Open-Meteo</span></div>
-      <div class="card-body">
-        <div class="weather-main">
-          <div class="w-emoji">☀️</div>
-          <div>
-            <div class="w-temp">3.8°C</div>
-            <div class="w-sub">Jasno · pocitová teplota <strong>−1.5°C</strong></div>
+    <!-- ═══════ SIDEBAR ═══════ -->
+    <aside class="sidebar">
+
+      <!-- Quick Links -->
+      <div class="sb-section">
+        <div class="sb-title"><span>⚡</span>Quick Links</div>
+        <div class="ql-list">
+          <a class="ql-item" href="https://notion.so" target="_blank"><span class="ql-icon">📝</span><span class="ql-label">Notion</span></a>
+          <a class="ql-item" href="https://github.com/DarkMaster9452" target="_blank"><span class="ql-icon">🐙</span><span class="ql-label">GitHub</span></a>
+          <a class="ql-item" href="https://vercel.com/dashboard" target="_blank"><span class="ql-icon">▲</span><span class="ql-label">Vercel</span></a>
+          <a class="ql-item" href="https://mail.google.com" target="_blank"><span class="ql-icon">📬</span><span class="ql-label">Gmail</span></a>
+          <a class="ql-item" href="https://calendar.google.com" target="_blank"><span class="ql-icon">📆</span><span class="ql-label">Google Calendar</span></a>
+          <a class="ql-item" href="https://figma.com" target="_blank"><span class="ql-icon">🎨</span><span class="ql-label">Figma</span></a>
+          <a class="ql-item" href="https://chatgpt.com" target="_blank"><span class="ql-icon">🤖</span><span class="ql-label">ChatGPT</span></a>
+          <a class="ql-item" href="https://oskkp.sk" target="_blank"><span class="ql-icon">⚽</span><span class="ql-label">oskkp.sk</span></a>
+        </div>
+      </div>
+
+      <!-- Daily Focus -->
+      <div class="sb-section">
+        <div class="sb-title"><span>🎯</span>Úloha dňa</div>
+        <textarea id="daily-focus" class="focus-input" rows="2" placeholder="Čo musíš dnes URČITE spraviť?"></textarea>
+      </div>
+
+      <!-- Scratchpad -->
+      <div class="sb-section">
+        <div class="sb-title"><span>📋</span>Scratchpad</div>
+        <textarea id="scratchpad" class="scratch-input" rows="4" placeholder="Rýchle poznámky, čísla, nápady…"></textarea>
+      </div>
+
+      <!-- Habit Tracker -->
+      <div class="sb-section">
+        <div class="sb-title"><span>✅</span>Návyky dnes</div>
+        <div class="habit-list" id="habit-list">
+          <div class="habit-item"><input type="checkbox" class="habit-cb" data-habit="0" id="h0"><label class="habit-label" for="h0">💧 Vypiť 2l vody</label></div>
+          <div class="habit-item"><input type="checkbox" class="habit-cb" data-habit="1" id="h1"><label class="habit-label" for="h1">🏃 30 min. pohyb</label></div>
+          <div class="habit-item"><input type="checkbox" class="habit-cb" data-habit="2" id="h2"><label class="habit-label" for="h2">📖 Čítanie</label></div>
+          <div class="habit-item"><input type="checkbox" class="habit-cb" data-habit="3" id="h3"><label class="habit-label" for="h3">🧘 Žiadny late-night scroll</label></div>
+          <div class="habit-item"><input type="checkbox" class="habit-cb" data-habit="4" id="h4"><label class="habit-label" for="h4">💻 1 commit alebo task</label></div>
+        </div>
+      </div>
+
+      <!-- Pomodoro -->
+      <div class="sb-section">
+        <div class="sb-title"><span>🍅</span>Pomodoro</div>
+        <div class="pomo-mode" id="pomo-mode">PRÁCA</div>
+        <div class="pomo-display" id="pomo-display">25:00</div>
+        <div class="pomo-btns">
+          <button class="pomo-btn active" id="pomo-start" onclick="pomodoroToggle()">▶ Štart</button>
+          <button class="pomo-btn" onclick="pomodoroReset()">↺ Reset</button>
+        </div>
+      </div>
+
+      <!-- Meniny -->
+      <div class="sb-section">
+        <div class="sb-title"><span>🌸</span>Meniny</div>
+        <div id="meniny-container">
+          <div class="meniny-row meniny-today"><span class="meniny-day">Dnes (9.4.)</span><span class="meniny-name">Miloslava</span></div>
+          <div class="meniny-row"><span class="meniny-day">Zajtra (10.4.)</span><span class="meniny-name">Igor</span></div>
+          <div class="meniny-row"><span class="meniny-day">Pozajtra (11.4.)</span><span class="meniny-name">Július</span></div>
+        </div>
+      </div>
+
+      <!-- Currency / Crypto -->
+      <div class="sb-section">
+        <div class="sb-title"><span>💱</span>Kurzy</div>
+        <div id="currency-list">
+          <div class="cur-loading">Načítavam…</div>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ═══════ MAIN GRID ═══════ -->
+    <div class="main">
+      <div class="grid">
+
+        <!-- WEATHER -->
+        <div class="card card-weather">
+          <div class="card-header"><span class="card-icon">☀️</span><span class="card-title">Počasie · Rajec, SK</span><span class="badge">Open-Meteo</span></div>
+          <div class="card-body">
+            <div class="weather-main"><div class="w-emoji">☀️</div><div><div class="w-temp">3.8°C</div><div class="w-sub">Jasno · pocitová <strong>−1.5°C</strong></div></div></div>
+            <div class="w-details">
+              <span>↑ <strong>6.8°</strong></span><span>↓ <strong>−1.3°</strong></span>
+              <span>💨 <strong>17.3 km/h</strong></span><span>💧 <strong>51%</strong></span>
+              <span>🌧 <strong>0%</strong></span><span>🌅 <strong>06:05</strong></span><span>🌇 <strong>19:27</strong></span>
+            </div>
           </div>
         </div>
-        <div class="w-details">
-          <span>↑ <strong>6.8°</strong></span>
-          <span>↓ <strong>−1.3°</strong></span>
-          <span>💨 <strong>17.3 km/h</strong></span>
-          <span>💧 <strong>51% vlhk.</strong></span>
-          <span>🌧 <strong>0% dážď</strong></span>
-          <span>🌅 <strong>06:05</strong></span>
-          <span>🌇 <strong>19:27</strong></span>
-        </div>
-      </div>
-    </div>
 
-    <!-- URGENT — real Gmail + Google Calendar -->
-    <div class="card card-urgent">
-      <div class="card-header"><span class="card-icon">🔔</span><span class="card-title">Potrebuje pozornosť</span><span class="badge">4 položky</span></div>
-      <div class="card-body">
-        <div class="u-row"><div class="u-dot"></div><div><div class="u-label">🎂 Majo Strba má dnes narodeniny!</div><div class="u-sub">Google Calendar · celodenná udalosť</div></div></div>
-        <div class="u-row"><div class="u-dot"></div><div><div class="u-label">📦 HBADA EU balík je na ceste</div><div class="u-sub">DPD: 01425110649234 · objednávka HBDEU1845185</div></div></div>
-        <div class="u-row"><div class="u-dot"></div><div><div class="u-label">⚠️ Microsoft konto — heslo zmenené dnes ráno</div><div class="u-sub">Heslá aplikácií treba aktualizovať · Gmail 10:06</div></div></div>
-        <div class="u-row"><div class="u-dot"></div><div><div class="u-label">🔑 GitHub PAT "claude-cowork" bol regenerovaný</div><div class="u-sub">GitHub security email · Gmail 10:59</div></div></div>
-      </div>
-    </div>
-
-    <!-- CALENDAR — real Google Calendar -->
-    <div class="card card-cal">
-      <div class="card-header"><span class="card-icon">📆</span><span class="card-title">Dnešný kalendár</span><span class="badge">GCal</span></div>
-      <div class="card-body">
-        <div class="ev-row">
-          <div class="ev-time">Celý deň</div>
-          <div><div class="ev-title">🎂 Majo Strba — narodeniny</div><div class="ev-sub">Opakujúca sa udalosť</div></div>
-        </div>
-        <div class="ev-empty">Žiadne ďalšie udalosti dnes.</div>
-      </div>
-    </div>
-
-    <!-- WORLD NEWS — real web search Apr 9, 2026 -->
-    <div class="card card-world">
-      <div class="card-header"><span class="card-icon">🌍</span><span class="card-title">Svet</span><span class="badge">9. apr 2026</span></div>
-      <div class="card-body">
-        <div class="news-row">
-          <div class="news-title"><span class="htag">URGENT</span>Izrael zaútočil na Libanon — 254+ mŕtvych, deň národného smútku</div>
-          <div class="news-sub">Al Jazeera · CBS News · 9.4.2026</div>
-        </div>
-        <div class="news-row">
-          <div class="news-title">Irán hrozí zastavením tankerov v Hormuzskom prielive — odpoveď na Libanon</div>
-          <div class="news-sub">Reuters · 9.4.2026</div>
-        </div>
-        <div class="news-row">
-          <div class="news-title">USA: Vojenské ciele proti Iránu splnené — dvojtýždňové prímerie platí</div>
-          <div class="news-sub">Xinhua · 8.4.2026</div>
-        </div>
-        <div class="news-row">
-          <div class="news-title">Vietnam zvolil nového premiéra Le Minh Hung (2026–2031)</div>
-          <div class="news-sub">Xinhua · 7.4.2026</div>
-        </div>
-        <div class="news-row">
-          <div class="news-title">Zemetrasenie 4.9 vo vých. Indonézii — 100+ poškodených domov</div>
-          <div class="news-sub">VolcanoDiscovery · 9.4.2026</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- AI NEWS — real web search Apr 2026 -->
-    <div class="card card-ai">
-      <div class="card-header"><span class="card-icon">🤖</span><span class="card-title">AI novinky</span><span class="badge">apr 2026</span></div>
-      <div class="card-body">
-        <div class="news-row">
-          <div class="news-title">Meta spustila Muse Spark — prvý veľký AI model po angažovaní Alexandr Wanga</div>
-          <div class="news-sub">CNBC · 8.4.2026</div>
-        </div>
-        <div class="news-row">
-          <div class="news-title">DeepSeek V4 — 1T parametrov, Apache 2.0, vytrénovaný za $5.2M</div>
-          <div class="news-sub">Radical Data Science · apr 2026</div>
-        </div>
-        <div class="news-row">
-          <div class="news-title">Google vydal Gemma 4 — open modely pre pokročilé reasoning + agentické workflowy</div>
-          <div class="news-sub">Google DeepMind · apr 2026</div>
-        </div>
-        <div class="news-row">
-          <div class="news-title">AI prieskum: 100× menej energie pri vyššej presnosti (neural + symbolic)</div>
-          <div class="news-sub">ScienceDaily · 5.4.2026</div>
-        </div>
-        <div class="news-row">
-          <div class="news-title">Microsoft investuje $10 mld. do AI infraštruktúry v Japonsku</div>
-          <div class="news-sub">CNBC · apr 2026</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TECH/WEB DEV — real web search Apr 2026 -->
-    <div class="card card-tech">
-      <div class="card-header"><span class="card-icon">💻</span><span class="card-title">Tech / Web Dev</span><span class="badge">apr 2026</span></div>
-      <div class="card-body">
-        <div class="news-row">
-          <div class="news-title">70%+ vývojárov používa AI coding denne — agentic coding je nový štandard</div>
-          <div class="news-sub">LogRocket Blog · 2026 Web Dev Trends</div>
-        </div>
-        <div class="news-row">
-          <div class="news-title">Server-first architektúra dominuje — RSC + SSR je default vo Next.js / Nuxt</div>
-          <div class="news-sub">DEV.to · talent500.com · 2026</div>
-        </div>
-        <div class="news-row">
-          <div class="news-title">TypeScript je nový štandard — plain JS sa považuje za legacy v 2026</div>
-          <div class="news-sub">Figma Resource Library · 2026</div>
-        </div>
-        <div class="news-row">
-          <div class="news-title">npm supply-chain útoky vzrástli o 150% (2024→2026) — pozor na deps</div>
-          <div class="news-sub">Blacksmith Agency · Security trends 2026</div>
-        </div>
-        <div class="news-row">
-          <div class="news-title">Headless CMS a composable architektúra — v 2026 už praktický baseline</div>
-          <div class="news-sub">Agility CMS · Anchor Points · 2026</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- NOTION PROJECTS — real, verified from Notion API -->
-    <div class="card card-notion">
-      <div class="card-header"><span class="card-icon">📂</span><span class="card-title">Projekty · Notion</span><span class="badge">12 projektov</span></div>
-      <div class="card-body">
-        <div class="proj-row">
-          <div class="proj-dot" style="background:#2ed573"></div>
-          <div style="flex:1"><div class="proj-name">OŠK Kamenná Poruba</div><div class="proj-meta">oskkp.sk · €350 jednorazovo · €50/mes</div></div>
-          <div class="proj-phase ph-c">Completed</div>
-        </div>
-        <div class="proj-row">
-          <div class="proj-dot" style="background:#a29bfe"></div>
-          <div style="flex:1"><div class="proj-name">FK Rajec</div><div class="proj-meta">github.io/FK-Rajec-Web-Koncept · €700 · €50/mes</div></div>
-          <div class="proj-phase ph-co">Concept</div>
-        </div>
-        <div class="proj-row">
-          <div class="proj-dot" style="background:#54a0ff"></div>
-          <div style="flex:1"><div class="proj-name">Excavator — Info</div><div class="proj-meta">michal-baranek.vercel.app · €250 · €35/mes</div></div>
-          <div class="proj-phase ph-d">Design</div>
-        </div>
-        <div class="proj-row">
-          <div class="proj-dot" style="background:#636e72"></div>
-          <div style="flex:1"><div class="proj-name">Cofbit Barber's</div><div class="proj-meta">€400 jednorazovo · €35/mes</div></div>
-          <div class="proj-phase ph-p">Potential</div>
-        </div>
-        <div class="proj-row">
-          <div class="proj-dot" style="background:#636e72"></div>
-          <div style="flex:1"><div class="proj-name">TJ Partizán Kunerad</div><div class="proj-meta">€700 · €50/mes</div></div>
-          <div class="proj-phase ph-p">Potential</div>
-        </div>
-        <div class="proj-row">
-          <div class="proj-dot" style="background:#636e72"></div>
-          <div style="flex:1"><div class="proj-name">FK Turie</div><div class="proj-meta">€700 · €50/mes</div></div>
-          <div class="proj-phase ph-p">Potential</div>
-        </div>
-        <div class="proj-row">
-          <div class="proj-dot" style="background:#636e72"></div>
-          <div style="flex:1"><div class="proj-name">ŠK Lietava</div><div class="proj-meta">€700 · €50/mes</div></div>
-          <div class="proj-phase ph-p">Potential</div>
-        </div>
-        <div class="proj-row">
-          <div class="proj-dot" style="background:#636e72"></div>
-          <div style="flex:1"><div class="proj-name">FK Ďurčiná</div><div class="proj-meta">€700 · €50/mes</div></div>
-          <div class="proj-phase ph-p">Potential</div>
-        </div>
-        <div class="proj-row">
-          <div class="proj-dot" style="background:#636e72"></div>
-          <div style="flex:1"><div class="proj-name">TJ Zbyňov</div><div class="proj-meta">€700 · €50/mes</div></div>
-          <div class="proj-phase ph-p">Potential</div>
-        </div>
-        <div class="proj-row">
-          <div class="proj-dot" style="background:#636e72"></div>
-          <div style="flex:1"><div class="proj-name">ŠK Cementáreň Lúčka</div><div class="proj-meta">€700 · €50/mes</div></div>
-          <div class="proj-phase ph-p">Potential</div>
-        </div>
-        <div class="proj-row">
-          <div class="proj-dot" style="background:#636e72"></div>
-          <div style="flex:1"><div class="proj-name">Car Wash — Info</div><div class="proj-meta">€200 · €35/mes</div></div>
-          <div class="proj-phase ph-p">Potential</div>
-        </div>
-        <div class="proj-row">
-          <div class="proj-dot" style="background:#8892b0"></div>
-          <div style="flex:1"><div class="proj-name">ALL (Hosting)</div><div class="proj-meta">mywebdev-delta.vercel.app</div></div>
-          <div class="proj-phase ph-n">Running</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- NOTION TASKS — real, only non-Done tasks verified from Notion -->
-    <div class="card card-tasks">
-      <div class="card-header"><span class="card-icon">✅</span><span class="card-title">Otvorené úlohy · Notion</span><span class="badge">2 aktívne</span></div>
-      <div class="card-body">
-        <div class="task-row">
-          <div style="flex:1">
-            <div class="task-name">Create Pricing web</div>
-            <div class="task-meta">Status: Finishing · bez projektu</div>
+        <!-- URGENT -->
+        <div class="card card-urgent">
+          <div class="card-header"><span class="card-icon">🔔</span><span class="card-title">Potrebuje pozornosť</span><span class="badge">4 položky</span></div>
+          <div class="card-body">
+            <div class="u-row"><div class="u-dot"></div><div><div class="u-label">🎂 Majo Strba má dnes narodeniny!</div><div class="u-sub">Google Calendar · celodenná udalosť</div></div></div>
+            <div class="u-row"><div class="u-dot"></div><div><div class="u-label">📦 HBADA EU balík je na ceste</div><div class="u-sub">DPD: 01425110649234 · objednávka HBDEU1845185</div></div></div>
+            <div class="u-row"><div class="u-dot"></div><div><div class="u-label">⚠️ Microsoft konto — heslo zmenené dnes ráno</div><div class="u-sub">Heslá aplikácií treba aktualizovať · Gmail 10:06</div></div></div>
+            <div class="u-row"><div class="u-dot"></div><div><div class="u-label">🔑 GitHub PAT "claude-cowork" bol regenerovaný</div><div class="u-sub">GitHub security email · Gmail 10:59</div></div></div>
           </div>
-          <div class="task-pri pri-now">NOW!</div>
         </div>
-        <div class="task-row">
-          <div style="flex:1">
-            <div class="task-name">Save Passwords</div>
-            <div class="task-meta">Status: Finishing · bez projektu</div>
+
+        <!-- CALENDAR -->
+        <div class="card card-cal">
+          <div class="card-header"><span class="card-icon">📆</span><span class="card-title">Dnešný kalendár</span><span class="badge">GCal</span></div>
+          <div class="card-body">
+            <div class="ev-row"><div class="ev-time">Celý deň</div><div><div class="ev-title">🎂 Majo Strba — narodeniny</div><div class="ev-sub">Opakujúca sa udalosť</div></div></div>
+            <div class="ev-empty">Žiadne ďalšie udalosti dnes.</div>
           </div>
-          <div class="task-pri pri-ok">OK</div>
         </div>
-        <div class="task-empty" style="margin-top:8px;font-size:10px">
-          Všetky ostatné overené úlohy sú <strong>Done</strong> ✓<br/>
-          <span style="color:rgba(136,146,176,.6)">(Add Sponsors, Put Backend, Fix API, Add Blog, opravit treningov, Fix login, UI matches, doplnit tim, Add socials, Create demo web, 24/7 live feed, ask claude)</span>
-        </div>
-      </div>
-    </div>
 
-    <!-- EMAIL — real Gmail inbox -->
-    <div class="card card-email">
-      <div class="card-header"><span class="card-icon">📬</span><span class="card-title">Gmail inbox</span><span class="badge">5 neprečítaných</span></div>
-      <div class="card-body">
-        <div class="email-row">
-          <div class="email-from"><span class="unread-dot"></span>Tipli.sk</div>
-          <div class="email-subj">Podeľte sa s nami o skúsenosť s prvou odmenou ⭐</div>
-          <div class="email-time">dnes 14:23</div>
+        <!-- WORLD NEWS -->
+        <div class="card card-world">
+          <div class="card-header"><span class="card-icon">🌍</span><span class="card-title">Svet</span><span class="badge">9. apr 2026</span></div>
+          <div class="card-body">
+            <div class="news-row"><div class="news-title"><span class="htag">URGENT</span>Izrael zaútočil na Libanon — 254+ mŕtvych, deň národného smútku</div><div class="news-sub">Al Jazeera · CBS News · 9.4.2026</div></div>
+            <div class="news-row"><div class="news-title">Irán hrozí zastavením tankerov v Hormuzskom prielive</div><div class="news-sub">Reuters · 9.4.2026</div></div>
+            <div class="news-row"><div class="news-title">USA: Vojenské ciele proti Iránu splnené — dvojtýždňové prímerie platí</div><div class="news-sub">Xinhua · 8.4.2026</div></div>
+            <div class="news-row"><div class="news-title">Vietnam zvolil nového premiéra Le Minh Hung (2026–2031)</div><div class="news-sub">Xinhua · 7.4.2026</div></div>
+            <div class="news-row"><div class="news-title">Zemetrasenie 4.9 vo vých. Indonézii — 100+ poškodených domov</div><div class="news-sub">VolcanoDiscovery · 9.4.2026</div></div>
+          </div>
         </div>
-        <div class="email-row">
-          <div class="email-from"><span class="unread-dot"></span>GitHub</div>
-          <div class="email-subj">[GitHub] PAT "claude-cowork" regenerovaný pre tvoj účet</div>
-          <div class="email-time">dnes 10:59</div>
-        </div>
-        <div class="email-row">
-          <div class="email-from">HBADA EU</div>
-          <div class="email-subj">A shipment from order HBDEU1845185 is on the way</div>
-          <div class="email-time">dnes 10:57</div>
-        </div>
-        <div class="email-row">
-          <div class="email-from"><span class="unread-dot"></span>GitHub</div>
-          <div class="email-subj">[GitHub] Fine-grained PAT (Claude) pridaný k účtu</div>
-          <div class="email-time">dnes 10:26</div>
-        </div>
-        <div class="email-row">
-          <div class="email-from"><span class="unread-dot"></span>Microsoft</div>
-          <div class="email-subj">Heslá aplikácií konta Microsoft treba aktualizovať</div>
-          <div class="email-time">dnes 10:06</div>
-        </div>
-        <div class="email-row">
-          <div class="email-from"><span class="unread-dot"></span>Microsoft</div>
-          <div class="email-subj">Zmena hesla konta Microsoft — 9.4.2026 12:06 CET</div>
-          <div class="email-time">dnes 10:06</div>
-        </div>
-        <div class="email-row">
-          <div class="email-from">HBADA EU</div>
-          <div class="email-subj">HBADA EU — You have earned 509 points!</div>
-          <div class="email-time">dnes 09:54</div>
-        </div>
-      </div>
-    </div>
 
-    <!-- SUGGESTIONS — AI generated, based on real Notion data -->
-    <div class="card card-clients">
-      <div class="card-header"><span class="card-icon">💡</span><span class="card-title">Tipy na dnes</span><span class="badge">AI návrhy</span></div>
-      <div class="card-body">
-        <div class="client-row"><div class="client-num">1.</div><div><div class="client-text">Dokonči "Create Pricing web" — tvoja Notion priorita #1 (NOW!)</div><div class="client-sub">Status: Finishing · žiadny deadline nastavený</div></div></div>
-        <div class="client-row"><div class="client-num">2.</div><div><div class="client-text">Pošli FK Rajec concept link klientovi na schválenie</div><div class="client-sub">darkmaster9452.github.io/FK-Rajec-Web-Koncept · Phase: Concept</div></div></div>
-        <div class="client-row"><div class="client-num">3.</div><div><div class="client-text">Vyber 2–3 projekty z 9 "Potential" a naplánuj prvý hovor</div><div class="client-sub">FK Turie, Cofbit, Car Wash — pridaj do Calendar</div></div></div>
-        <div class="client-row"><div class="client-num">4.</div><div><div class="client-text">Pridaj OŠK KP ako case study na Excavator referenčný web</div><div class="client-sub">oskkp.sk je Completed — ideálny showcase pre ďalších klientov</div></div></div>
-        <div class="client-row"><div class="client-num">5.</div><div><div class="client-text">Napíš príspevok na Facebook o futbalovom webe — tagni FK Rajec</div><div class="client-sub">Organický dosah = bezplatné leady z regiónu</div></div></div>
-        <div class="client-row"><div class="client-num">6.</div><div><div class="client-text">Ukloč Microsoft account security (zmenené heslo dnes ráno)</div><div class="client-sub">Aktualizuj heslá aplikácií podľa emailu z Microsoftu</div></div></div>
-      </div>
-    </div>
-
-    <!-- BIRTHDAYS — real Google Calendar -->
-    <div class="card card-bday">
-      <div class="card-header"><span class="card-icon">🎂</span><span class="card-title">Narodeniny</span><span class="badge">GCal</span></div>
-      <div class="card-body">
-        <div class="bday-row">
-          <div style="font-size:18px">🎉</div>
-          <div class="bday-name">Majo Strba</div>
-          <div><span class="bday-today-tag">DNES</span></div>
+        <!-- AI NEWS -->
+        <div class="card card-ai">
+          <div class="card-header"><span class="card-icon">🤖</span><span class="card-title">AI novinky</span><span class="badge">apr 2026</span></div>
+          <div class="card-body">
+            <div class="news-row"><div class="news-title">Meta spustila Muse Spark — prvý veľký AI model po angažovaní Alexandr Wanga</div><div class="news-sub">CNBC · 8.4.2026</div></div>
+            <div class="news-row"><div class="news-title">DeepSeek V4 — 1T parametrov, Apache 2.0, vytrénovaný za $5.2M</div><div class="news-sub">Radical Data Science · apr 2026</div></div>
+            <div class="news-row"><div class="news-title">Google vydal Gemma 4 — open modely pre reasoning + agentické workflowy</div><div class="news-sub">Google DeepMind · apr 2026</div></div>
+            <div class="news-row"><div class="news-title">AI prieskum: 100× menej energie pri vyššej presnosti</div><div class="news-sub">ScienceDaily · 5.4.2026</div></div>
+            <div class="news-row"><div class="news-title">Microsoft investuje $10 mld. do AI infraštruktúry v Japonsku</div><div class="news-sub">CNBC · apr 2026</div></div>
+          </div>
         </div>
-        <div style="margin-top:10px;font-size:9px;color:var(--muted);font-style:italic;line-height:1.5">
-          Ďalšie narodeniny sa zobrazujú len ak sú v Google Calendar.<br/>Ak chceš viac, pridaj ich tam manuálne.
+
+        <!-- TECH -->
+        <div class="card card-tech">
+          <div class="card-header"><span class="card-icon">💻</span><span class="card-title">Tech / Web Dev</span><span class="badge">apr 2026</span></div>
+          <div class="card-body">
+            <div class="news-row"><div class="news-title">70%+ vývojárov používa AI coding denne — agentic je nový štandard</div><div class="news-sub">LogRocket Blog · 2026</div></div>
+            <div class="news-row"><div class="news-title">Server-first architektúra dominuje — RSC + SSR je default vo Next.js / Nuxt</div><div class="news-sub">DEV.to · talent500.com</div></div>
+            <div class="news-row"><div class="news-title">TypeScript je nový štandard — plain JS sa považuje za legacy v 2026</div><div class="news-sub">Figma Resource Library · 2026</div></div>
+            <div class="news-row"><div class="news-title">npm supply-chain útoky vzrástli o 150% (2024→2026)</div><div class="news-sub">Blacksmith Agency · Security trends</div></div>
+            <div class="news-row"><div class="news-title">Headless CMS a composable architektúra — v 2026 praktický baseline</div><div class="news-sub">Agility CMS · Anchor Points</div></div>
+          </div>
         </div>
-      </div>
-    </div>
 
-  </div>
+        <!-- NOTION PROJECTS -->
+        <div class="card card-notion">
+          <div class="card-header"><span class="card-icon">📂</span><span class="card-title">Projekty · Notion</span><span class="badge">12 projektov</span></div>
+          <div class="card-body">
+            <div class="proj-row"><div class="proj-dot" style="background:#2ed573"></div><div style="flex:1"><div class="proj-name">OŠK Kamenná Poruba</div><div class="proj-meta">oskkp.sk · €350 · €50/mes</div></div><div class="proj-phase ph-c">Completed</div></div>
+            <div class="proj-row"><div class="proj-dot" style="background:#a29bfe"></div><div style="flex:1"><div class="proj-name">FK Rajec</div><div class="proj-meta">github.io/FK-Rajec · €700 · €50/mes</div></div><div class="proj-phase ph-co">Concept</div></div>
+            <div class="proj-row"><div class="proj-dot" style="background:#54a0ff"></div><div style="flex:1"><div class="proj-name">Excavator — Info</div><div class="proj-meta">michal-baranek.vercel.app · €250 · €35/mes</div></div><div class="proj-phase ph-d">Design</div></div>
+            <div class="proj-row"><div class="proj-dot" style="background:#636e72"></div><div style="flex:1"><div class="proj-name">Cofbit Barber's</div><div class="proj-meta">€400 · €35/mes</div></div><div class="proj-phase ph-p">Potential</div></div>
+            <div class="proj-row"><div class="proj-dot" style="background:#636e72"></div><div style="flex:1"><div class="proj-name">TJ Partizán Kunerad</div><div class="proj-meta">€700 · €50/mes</div></div><div class="proj-phase ph-p">Potential</div></div>
+            <div class="proj-row"><div class="proj-dot" style="background:#636e72"></div><div style="flex:1"><div class="proj-name">FK Turie</div><div class="proj-meta">€700 · €50/mes</div></div><div class="proj-phase ph-p">Potential</div></div>
+            <div class="proj-row"><div class="proj-dot" style="background:#636e72"></div><div style="flex:1"><div class="proj-name">ŠK Lietava</div><div class="proj-meta">€700 · €50/mes</div></div><div class="proj-phase ph-p">Potential</div></div>
+            <div class="proj-row"><div class="proj-dot" style="background:#636e72"></div><div style="flex:1"><div class="proj-name">FK Ďurčiná</div><div class="proj-meta">€700 · €50/mes</div></div><div class="proj-phase ph-p">Potential</div></div>
+            <div class="proj-row"><div class="proj-dot" style="background:#636e72"></div><div style="flex:1"><div class="proj-name">TJ Zbyňov</div><div class="proj-meta">€700 · €50/mes</div></div><div class="proj-phase ph-p">Potential</div></div>
+            <div class="proj-row"><div class="proj-dot" style="background:#636e72"></div><div style="flex:1"><div class="proj-name">ŠK Cementáreň Lúčka</div><div class="proj-meta">€700 · €50/mes</div></div><div class="proj-phase ph-p">Potential</div></div>
+            <div class="proj-row"><div class="proj-dot" style="background:#636e72"></div><div style="flex:1"><div class="proj-name">Car Wash — Info</div><div class="proj-meta">€200 · €35/mes</div></div><div class="proj-phase ph-p">Potential</div></div>
+            <div class="proj-row"><div class="proj-dot" style="background:#8892b0"></div><div style="flex:1"><div class="proj-name">ALL (Hosting)</div><div class="proj-meta">mywebdev-delta.vercel.app</div></div><div class="proj-phase ph-n">Running</div></div>
+          </div>
+        </div>
 
-  <footer class="footer">
-    Morning Briefing · <strong>Open-Meteo</strong> · <strong>Gmail</strong> · <strong>Google Calendar</strong> · <strong>Notion</strong> · <strong>Web Search</strong> ·
-    <a href="https://github.com/DarkMaster9452/morning-briefing">GitHub</a>
-  </footer>
-</div>
+        <!-- NOTION TASKS -->
+        <div class="card card-tasks">
+          <div class="card-header"><span class="card-icon">✅</span><span class="card-title">Otvorené úlohy · Notion</span><span class="badge">2 aktívne</span></div>
+          <div class="card-body">
+            <div class="task-row"><div style="flex:1"><div class="task-name">Create Pricing web</div><div class="task-meta">Status: Finishing · bez projektu</div></div><div class="task-pri pri-now">NOW!</div></div>
+            <div class="task-row"><div style="flex:1"><div class="task-name">Save Passwords</div><div class="task-meta">Status: Finishing · bez projektu</div></div><div class="task-pri pri-ok">OK</div></div>
+            <div class="task-empty" style="margin-top:8px;font-size:10px">Všetky ostatné overené úlohy sú <strong>Done</strong> ✓</div>
+          </div>
+        </div>
+
+        <!-- EMAIL -->
+        <div class="card card-email">
+          <div class="card-header"><span class="card-icon">📬</span><span class="card-title">Gmail inbox</span><span class="badge">5 neprečítaných</span></div>
+          <div class="card-body">
+            <div class="email-row"><div class="email-from"><span class="unread-dot"></span>Tipli.sk</div><div class="email-subj">Podeľte sa s nami o skúsenosť s prvou odmenou ⭐</div><div class="email-time">dnes 14:23</div></div>
+            <div class="email-row"><div class="email-from"><span class="unread-dot"></span>GitHub</div><div class="email-subj">[GitHub] PAT "claude-cowork" regenerovaný</div><div class="email-time">dnes 10:59</div></div>
+            <div class="email-row"><div class="email-from">HBADA EU</div><div class="email-subj">Shipment from order HBDEU1845185 is on the way</div><div class="email-time">dnes 10:57</div></div>
+            <div class="email-row"><div class="email-from"><span class="unread-dot"></span>GitHub</div><div class="email-subj">[GitHub] Fine-grained PAT (Claude) pridaný</div><div class="email-time">dnes 10:26</div></div>
+            <div class="email-row"><div class="email-from"><span class="unread-dot"></span>Microsoft</div><div class="email-subj">Heslá aplikácií konta Microsoft treba aktualizovať</div><div class="email-time">dnes 10:06</div></div>
+            <div class="email-row"><div class="email-from"><span class="unread-dot"></span>Microsoft</div><div class="email-subj">Zmena hesla konta Microsoft — 9.4.2026 12:06 CET</div><div class="email-time">dnes 10:06</div></div>
+            <div class="email-row"><div class="email-from">HBADA EU</div><div class="email-subj">HBADA EU — You have earned 509 points!</div><div class="email-time">dnes 09:54</div></div>
+          </div>
+        </div>
+
+        <!-- SUGGESTIONS -->
+        <div class="card card-clients">
+          <div class="card-header"><span class="card-icon">💡</span><span class="card-title">Tipy na dnes</span><span class="badge">AI návrhy</span></div>
+          <div class="card-body">
+            <div class="client-row"><div class="client-num">1.</div><div><div class="client-text">Dokonči "Create Pricing web" — tvoja Notion priorita #1 (NOW!)</div><div class="client-sub">Status: Finishing</div></div></div>
+            <div class="client-row"><div class="client-num">2.</div><div><div class="client-text">Pošli FK Rajec concept link klientovi na schválenie</div><div class="client-sub">github.io/FK-Rajec-Web-Koncept · Phase: Concept</div></div></div>
+            <div class="client-row"><div class="client-num">3.</div><div><div class="client-text">Vyber 2–3 projekty z 9 "Potential" a naplánuj prvý hovor</div><div class="client-sub">FK Turie, Cofbit, Car Wash</div></div></div>
+            <div class="client-row"><div class="client-num">4.</div><div><div class="client-text">Pridaj OŠK KP ako case study na Excavator web</div><div class="client-sub">oskkp.sk je Completed — ideálny showcase</div></div></div>
+            <div class="client-row"><div class="client-num">5.</div><div><div class="client-text">Ukloč Microsoft account security (zmenené heslo dnes ráno)</div><div class="client-sub">Aktualizuj heslá aplikácií</div></div></div>
+          </div>
+        </div>
+
+        <!-- BIRTHDAYS -->
+        <div class="card card-bday">
+          <div class="card-header"><span class="card-icon">🎂</span><span class="card-title">Narodeniny</span><span class="badge">GCal</span></div>
+          <div class="card-body">
+            <div class="bday-row"><div style="font-size:18px">🎉</div><div class="bday-name">Majo Strba</div><span class="bday-today-tag">DNES</span></div>
+            <div style="margin-top:10px;font-size:9px;color:var(--muted);font-style:italic;line-height:1.5">Ďalšie narodeniny sa zobrazujú len ak sú v Google Calendar.</div>
+          </div>
+        </div>
+
+      </div><!-- /grid -->
+
+      <footer class="footer">
+        Morning Briefing · Open-Meteo · Gmail · GCal · Notion · Web Search ·
+        <a href="https://github.com/DarkMaster9452/morning-briefing">GitHub</a>
+      </footer>
+    </div><!-- /main -->
+
+  </div><!-- /body-row -->
+</div><!-- /app -->
+
+<script>
+/* ══════════════════════════════════════════
+   GOOGLE OAUTH
+   !! REPLACE WITH YOUR REAL CLIENT ID !!
+   Steps:
+   1. Go to https://console.cloud.google.com/
+   2. Create project → APIs & Services → Credentials
+   3. Create OAuth 2.0 Client ID (Web application)
+   4. Add https://darkmaster9452.github.io to Authorized JavaScript origins
+   5. Copy Client ID here
+══════════════════════════════════════════ */
+const ALLOWED_EMAIL = 'strananekm@gmail.com';
+const GOOGLE_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
+
+function signIn() {
+  google.accounts.id.initialize({
+    client_id: GOOGLE_CLIENT_ID,
+    callback: handleCredentialResponse,
+    auto_select: false,
+  });
+  google.accounts.id.prompt();
+}
+
+function handleCredentialResponse(response) {
+  const payload = parseJwt(response.credential);
+  if (payload.email === ALLOWED_EMAIL) {
+    sessionStorage.setItem('mb_user', JSON.stringify({
+      email: payload.email,
+      name: payload.name,
+      picture: payload.picture,
+      token: response.credential
+    }));
+    showApp(payload);
+  } else {
+    document.getElementById('access-denied').style.display = 'block';
+  }
+}
+
+function parseJwt(token) {
+  const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+  return JSON.parse(decodeURIComponent(atob(base64).split('').map(c =>
+    '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')));
+}
+
+function showApp(user) {
+  document.getElementById('login-screen').style.display = 'none';
+  const app = document.getElementById('app');
+  app.style.display = 'flex';
+  if (user.picture) {
+    const av = document.getElementById('user-avatar');
+    av.src = user.picture; av.style.display = 'block';
+  }
+}
+
+function signOut() {
+  sessionStorage.removeItem('mb_user');
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+}
+
+// Auto-login if session exists
+window.addEventListener('load', () => {
+  const stored = sessionStorage.getItem('mb_user');
+  if (stored) {
+    showApp(JSON.parse(stored));
+  }
+  // GSI library ready callback
+  window.onGoogleLibraryLoad = () => {
+    google.accounts.id.initialize({
+      client_id: GOOGLE_CLIENT_ID,
+      callback: handleCredentialResponse,
+      auto_select: true,
+    });
+    if (!sessionStorage.getItem('mb_user')) {
+      google.accounts.id.prompt();
+    }
+  };
+});
+
+/* ══════════════════════════════════════════
+   DAILY FOCUS — localStorage
+══════════════════════════════════════════ */
+const focusEl = document.getElementById('daily-focus');
+const focusKey = 'mb_focus_' + new Date().toDateString();
+focusEl.value = localStorage.getItem(focusKey) || '';
+focusEl.addEventListener('input', () => localStorage.setItem(focusKey, focusEl.value));
+
+/* ══════════════════════════════════════════
+   SCRATCHPAD — localStorage (persists across days)
+══════════════════════════════════════════ */
+const scratchEl = document.getElementById('scratchpad');
+scratchEl.value = localStorage.getItem('mb_scratch') || '';
+scratchEl.addEventListener('input', () => localStorage.setItem('mb_scratch', scratchEl.value));
+
+/* ══════════════════════════════════════════
+   HABIT TRACKER — localStorage, resets daily
+══════════════════════════════════════════ */
+const habitKey = 'mb_habits_' + new Date().toDateString();
+const savedHabits = JSON.parse(localStorage.getItem(habitKey) || '{}');
+document.querySelectorAll('.habit-cb').forEach(cb => {
+  const idx = cb.dataset.habit;
+  if (savedHabits[idx]) {
+    cb.checked = true;
+    cb.nextElementSibling.classList.add('done');
+  }
+  cb.addEventListener('change', () => {
+    cb.nextElementSibling.classList.toggle('done', cb.checked);
+    savedHabits[idx] = cb.checked;
+    localStorage.setItem(habitKey, JSON.stringify(savedHabits));
+  });
+});
+
+/* ══════════════════════════════════════════
+   POMODORO TIMER
+══════════════════════════════════════════ */
+let pomoInterval = null;
+let pomoSeconds = 25 * 60;
+let pomoRunning = false;
+let pomoIsWork = true;
+const WORK_TIME = 25 * 60;
+const BREAK_TIME = 5 * 60;
+
+function updatePomoDisplay() {
+  const m = String(Math.floor(pomoSeconds / 60)).padStart(2, '0');
+  const s = String(pomoSeconds % 60).padStart(2, '0');
+  document.getElementById('pomo-display').textContent = m + ':' + s;
+  document.getElementById('pomo-mode').textContent = pomoIsWork ? 'PRÁCA' : 'PRESTÁVKA';
+  document.getElementById('pomo-display').style.color = pomoIsWork ? 'var(--c-urgent)' : 'var(--c-ai)';
+}
+
+function pomodoroToggle() {
+  const btn = document.getElementById('pomo-start');
+  if (pomoRunning) {
+    clearInterval(pomoInterval); pomoRunning = false;
+    btn.textContent = '▶ Pokračovať'; btn.classList.remove('active');
+  } else {
+    pomoRunning = true; btn.textContent = '⏸ Pauza'; btn.classList.add('active');
+    pomoInterval = setInterval(() => {
+      if (pomoSeconds > 0) { pomoSeconds--; updatePomoDisplay(); }
+      else {
+        clearInterval(pomoInterval); pomoRunning = false;
+        pomoIsWork = !pomoIsWork;
+        pomoSeconds = pomoIsWork ? WORK_TIME : BREAK_TIME;
+        updatePomoDisplay();
+        btn.textContent = '▶ Štart'; btn.classList.remove('active');
+        // notify
+        if (Notification.permission === 'granted') {
+          new Notification(pomoIsWork ? '☕ Prestávka skončila!' : '🍅 Pomodoro hotové!');
+        }
+      }
+    }, 1000);
+  }
+}
+
+function pomodoroReset() {
+  clearInterval(pomoInterval); pomoRunning = false; pomoIsWork = true;
+  pomoSeconds = WORK_TIME; updatePomoDisplay();
+  const btn = document.getElementById('pomo-start');
+  btn.textContent = '▶ Štart'; btn.classList.remove('active');
+}
+
+// Request notification permission
+if (Notification && Notification.permission === 'default') Notification.requestPermission();
+
+/* ══════════════════════════════════════════
+   CURRENCY / CRYPTO (live from free APIs)
+══════════════════════════════════════════ */
+async function loadCurrencies() {
+  const el = document.getElementById('currency-list');
+  try {
+    const [fxRes, btcRes] = await Promise.all([
+      fetch('https://api.frankfurter.app/latest?base=EUR&symbols=USD,CZK,GBP'),
+      fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=eur')
+    ]);
+    const fx = await fxRes.json();
+    const crypto = await btcRes.json();
+    const rates = fx.rates;
+    el.innerHTML = `
+      <div class="cur-row"><span class="cur-sym">EUR/USD</span><span class="cur-val">${rates.USD.toFixed(4)}</span></div>
+      <div class="cur-row"><span class="cur-sym">EUR/CZK</span><span class="cur-val">${rates.CZK.toFixed(2)}</span></div>
+      <div class="cur-row"><span class="cur-sym">EUR/GBP</span><span class="cur-val">${rates.GBP.toFixed(4)}</span></div>
+      <div class="cur-row"><span class="cur-sym">BTC</span><span class="cur-val">€${Math.round(crypto.bitcoin.eur).toLocaleString()}</span></div>
+      <div class="cur-row"><span class="cur-sym">ETH</span><span class="cur-val">€${Math.round(crypto.ethereum.eur).toLocaleString()}</span></div>
+    `;
+  } catch(e) {
+    el.innerHTML = '<div class="cur-loading">Nedostupné (offline?)</div>';
+  }
+}
+
+loadCurrencies();
+</script>
 </body>
 </html>
