@@ -3,666 +3,430 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Morning Briefing</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌅</text></svg>"/>
+  <title>Morning Briefing — Thursday, April 9, 2026</title>
   <style>
     :root {
-      --bg:        #0d0f16;
-      --panel:     #13161f;
-      --surface:   #191c28;
-      --surface2:  #1e2233;
-      --border:    #252a3d;
-      --border2:   #2e3450;
-
-      --red:    #e05c78;
-      --blue:   #5b9cf6;
-      --purple: #9b7fe8;
-      --teal:   #3ec9a7;
-      --green:  #4ade80;
-      --orange: #f59e4a;
-      --amber:  #f0bb3b;
-      --indigo: #6c63ff;
-
-      --text:   #dce3f0;
-      --muted:  #6b7799;
-      --muted2: #8a93b5;
-
-      --fs-xs:  11px;
-      --fs-sm:  12px;
-      --fs-md:  13px;
-      --fs-lg:  14px;
-      --fs-xl:  15px;
+      --bg:#0f1117; --surface:#1a1d27; --surface2:#22263a; --border:#2e3250;
+      --accent:#6c63ff; --accent2:#ff6584; --green:#43d9ad; --yellow:#ffd166;
+      --text:#e2e8f0; --muted:#8892b0;
     }
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body {
+    html, body {
+      height: 100%;
+      overflow: hidden;
       background: var(--bg);
       color: var(--text);
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      font-size: var(--fs-md);
-      line-height: 1.5;
-      min-height: 100vh;
+      font-family: 'Segoe UI', system-ui, sans-serif;
     }
 
-    a { color: inherit; text-decoration: none; }
+    /* ── OUTER WRAPPER ── */
+    .wrapper {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 10px 16px 8px;
+      gap: 8px;
+    }
 
-    /* ── TOP BAR ──────────────────────────────────────────── */
-    .topbar {
-      background: var(--panel);
-      border-bottom: 1px solid var(--border);
-      padding: 0 32px;
+    /* ── HEADER ── */
+    .header {
+      flex-shrink: 0;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 56px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    .topbar-left { display: flex; align-items: center; gap: 20px; }
-    .topbar-logo { font-size: 18px; font-weight: 700; letter-spacing: -.3px; color: var(--text); }
-    .topbar-logo span { color: var(--indigo); }
-    .topbar-date { font-size: var(--fs-sm); color: var(--muted2); }
-    .live-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--teal); margin-right: 6px; animation: pulse 2s infinite; vertical-align: middle; }
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
-
-    .stat-chips { display: flex; gap: 8px; align-items: center; }
-    .chip {
-      display: flex; align-items: center; gap: 6px;
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 6px; padding: 4px 10px;
-      font-size: var(--fs-xs); font-weight: 600; color: var(--muted2);
-      white-space: nowrap;
-    }
-    .chip-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-
-    /* ── PAGE LAYOUT ──────────────────────────────────────── */
-    .page { display: flex; gap: 0; min-height: calc(100vh - 56px); }
-
-    /* LEFT SIDEBAR */
-    .sidebar {
-      width: 320px;
-      flex-shrink: 0;
-      background: var(--panel);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      overflow-y: auto;
-    }
-
-    /* MAIN CONTENT */
-    .main {
-      flex: 1;
-      min-width: 0;
-      padding: 24px 28px 48px;
-      overflow-y: auto;
-    }
-
-    /* ── SECTION CARD ─────────────────────────────────────── */
-    .section {
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      margin-bottom: 18px;
-      overflow: hidden;
-    }
-    .section-header {
-      display: flex; align-items: center; gap: 10px;
-      padding: 12px 18px;
+      padding: 6px 4px;
       border-bottom: 1px solid var(--border);
     }
-    .section-icon { font-size: 15px; line-height: 1; flex-shrink: 0; }
-    .section-title {
-      font-size: var(--fs-xs); font-weight: 700;
-      letter-spacing: .08em; text-transform: uppercase; color: var(--muted2);
+    .header-left .greeting { font-size: 11px; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; }
+    .header-left h1 { font-size: 20px; font-weight: 700; margin-top: 1px; }
+    .header-right { text-align: right; }
+    .header-right .timestamp { font-size: 11px; color: var(--muted); }
+    .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--green); margin-right: 5px; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+    /* ── MAIN GRID ── */
+    .grid {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 2fr 1.2fr 1.2fr 1.6fr;
+      grid-template-rows: 1fr 1fr 0.6fr;
+      gap: 9px;
     }
-    .section-badge {
+
+    /* ── CARD BASE ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 11px 13px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: border-color .2s;
+    }
+    .card:hover { border-color: var(--accent); }
+    .card.urgent {
+      background: rgba(255,101,132,.07);
+      border-color: rgba(255,101,132,.35);
+      grid-column: 1 / 3;
+    }
+    .card.schedule { grid-column: 3; grid-row: 1; }
+    .card.emails   { grid-column: 4; grid-row: 1; }
+    .card.world    { grid-column: 1 / 3; grid-row: 2; }
+    .card.ai-news  { grid-column: 3; grid-row: 2; }
+    .card.tech     { grid-column: 4; grid-row: 2; }
+    .card.actions  { grid-column: 1 / -1; grid-row: 3; }
+
+    /* ── CARD HEADER ── */
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 8px;
+      flex-shrink: 0;
+    }
+    .card-icon { font-size: 15px; line-height: 1; }
+    .card-title { font-size: 10px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); }
+    .badge {
       margin-left: auto;
-      font-size: var(--fs-xs); font-weight: 700; color: var(--muted);
-      background: var(--surface2); border: 1px solid var(--border2);
-      border-radius: 20px; padding: 2px 9px; white-space: nowrap;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--muted);
+      padding: 1px 8px;
     }
-    .section-badge.alert { background: rgba(224,92,120,.12); border-color: rgba(224,92,120,.4); color: var(--red); }
-    .section-body { padding: 14px 18px; }
-    .section-body.compact { padding: 10px 18px; }
+    .badge.red { background: rgba(255,101,132,.15); border-color: var(--accent2); color: var(--accent2); }
+    .badge.green { background: rgba(67,217,173,.1); border-color: var(--green); color: var(--green); }
 
-    /* accent left border per section type */
-    .s-red    { background: rgba(224,92,120,.05);  border-color: rgba(224,92,120,.25); }
-    .s-red    .section-header { border-color: rgba(224,92,120,.2); }
-    .s-red    .section-title  { color: rgba(224,92,120,.8); }
-
-    .s-blue   { background: rgba(91,156,246,.04);  border-color: rgba(91,156,246,.2); }
-    .s-blue   .section-header { border-color: rgba(91,156,246,.18); }
-    .s-blue   .section-title  { color: rgba(91,156,246,.8); }
-
-    .s-purple { background: rgba(155,127,232,.04); border-color: rgba(155,127,232,.2); }
-    .s-purple .section-header { border-color: rgba(155,127,232,.18); }
-    .s-purple .section-title  { color: rgba(155,127,232,.8); }
-
-    .s-teal   { background: rgba(62,201,167,.04);  border-color: rgba(62,201,167,.2); }
-    .s-teal   .section-header { border-color: rgba(62,201,167,.18); }
-    .s-teal   .section-title  { color: rgba(62,201,167,.8); }
-
-    .s-sky    { background: rgba(56,189,248,.04);  border-color: rgba(56,189,248,.2); }
-    .s-sky    .section-header { border-color: rgba(56,189,248,.18); }
-    .s-sky    .section-title  { color: rgba(56,189,248,.8); }
-
-    .s-orange { background: rgba(245,158,74,.04);  border-color: rgba(245,158,74,.2); }
-    .s-orange .section-header { border-color: rgba(245,158,74,.18); }
-    .s-orange .section-title  { color: rgba(245,158,74,.8); }
-
-    .s-amber  { background: rgba(240,187,59,.04);  border-color: rgba(240,187,59,.2); }
-    .s-amber  .section-header { border-color: rgba(240,187,59,.18); }
-    .s-amber  .section-title  { color: rgba(240,187,59,.8); }
-
-    .s-indigo { background: rgba(108,99,255,.05);  border-color: rgba(108,99,255,.2); }
-    .s-indigo .section-header { border-color: rgba(108,99,255,.18); }
-    .s-indigo .section-title  { color: rgba(108,99,255,.8); }
-
-    /* ── SIDEBAR SECTIONS ─────────────────────────────────── */
-    .sidebar .section { border-radius: 0; margin: 0; border-left: none; border-right: none; border-top: none; }
-    .sidebar .section:first-child { border-top: none; }
-
-    /* ── ROW ITEMS ────────────────────────────────────────── */
-    .row-item {
-      display: flex; align-items: flex-start; gap: 10px;
-      padding: 9px 0; border-bottom: 1px solid var(--border);
+    /* ── SCROLLABLE CARD BODY ── */
+    .card-body {
+      flex: 1;
+      overflow-y: auto;
+      min-height: 0;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
     }
-    .row-item:last-child { border-bottom: none; padding-bottom: 0; }
-    .row-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
-    .row-item .title { font-size: var(--fs-lg); font-weight: 500; line-height: 1.4; }
-    .row-item .sub   { font-size: var(--fs-sm); color: var(--muted2); margin-top: 3px; line-height: 1.45; }
+    .card-body::-webkit-scrollbar { width: 4px; }
+    .card-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
-    /* ── TAGS / PILLS ─────────────────────────────────────── */
-    .tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; }
-    .tag {
-      font-size: 10px; font-weight: 600; border-radius: 4px;
-      padding: 2px 7px; border: 1px solid; white-space: nowrap;
+    /* ── URGENT ── */
+    .urgent-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--border);
     }
-    .tag-red    { color: var(--red);    background: rgba(224,92,120,.1);  border-color: rgba(224,92,120,.3); }
-    .tag-amber  { color: var(--amber);  background: rgba(240,187,59,.08); border-color: rgba(240,187,59,.25); }
-    .tag-muted  { color: var(--muted2); background: var(--surface2);     border-color: var(--border2); }
-    .tag-indigo { color: var(--indigo); background: rgba(108,99,255,.1);  border-color: rgba(108,99,255,.3); }
+    .urgent-item:last-child { border-bottom: none; }
+    .urgent-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent2); margin-top: 5px; flex-shrink: 0; }
+    .urgent-item .label { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+    .urgent-item .sub   { font-size: 11px; color: var(--muted); }
 
-    /* ── CALENDAR ─────────────────────────────────────────── */
-    .event-row { display: flex; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
-    .event-row:last-child { border-bottom: none; }
-    .event-time { font-size: var(--fs-xs); font-weight: 700; color: var(--blue); min-width: 48px; padding-top: 2px; }
-    .event-title { font-size: var(--fs-lg); font-weight: 500; }
-    .event-sub   { font-size: var(--fs-xs); color: var(--muted); margin-top: 2px; }
+    /* ── SCHEDULE ── */
+    .event { display: flex; align-items: flex-start; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border); }
+    .event:last-child { border-bottom: none; }
+    .event-time { font-size: 11px; font-weight: 700; color: var(--accent); min-width: 46px; padding-top: 1px; }
+    .event-body .ev-title { font-size: 13px; font-weight: 500; }
+    .event-body .ev-sub   { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .bday-tag { display: inline-block; font-size: 10px; font-weight: 600; color: var(--yellow); background: rgba(255,209,102,.1); border: 1px solid rgba(255,209,102,.3); border-radius: 4px; padding: 1px 5px; margin-left: 6px; }
 
-    /* ── EMAIL ────────────────────────────────────────────── */
-    .email-group { font-size: var(--fs-xs); font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); margin: 8px 0 6px; }
-    .email-item { padding: 8px 0; border-bottom: 1px solid var(--border); }
+    /* ── EMAILS ── */
+    .email-group-label { font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); margin: 4px 0 5px; }
+    .email-item { padding: 6px 0; border-bottom: 1px solid var(--border); }
     .email-item:last-child { border-bottom: none; }
-    .email-from   { font-size: var(--fs-md); font-weight: 600; }
-    .email-subj   { font-size: var(--fs-sm); color: var(--muted2); margin-top: 1px; }
-    .email-preview{ font-size: var(--fs-sm); color: var(--muted2); margin-top: 3px; opacity: .85; }
+    .email-sender  { font-size: 12px; font-weight: 600; }
+    .email-subject { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .email-summary { font-size: 11px; margin-top: 3px; opacity: .75; }
 
-    /* ── NEWS GRID ────────────────────────────────────────── */
-    .news-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
-    .news-item {
-      padding: 10px 14px 10px 0; border-bottom: 1px solid var(--border);
-    }
-    .news-item:nth-child(odd)  { border-right: 1px solid var(--border); padding-right: 14px; }
-    .news-item:nth-child(even) { padding-left: 14px; padding-right: 0; }
-    /* last row — no bottom border */
-    .news-grid.n2 .news-item:nth-last-child(-n+2) { border-bottom: none; }
-    .news-grid.n3 .news-item:last-child { border-bottom: none; }
-    .news-grid.n4 .news-item:nth-last-child(-n+2) { border-bottom: none; }
-    .news-grid.n5 .news-item:last-child { border-bottom: none; }
-    .news-headline { font-size: var(--fs-lg); font-weight: 500; line-height: 1.4; margin-bottom: 4px; }
-    .news-summary  { font-size: var(--fs-sm); color: var(--muted2); line-height: 1.45; }
-    .news-source   { font-size: var(--fs-xs); color: var(--muted); margin-top: 4px; }
+    /* ── NEWS ── */
+    .news-item { padding: 7px 0; border-bottom: 1px solid var(--border); }
+    .news-item:last-child { border-bottom: none; }
+    .news-headline { font-size: 13px; font-weight: 500; line-height: 1.35; margin-bottom: 3px; }
+    .news-summary  { font-size: 11px; color: var(--muted); line-height: 1.4; }
+    .news-source   { font-size: 10px; color: var(--accent); margin-top: 3px; font-weight: 600; letter-spacing: .04em; }
 
-    /* ── PROJECT CARD ─────────────────────────────────────── */
-    .project-header {
-      display: flex; align-items: center; gap: 14px;
-      background: var(--surface2); border: 1px solid var(--border2);
-      border-radius: 8px; padding: 12px 16px; margin-bottom: 14px;
+    /* ── ACTIONS (horizontal row) ── */
+    .actions-row {
+      display: flex;
+      gap: 10px;
+      height: 100%;
+      align-items: stretch;
     }
-    .project-icon   { font-size: 24px; flex-shrink: 0; }
-    .project-name   { font-size: var(--fs-xl); font-weight: 700; }
-    .project-meta   { font-size: var(--fs-sm); color: var(--muted2); margin-top: 2px; }
-    .project-meta a { color: var(--indigo); }
-    .project-phase  {
-      margin-left: auto; flex-shrink: 0;
-      font-size: var(--fs-xs); font-weight: 700;
-      color: var(--amber); background: rgba(240,187,59,.1);
-      border: 1px solid rgba(240,187,59,.3); border-radius: 6px; padding: 4px 12px;
+    .action-item {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 9px 12px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
     }
-    .sub-label {
-      font-size: var(--fs-xs); font-weight: 700; letter-spacing: .07em;
-      text-transform: uppercase; color: var(--muted); margin: 14px 0 8px;
-    }
-
-    /* ── ACTION LIST ──────────────────────────────────────── */
-    .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
-    .action-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
-    .action-item:last-child { border-bottom: none; }
     .action-num {
-      width: 22px; height: 22px; border-radius: 50%;
-      background: var(--indigo); color: #fff;
-      font-size: 11px; font-weight: 700;
+      width: 20px; height: 20px; border-radius: 50%;
+      background: var(--accent); color: #fff;
+      font-size: 10px; font-weight: 700;
       display: flex; align-items: center; justify-content: center;
       flex-shrink: 0; margin-top: 1px;
     }
-    .action-num.red    { background: var(--red); }
-    .action-num.amber  { background: var(--amber); color: #111; }
-    .action-title { font-size: var(--fs-lg); font-weight: 500; line-height: 1.4; }
-    .action-sub   { font-size: var(--fs-sm); color: var(--muted2); margin-top: 3px; line-height: 1.45; }
+    .action-item .label { font-size: 12px; font-weight: 600; line-height: 1.3; }
+    .action-item .sub   { font-size: 11px; color: var(--muted); margin-top: 2px; }
 
-    .action-grid .action-item:nth-child(odd)  { padding-right: 20px; border-right: 1px solid var(--border); }
-    .action-grid .action-item:nth-child(even) { padding-left: 20px; }
-    .action-grid .action-item:nth-last-child(-n+2) { border-bottom: none; }
-
-    .defer-label { font-size: var(--fs-xs); font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); margin: 14px 0 6px; }
-    .defer-list  { display: flex; flex-direction: column; gap: 4px; }
-    .defer-item  { font-size: var(--fs-sm); color: var(--muted); padding: 3px 0; border-bottom: 1px solid var(--border); }
-    .defer-item:last-child { border-bottom: none; }
-
-    /* ── FOOTER ───────────────────────────────────────────── */
+    /* ── FOOTER ── */
     .footer {
-      text-align: center; padding: 20px;
-      font-size: var(--fs-xs); color: var(--muted);
+      flex-shrink: 0;
+      text-align: center;
+      font-size: 10px;
+      color: var(--muted);
+      padding: 2px 0;
       border-top: 1px solid var(--border);
     }
-    .footer a { color: var(--indigo); }
-
-    /* ── NOTION TASK ROWS ─────────────────────────────────── */
-    .notion-task { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); }
-    .notion-task:last-child { border-bottom: none; }
-    .notion-link { font-size: var(--fs-xs); color: var(--indigo); margin-top: 5px; display: inline-block; }
-
-    /* ── REFRESH BUTTON ──────────────────────────────────── */
-    #refresh-btn {
-      display: flex; align-items: center; gap: 6px;
-      background: var(--surface2); border: 1px solid var(--border2);
-      border-radius: 6px; padding: 5px 13px;
-      font-size: var(--fs-xs); font-weight: 700; color: var(--muted2);
-      cursor: pointer; transition: all .15s; white-space: nowrap;
-    }
-    #refresh-btn:hover { background: var(--indigo); border-color: var(--indigo); color: #fff; }
-    #refresh-btn.spinning { color: var(--teal); border-color: rgba(62,201,167,.4); animation: spin .6s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ── SCROLLBAR ────────────────────────────────────────── */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+    .footer a { color: var(--accent); text-decoration: none; }
   </style>
 </head>
 <body>
+<div class="wrapper">
 
-<!-- ═══════════════════════ TOP BAR ═══════════════════════ -->
-<div class="topbar">
-  <div class="topbar-left">
-    <div class="topbar-logo">🌅 <span>Morning</span> Briefing</div>
-    <div class="topbar-date"><span class="live-dot"></span>Thursday, April 9, 2026 · Last updated 12:48 PM</div>
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div class="greeting">Good morning, Martin</div>
+      <h1>🌅 Thursday, April 9, 2026</h1>
+    </div>
+    <div class="header-right">
+      <div class="timestamp"><span class="dot"></span>Last updated at 06:06 PM · Auto-refreshes daily</div>
+    </div>
   </div>
-  <div class="stat-chips">
-    <div class="chip"><span class="chip-dot" style="background:var(--red)"></span>2 urgent</div>
-    <div class="chip"><span class="chip-dot" style="background:var(--blue)"></span>1 event</div>
-    <div class="chip"><span class="chip-dot" style="background:var(--purple)"></span>4 emails</div>
-    <div class="chip"><span class="chip-dot" style="background:var(--teal)"></span>5 world</div>
-    <div class="chip"><span class="chip-dot" style="background:var(--orange)"></span>5 AI · 4 tech</div>
-    <div class="chip"><span class="chip-dot" style="background:var(--amber)"></span>2 open tasks</div>
-    <button id="refresh-btn" onclick="refreshBriefing()" title="Load the latest generated briefing from disk">
-      ↻ Refresh
-    </button>
-  </div>
-</div>
 
-<!-- ═══════════════════════ PAGE ═══════════════════════════ -->
-<div class="page">
+  <!-- GRID -->
+  <div class="grid">
 
-  <!-- ════════════ LEFT SIDEBAR ════════════ -->
-  <aside class="sidebar">
-
-    <!-- URGENT -->
-    <div class="section s-red">
-      <div class="section-header">
-        <span class="section-icon">⚡</span>
-        <span class="section-title">Urgent</span>
-        <span class="section-badge alert">2 items</span>
+    <!-- ⚡ URGENT -->
+    <div class="card urgent">
+      <div class="card-header">
+        <span class="card-icon">⚡</span>
+        <span class="card-title">Urgent — needs immediate attention</span>
+        <span class="badge red">2 items</span>
       </div>
-      <div class="section-body">
-        <div class="row-item">
-          <div class="row-dot" style="background:var(--red)"></div>
+      <div class="card-body">
+        <div class="urgent-item">
+          <span class="urgent-dot"></span>
           <div>
-            <div class="title">🔐 Microsoft password changed today</div>
-            <div class="sub">Account st**m@gmail.com — changed at 12:06 CET. Verify it was you, then update app passwords.</div>
+            <div class="label">🔒 Microsoft account password changed today</div>
+            <div class="sub">Your Microsoft account password was changed on Apr 9, 2026 at 12:06 CET. If this wasn't you, secure your account immediately and revoke active sessions.</div>
           </div>
         </div>
-        <div class="row-item">
-          <div class="row-dot" style="background:var(--red)"></div>
+        <div class="urgent-item">
+          <span class="urgent-dot"></span>
           <div>
-            <div class="title">🎂 Majo Strba's birthday!</div>
-            <div class="sub">Don't forget to send a message or call.</div>
+            <div class="label">🔑 Microsoft app passwords must be updated</div>
+            <div class="sub">Because 2-step verification is enabled, all apps and devices using the old password will stop working. Update app-specific passwords now.</div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- CALENDAR -->
-    <div class="section s-blue">
-      <div class="section-header">
-        <span class="section-icon">📅</span>
-        <span class="section-title">Today's Schedule</span>
-        <span class="section-badge">1 event</span>
+    <!-- 📅 SCHEDULE -->
+    <div class="card schedule">
+      <div class="card-header">
+        <span class="card-icon">📅</span>
+        <span class="card-title">Today's Schedule</span>
+        <span class="badge">1 event</span>
       </div>
-      <div class="section-body">
-        <div class="event-row">
+      <div class="card-body">
+        <div class="event">
           <div class="event-time">All day</div>
-          <div>
-            <div class="event-title">🎂 Majo Strba — narodeniny</div>
-            <div class="event-sub">Birthday · Recurring</div>
+          <div class="event-body">
+            <div class="ev-title">Majo Strba — narodeniny <span class="bday-tag">🎂 BIRTHDAY</span></div>
+            <div class="ev-sub">Don't forget to send a birthday message!</div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- EMAILS -->
-    <div class="section s-purple">
-      <div class="section-header">
-        <span class="section-icon">📧</span>
-        <span class="section-title">Emails</span>
-        <span class="section-badge">4 unread</span>
+    <!-- 📧 EMAILS -->
+    <div class="card emails">
+      <div class="card-header">
+        <span class="card-icon">📧</span>
+        <span class="card-title">Emails</span>
+        <span class="badge">5 unread</span>
       </div>
-      <div class="section-body">
-        <div class="email-group">Needs reply</div>
+      <div class="card-body">
+        <div class="email-group-label">⚠️ Needs action</div>
         <div class="email-item">
-          <div class="email-from" style="color:var(--red);">⚠️ Microsoft Account Team</div>
-          <div class="email-subj">Heslá aplikácií konta Microsoft treba aktualizovať</div>
-          <div class="email-preview">App passwords must be updated after your password change.</div>
-        </div>
-        <div class="email-group" style="margin-top:10px;">FYI</div>
-        <div class="email-item">
-          <div class="email-from">Microsoft Account Team</div>
-          <div class="email-subj">Zmena hesla konta Microsoft</div>
-          <div class="email-preview">Password changed Apr 9 at 12:06 CET — ignore if this was you.</div>
+          <div class="email-sender">Microsoft Account Team</div>
+          <div class="email-subject">Zmena hesla konta Microsoft</div>
+          <div class="email-summary">Password changed at 12:06 CET — verify this was you.</div>
         </div>
         <div class="email-item">
-          <div class="email-from">GitHub</div>
-          <div class="email-subj">PAT (classic) "claude-cowork" added</div>
-          <div class="email-preview">Broad admin scopes — likely from Cowork setup.</div>
+          <div class="email-sender">Microsoft Account Team</div>
+          <div class="email-subject">Heslá aplikácií konta Microsoft treba aktualizovať</div>
+          <div class="email-summary">App passwords need refreshing after the password change.</div>
+        </div>
+        <div class="email-group-label" style="margin-top:8px;">FYI / No action needed</div>
+        <div class="email-item">
+          <div class="email-sender">GitHub</div>
+          <div class="email-subject">Fine-grained PAT "Claude" added</div>
+          <div class="email-summary">New token added to your account (Cowork setup).</div>
         </div>
         <div class="email-item">
-          <div class="email-from">GitHub</div>
-          <div class="email-subj">Fine-grained PAT "Claude" added</div>
-          <div class="email-preview">Related to Claude Cowork integration.</div>
+          <div class="email-sender">GitHub</div>
+          <div class="email-subject">Classic PAT "claude-cowork" added &amp; regenerated</div>
+          <div class="email-summary">Token with full admin scopes created and refreshed.</div>
         </div>
       </div>
     </div>
 
-  </aside>
-
-  <!-- ════════════ MAIN CONTENT ════════════ -->
-  <main class="main">
-
-    <!-- WORLD NEWS -->
-    <div class="section s-teal">
-      <div class="section-header">
-        <span class="section-icon">🌍</span>
-        <span class="section-title">World News</span>
-        <span class="section-badge">5 stories</span>
+    <!-- 🌍 WORLD NEWS -->
+    <div class="card world">
+      <div class="card-header">
+        <span class="card-icon">🌍</span>
+        <span class="card-title">World News</span>
+        <span class="badge">4 stories</span>
       </div>
-      <div class="section-body compact">
-        <div class="news-grid n5">
-          <div class="news-item">
-            <div class="news-headline">US-Iran Ceasefire — Israel Continues Lebanon Assault</div>
-            <div class="news-summary">US and Iran suspended hostilities, but Israel's strikes across Lebanon killed at least 254; Iran accuses both the US and Israel of violating the ceasefire framework.</div>
-            <div class="news-source">Al Jazeera · CBS News · ABC News</div>
-          </div>
-          <div class="news-item">
-            <div class="news-headline">Strait of Hormuz Traffic Suspended, Slowly Resuming</div>
-            <div class="news-summary">Iran halted oil tanker passage through the Strait of Hormuz; maritime monitoring now reports early signs of vessel activity resuming following the ceasefire announcement.</div>
-            <div class="news-source">ABC7 Chicago · MarineTraffic</div>
-          </div>
-          <div class="news-item">
-            <div class="news-headline">Democrats Overperform in Georgia &amp; Wisconsin Elections</div>
-            <div class="news-summary">Democrats continued outperforming 2024 margins in state contests; Wisconsin also expanded the liberal majority on its Supreme Court.</div>
-            <div class="news-source">NPR</div>
-          </div>
-          <div class="news-item">
-            <div class="news-headline">IS-Linked Rebels Kill 43+ in Eastern Congo Attack</div>
-            <div class="news-summary">Islamic State-affiliated militants struck in eastern DRC, killing at least 43 people in the latest escalation of violence in the region.</div>
-            <div class="news-source">NPR · Reuters</div>
-          </div>
-          <div class="news-item">
-            <div class="news-headline">1.2 Million Displaced in Lebanon</div>
-            <div class="news-summary">One-fifth of Lebanon's population — 1.2 million people — has been forced to flee their homes over the past month amid the ongoing Israeli campaign.</div>
-            <div class="news-source">Al Jazeera</div>
-          </div>
+      <div class="card-body">
+        <div class="news-item">
+          <div class="news-headline">🕊️ US-Iran ceasefire reached — but Israel bombs Lebanon hours later</div>
+          <div class="news-summary">A last-minute US-Iran deal was struck before Trump's deadline, yet Israeli forces launched devastating strikes across Lebanon, killing at least 203 people and wounding 1,000 within hours of the ceasefire announcement.</div>
+          <div class="news-source">Al Jazeera</div>
+        </div>
+        <div class="news-item">
+          <div class="news-headline">🗳️ Democrats overperform in Wisconsin Supreme Court election</div>
+          <div class="news-summary">Wisconsin voters chose a new liberal justice, expanding the court's progressive majority in a sign that Democrats continue to outperform expectations in special elections.</div>
+          <div class="news-source">NPR</div>
+        </div>
+        <div class="news-item">
+          <div class="news-headline">📺 OpenAI acquires Silicon Valley insider talk show</div>
+          <div class="news-summary">OpenAI purchased a niche talk show popular with Silicon Valley insiders, a strategic move to shape public narrative around artificial intelligence.</div>
+          <div class="news-source">NBC News</div>
+        </div>
+        <div class="news-item">
+          <div class="news-headline">🕵️ ICE using spyware to intercept encrypted messages of fentanyl traffickers</div>
+          <div class="news-summary">The agency's top official revealed to members of Congress that ICE has deployed a spyware tool to break into encrypted communications as part of drug trafficking investigations.</div>
+          <div class="news-source">NBC News</div>
         </div>
       </div>
     </div>
 
-    <!-- AI + TECH row -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;">
-
-      <!-- AI NEWS -->
-      <div class="section s-sky" style="margin-bottom:0;">
-        <div class="section-header">
-          <span class="section-icon">🤖</span>
-          <span class="section-title">AI News</span>
-          <span class="section-badge">5 stories</span>
+    <!-- 🤖 AI NEWS -->
+    <div class="card ai-news">
+      <div class="card-header">
+        <span class="card-icon">🤖</span>
+        <span class="card-title">AI News</span>
+        <span class="badge">4 stories</span>
+      </div>
+      <div class="card-body">
+        <div class="news-item">
+          <div class="news-headline">Utah first state to let AI renew drug prescriptions</div>
+          <div class="news-summary">A landmark law now allows AI systems to autonomously renew prescriptions — the first state to move AI beyond diagnosis into actual treatment decisions.</div>
+          <div class="news-source">HumAI Blog</div>
         </div>
-        <div class="section-body compact">
-          <div class="news-item" style="border-right:none;padding-right:0;">
-            <div class="news-headline">Meta Launches Muse Spark from New Superintelligence Labs</div>
-            <div class="news-summary">Meta's first major model under Alexandr Wang, competitive in multimodal, reasoning, health and agentic tasks. 2026 AI capex: $115B–$135B.</div>
-            <div class="news-source">CNBC</div>
-          </div>
-          <div class="news-item" style="border-right:none;padding-right:0;">
-            <div class="news-headline">Gemma 4, Claude Mythos, Qwen 3.6 &amp; MiniMax 2.7 Released</div>
-            <div class="news-summary">Wave of new model releases from Google, Anthropic, Alibaba, and MiniMax — signals a fiercely competitive model landscape.</div>
-            <div class="news-source">Renovate QR · Humai Blog</div>
-          </div>
-          <div class="news-item" style="border-right:none;padding-right:0;">
-            <div class="news-headline">Utah First State to Let AI Renew Drug Prescriptions</div>
-            <div class="news-summary">New legislation grants AI authority to autonomously renew prescriptions — the first major expansion of AI into direct patient care.</div>
-            <div class="news-source">Crescendo AI News</div>
-          </div>
-          <div class="news-item" style="border-right:none;padding-right:0;">
-            <div class="news-headline">AI Energy Breakthrough: 100× Efficiency Gain</div>
-            <div class="news-summary">Researchers demonstrate a proof-of-concept AI system using 100× less energy with improved task performance.</div>
-            <div class="news-source">ScienceDaily</div>
-          </div>
-          <div class="news-item" style="border-right:none;padding-right:0;border-bottom:none;">
-            <div class="news-headline">Q1 2026: $300B VC Funding, 80% Goes to AI</div>
-            <div class="news-summary">All-time record quarter; $242B of $300B total went to AI companies. Spirit AI raised $420M in 30 days.</div>
-            <div class="news-source">Crunchbase · The AI Insider</div>
-          </div>
+        <div class="news-item">
+          <div class="news-headline">Meta releases Muse Spark — ranks #4 on AI Intelligence Index</div>
+          <div class="news-summary">Closed-source Muse Spark scores 52 on the Artificial Analysis Index v4, excelling at figure understanding and medical reasoning but struggling with abstract tasks.</div>
+          <div class="news-source">Artificial Analysis</div>
+        </div>
+        <div class="news-item">
+          <div class="news-headline">AI industry enters consolidation phase in April 2026</div>
+          <div class="news-summary">Deployments from Q1 are now delivering their first real-world results as the sector shifts from hype to measurable outcomes and pragmatic enterprise use.</div>
+          <div class="news-source">TechCrunch</div>
+        </div>
+        <div class="news-item">
+          <div class="news-headline">Physical AI robots accelerate solar farm buildouts</div>
+          <div class="news-summary">AI-powered field robots like Maximo and Aigen's solar-driven weed rovers are cutting installation time and herbicide use at scale across renewable energy sites.</div>
+          <div class="news-source">NVIDIA Blog</div>
         </div>
       </div>
-
-      <!-- TECH NEWS -->
-      <div class="section s-orange" style="margin-bottom:0;">
-        <div class="section-header">
-          <span class="section-icon">📱</span>
-          <span class="section-title">Electronics &amp; Tech Brands</span>
-          <span class="section-badge">4 stories</span>
-        </div>
-        <div class="section-body compact">
-          <div class="news-item" style="border-right:none;padding-right:0;">
-            <div class="news-headline">Microsoft &amp; Google Lock In Multi-Year DRAM Supply Deals</div>
-            <div class="news-summary">Long-term DDR5/HBM contracts with Samsung and SK Hynix — Microsoft reportedly prepaying $10B+ to Samsung for future AI infrastructure.</div>
-            <div class="news-source">TechBriefly · Bloomberg</div>
-          </div>
-          <div class="news-item" style="border-right:none;padding-right:0;">
-            <div class="news-headline">Apple Planning AI-Native Hardware This Week</div>
-            <div class="news-summary">Apple reportedly set to announce AI-native devices to unlock new services revenue, deepening on-device AI across its lineup.</div>
-            <div class="news-source">PYMNTS.com</div>
-          </div>
-          <div class="news-item" style="border-right:none;padding-right:0;">
-            <div class="news-headline">Broadcom–Google AI Chip Deal, Anthropic Gets 3.5 GW TPU Access</div>
-            <div class="news-summary">Broadcom signed a long-term custom AI chip agreement with Google and expanded its Anthropic partnership — giving Anthropic access to 3.5 GW of TPU compute from 2027.</div>
-            <div class="news-source">Tech Startups</div>
-          </div>
-          <div class="news-item" style="border-right:none;padding-right:0;border-bottom:none;">
-            <div class="news-headline">Firmus AI Data Centers Hit $5.5B Valuation</div>
-            <div class="news-summary">Nvidia-backed Firmus, building high-density GPU-optimised data centers, reached $5.5B after a new funding round as specialised AI infrastructure demand surges.</div>
-            <div class="news-source">Tech Startups</div>
-          </div>
-        </div>
-      </div>
-
     </div>
 
-    <!-- NOTION PROJECT -->
-    <div class="section s-amber">
-      <div class="section-header">
-        <span class="section-icon">📋</span>
-        <span class="section-title">Notion — Web Project Manager</span>
-        <span class="section-badge">2 open tasks</span>
+    <!-- 📱 TECH / ELECTRONICS -->
+    <div class="card tech">
+      <div class="card-header">
+        <span class="card-icon">📱</span>
+        <span class="card-title">Electronics &amp; Tech Brands</span>
+        <span class="badge">4 stories</span>
       </div>
-      <div class="section-body">
+      <div class="card-body">
+        <div class="news-item">
+          <div class="news-headline">Apple confirms US Mac manufacturing starting in 2026</div>
+          <div class="news-summary">Apple officially announced plans to produce select Mac models domestically in the United States this year, in response to ongoing tariff pressures.</div>
+          <div class="news-source">Engadget</div>
+        </div>
+        <div class="news-item">
+          <div class="news-headline">Sony unveils "True RGB" — its own display technology brand</div>
+          <div class="news-summary">Sony introduced the "True RGB" name for its proprietary display pipeline, positioning it against competitors like Samsung's QD-OLED and LG's WRGB technologies.</div>
+          <div class="news-source">TechRadar</div>
+        </div>
+        <div class="news-item">
+          <div class="news-headline">Meta launches improved WhatsApp for CarPlay</div>
+          <div class="news-summary">The new WhatsApp CarPlay update brings much deeper integration with Apple's in-car system, including hands-free messaging and better audio routing.</div>
+          <div class="news-source">Engadget</div>
+        </div>
+        <div class="news-item">
+          <div class="news-headline">Wearable AI market: smartwatches dominate in 2026</div>
+          <div class="news-summary">North America leads global wearable AI device adoption, with the smartwatch segment holding the largest share driven by health monitoring, payments, and AI voice assistants.</div>
+          <div class="news-source">Yahoo Finance</div>
+        </div>
+      </div>
+    </div>
 
-        <div class="project-header">
-          <div class="project-icon">⚽</div>
+    <!-- 📝 ACTIONS -->
+    <div class="card actions">
+      <div class="card-header">
+        <span class="card-icon">📝</span>
+        <span class="card-title">Suggested Actions — what to tackle first</span>
+      </div>
+      <div class="actions-row">
+        <div class="action-item">
+          <div class="action-num">1</div>
           <div>
-            <div class="project-name">Fotball Team OŠK Kamenná Poruba</div>
-            <div class="project-meta"><a href="https://oskkp.sk">oskkp.sk</a> · Commercial · €350 project + €50/mo maintenance</div>
+            <div class="label">🔒 Verify Microsoft account security</div>
+            <div class="sub">Check if you changed the password at 12:06 CET. If not — change it immediately &amp; revoke sessions.</div>
           </div>
-          <div class="project-phase">🔧 Finishing</div>
         </div>
-
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 24px;">
+        <div class="action-item">
+          <div class="action-num">2</div>
           <div>
-            <div class="sub-label">Open Tasks</div>
-            <div class="notion-task">
-              <div class="row-dot" style="background:var(--red);margin-top:5px;"></div>
-              <div>
-                <div class="title">Create Pricing web</div>
-                <div class="tags">
-                  <span class="tag tag-red">🔥 Needs done NOW</span>
-                  <span class="tag tag-muted">In Progress</span>
-                  <span class="tag tag-red">⚠️ Overdue Mar 18</span>
-                </div>
-                <div class="sub" style="margin-top:5px;">Prepare email preset for clients — make sure it contains everything needed.</div>
-                <a class="notion-link" href="https://www.notion.so/31d1c3f6089880b48570ea6e409eee55">Open in Notion ↗</a>
-              </div>
-            </div>
-            <div class="notion-task">
-              <div class="row-dot" style="background:var(--amber);margin-top:5px;"></div>
-              <div>
-                <div class="title">Save Passwords</div>
-                <div class="tags">
-                  <span class="tag tag-muted">In Progress</span>
-                  <span class="tag tag-red">⚠️ Overdue Mar 18</span>
-                </div>
-                <div class="sub" style="margin-top:5px;">Save IG, FB, Admin credentials — don't leave these unsaved.</div>
-                <a class="notion-link" href="https://www.notion.so/3201c3f60898802f8ff4e75a2998c1b6">Open in Notion ↗</a>
-              </div>
-            </div>
+            <div class="label">🔑 Update Microsoft app passwords</div>
+            <div class="sub">Required after a password change when 2FA is enabled. Go to account.microsoft.com → Security.</div>
           </div>
+        </div>
+        <div class="action-item">
+          <div class="action-num">3</div>
           <div>
-            <div class="sub-label">Suggested Actions</div>
-            <div class="action-item">
-              <div class="action-num red">1</div>
-              <div>
-                <div class="action-title">Finish pricing web email preset today</div>
-                <div class="action-sub">Marked urgent and 3 weeks overdue — highest priority task on this project.</div>
-              </div>
-            </div>
-            <div class="action-item">
-              <div class="action-num amber">2</div>
-              <div>
-                <div class="action-title">Save all project credentials</div>
-                <div class="action-sub">IG, FB, Admin — store securely. Liability risk the longer this waits.</div>
-              </div>
-            </div>
-            <div class="action-item" style="border-bottom:none;">
-              <div class="action-num">3</div>
-              <div>
-                <div class="action-title">Close out these 2 tasks → Completed</div>
-                <div class="action-sub">Only 2 tasks remain on a €350 + €50/mo commercial project. Finishing phase — push to launch.</div>
-              </div>
-            </div>
+            <div class="label">🎂 Wish Majo Strba happy birthday!</div>
+            <div class="sub">Today is their birthday — send a message so you don't miss it.</div>
           </div>
         </div>
-
-      </div>
-    </div>
-
-    <!-- SUGGESTED ACTIONS -->
-    <div class="section s-indigo">
-      <div class="section-header">
-        <span class="section-icon">📝</span>
-        <span class="section-title">Suggested Actions — What to Tackle First</span>
-      </div>
-      <div class="section-body">
-        <div class="action-grid">
-          <div class="action-item">
-            <div class="action-num red">1</div>
-            <div>
-              <div class="action-title">🔐 Verify the Microsoft password change</div>
-              <div class="action-sub">Check account.microsoft.com security page. If unauthorized, begin account recovery immediately.</div>
-            </div>
-          </div>
-          <div class="action-item">
-            <div class="action-num red">2</div>
-            <div>
-              <div class="action-title">🔑 Update Microsoft app passwords</div>
-              <div class="action-sub">Update passwords on all apps and devices linked to your Microsoft account to avoid losing access.</div>
-            </div>
-          </div>
-          <div class="action-item">
-            <div class="action-num amber">3</div>
-            <div>
-              <div class="action-title">🎂 Wish Majo Strba a happy birthday</div>
-              <div class="action-sub">Send a message, call, or post on social today.</div>
-            </div>
-          </div>
-          <div class="action-item" style="border-bottom:none;">
-            <div class="action-num">4</div>
-            <div>
-              <div class="action-title">🔑 Review GitHub PAT tokens</div>
-              <div class="action-sub">"claude-cowork" (classic, broad scopes) and "Claude" (fine-grained) were added — confirm these are expected and consider tightening classic token permissions.</div>
-            </div>
+        <div class="action-item">
+          <div class="action-num">4</div>
+          <div>
+            <div class="label">🐙 Review GitHub PAT scopes</div>
+            <div class="sub">Two new tokens were created (claude-cowork classic + Claude fine-grained). Verify scopes are appropriate.</div>
           </div>
         </div>
-
-        <div class="defer-label">Can wait until tomorrow</div>
-        <div class="defer-list">
-          <div class="defer-item">· Read up on Meta Muse Spark and Claude Mythos model details — notable new releases worth tracking.</div>
-          <div class="defer-item">· Review Apple's upcoming AI-native hardware announcements when published later this week.</div>
-          <div class="defer-item">· Monitor Strait of Hormuz situation — could affect global oil/energy markets.</div>
+        <div class="action-item">
+          <div class="action-num">5</div>
+          <div>
+            <div class="label">🌍 Follow Middle East developments</div>
+            <div class="sub">US-Iran ceasefire is fragile — Israeli strikes on Lebanon are ongoing. Monitor for rapid changes today.</div>
+          </div>
         </div>
       </div>
     </div>
 
-  </main>
-</div>
+  </div><!-- /grid -->
 
-<!-- ═══════════════════════ FOOTER ═════════════════════════ -->
-<div class="footer">
-  Generated by Claude · Thursday, April 9, 2026 at 12:48 PM ·
-  <a href="https://github.com/DarkMaster9452/morning-briefing">GitHub ↗</a>
-</div>
+  <!-- FOOTER -->
+  <div class="footer">
+    Generated by Claude · Thursday, April 9, 2026 at 06:06 PM ·
+    <a href="https://github.com/DarkMaster9452/morning-briefing">GitHub ↗</a>
+  </div>
 
-<script>
-  // Auto-refresh at 6 AM
-  (function () {
-    function msUntil6AM() {
-      const now = new Date(), next = new Date(now);
-      next.setHours(6, 0, 0, 0);
-      if (now >= next) next.setDate(next.getDate() + 1);
-      return next - now;
-    }
-    setTimeout(function () { location.reload(); }, msUntil6AM());
-  })();
-
-  // Manual refresh button
-  function refreshBriefing() {
-    const btn = document.getElementById('refresh-btn');
-    btn.textContent = '↻ Loading…';
-    btn.classList.add('spinning');
-    btn.disabled = true;
-    // Hard reload — bypasses cache, picks up latest generated file
-    setTimeout(function () { location.reload(true); }, 400);
-  }
-</script>
+</div><!-- /wrapper -->
 </body>
 </html>
