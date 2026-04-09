@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Morning Briefing</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌅</text></svg>"/>
+  <style>
+    :root {
+      --bg:#0f1117; --surface:#1a1d27; --surface2:#22263a; --border:#2e3250;
+      --accent:#6c63ff; --accent2:#ff6584; --green:#43d9ad; --yellow:#ffd166;
+      --text:#e2e8f0; --muted:#8892b0;
+    }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui,sans-serif; min-height:100vh; padding:32px 20px 60px; }
+    .header { text-align:center; margin-bottom:40px; }
+    .header .greeting { font-size:13px; color:var(--muted); letter-spacing:.1em; text-transform:uppercase; margin-bottom:8px; }
+    .header h1 { font-size:28px; font-weight:700; margin-bottom:6px; }
+    .header .timestamp { font-size:13px; color:var(--muted); }
+    .dot { display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--green); margin-right:6px; animation:pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+    .grid { max-width:960px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+    .card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:24px; }
+    .card:hover { border-color:var(--accent); transition:border-color .2s; }
+    .card.full-width { grid-column:1/-1; }
+    .card.urgent { background:rgba(255,101,132,.08); border-color:rgba(255,101,132,.4); grid-column:1/-1; }
+    .card-header { display:flex; align-items:center; gap:10px; margin-bottom:18px; }
+    .card-icon { font-size:20px; }
+    .card-title { font-size:13px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+    .badge { margin-left:auto; background:var(--surface2); border:1px solid var(--border); border-radius:20px; font-size:11px; font-weight:600; color:var(--muted); padding:2px 10px; }
+    .badge.red { background:rgba(255,101,132,.15); border-color:var(--accent2); color:var(--accent2); }
+    /* Urgent */
+    .urgent-item { display:flex; align-items:flex-start; gap:12px; padding:12px 0; border-bottom:1px solid var(--border); }
+    .urgent-item:last-child { border-bottom:none; }
+    .urgent-dot { width:8px; height:8px; border-radius:50%; background:var(--accent2); margin-top:6px; flex-shrink:0; }
+    .urgent-item .label { font-size:14px; font-weight:500; margin-bottom:3px; }
+    .urgent-item .sub { font-size:12px; color:var(--muted); }
+    /* Schedule */
+    .event { display:flex; align-items:flex-start; gap:14px; padding:11px 0; border-bottom:1px solid var(--border); }
+    .event:last-child { border-bottom:none; }
+    .event-time { font-size:12px; font-weight:600; color:var(--accent); min-width:52px; padding-top:1px; }
+    .event-body .title { font-size:14px; font-weight:500; }
+    .event-body .attendees { font-size:12px; color:var(--muted); margin-top:2px; }
+    .prep-tag { display:inline-block; font-size:10px; font-weight:600; color:var(--yellow); background:rgba(255,209,102,.1); border:1px solid rgba(255,209,102,.3); border-radius:4px; padding:1px 6px; margin-left:6px; }
+    /* Emails */
+    .email-group-label { font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--muted); margin:10px 0 8px; }
+    .email-item { padding:10px 0; border-bottom:1px solid var(--border); }
+    .email-item:last-child { border-bottom:none; }
+    .email-sender { font-size:13px; font-weight:600; }
+    .email-subject { font-size:12px; color:var(--muted); margin-top:2px; }
+    .email-summary { font-size:12px; margin-top:4px; opacity:.8; }
+    /* News items */
+    .news-item { padding:10px 0; border-bottom:1px solid var(--border); }
+    .news-item:last-child { border-bottom:none; }
+    .news-headline { font-size:14px; font-weight:500; margin-bottom:3px; }
+    .news-summary { font-size:12px; color:var(--muted); }
+    .news-source { font-size:11px; color:var(--accent); margin-top:3px; }
+    /* Actions */
+    .action-item { display:flex; align-items:flex-start; gap:12px; padding:11px 0; border-bottom:1px solid var(--border); }
+    .action-item:last-child { border-bottom:none; }
+    .action-num { width:22px; height:22px; border-radius:50%; background:var(--accent); color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+    .action-item .label { font-size:14px; font-weight:500; }
+    .action-item .sub { font-size:12px; color:var(--muted); margin-top:2px; }
+    .tomorrow-label { font-size:11px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; color:var(--muted); margin:14px 0 8px; }
+    .tomorrow-item { font-size:13px; color:var(--muted); padding:4px 0; }
+    .notice { font-size:13px; color:var(--muted); background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:12px 16px; }
+    .footer { text-align:center; margin-top:40px; font-size:12px; color:var(--muted); }
+    @media(max-width:640px){ .grid{grid-template-columns:1fr} .card.urgent,.card.full-width{grid-column:1} }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="greeting">Good morning, Martin</div>
+  <h1>🌅 Thursday, April 9, 2026</h1>
+  <div class="timestamp"><span class="dot"></span>Last updated at 12:48 PM · Auto-refreshes daily</div>
+</div>
+
+<div class="grid">
+
+  <!-- URGENT -->
+  <div class="card urgent">
+    <div class="card-header">
+      <span class="card-icon">⚡</span>
+      <span class="card-title">Urgent — needs immediate attention</span>
+      <span class="badge red">2 items</span>
+    </div>
+    <div class="urgent-item">
+      <div class="urgent-dot"></div>
+      <div>
+        <div class="label">🔐 Microsoft account password changed today</div>
+        <div class="sub">Your Microsoft account (st**m@gmail.com) password was changed at 12:06 CET. If this was NOT you, your account may be compromised — act immediately. If it was you, update your app passwords.</div>
+      </div>
+    </div>
+    <div class="urgent-item">
+      <div class="urgent-dot"></div>
+      <div>
+        <div class="label">🎂 It's Majo Strba's birthday today!</div>
+        <div class="sub">Calendar reminder: Don't forget to wish Majo a happy birthday — it's an all-day event on your calendar.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCHEDULE -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">📅</span>
+      <span class="card-title">Today's Schedule</span>
+      <span class="badge">1 event</span>
+    </div>
+    <div class="event">
+      <div class="event-time">All day</div>
+      <div class="event-body">
+        <div class="title">🎂 Majo Strba - narodeniny</div>
+        <div class="attendees">Birthday reminder · Recurring event</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EMAILS -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">📧</span>
+      <span class="card-title">Emails</span>
+      <span class="badge">4 unread</span>
+    </div>
+    <div class="email-group-label">Needs reply</div>
+    <div class="email-item">
+      <div class="email-sender" style="color:var(--accent2);">⚠️ Microsoft Account Team</div>
+      <div class="email-subject">Heslá aplikácií konta Microsoft treba aktualizovať</div>
+      <div class="email-summary">Action required: Your Microsoft app passwords must be updated because your account password was changed. Log in and update passwords for all connected apps and devices.</div>
+    </div>
+    <div class="email-group-label" style="margin-top:14px;">FYI / no action needed</div>
+    <div class="email-item">
+      <div class="email-sender">Microsoft Account Team</div>
+      <div class="email-subject">Zmena hesla konta Microsoft</div>
+      <div class="email-summary">Notification that your Microsoft account password was changed on Apr 9, 2026 at 12:06 CET. Ignore if this was you.</div>
+    </div>
+    <div class="email-item">
+      <div class="email-sender">GitHub</div>
+      <div class="email-subject">[GitHub] A personal access token (classic) has been added to your account</div>
+      <div class="email-summary">Token "claude-cowork" with broad admin permissions was added to your GitHub account — likely from the Cowork setup.</div>
+    </div>
+    <div class="email-item">
+      <div class="email-sender">GitHub</div>
+      <div class="email-subject">[GitHub] A fine-grained personal access token has been added to your account</div>
+      <div class="email-summary">Fine-grained token "Claude" was added to your GitHub account — related to the Claude Cowork integration.</div>
+    </div>
+  </div>
+
+  <!-- WORLD NEWS -->
+  <div class="card full-width">
+    <div class="card-header">
+      <span class="card-icon">🌍</span>
+      <span class="card-title">World News</span>
+      <span class="badge">5 stories</span>
+    </div>
+    <div class="news-item">
+      <div class="news-headline">US-Iran Ceasefire Reached — But Israel Continues Lebanon Assault</div>
+      <div class="news-summary">The US and Iran agreed to suspend hostilities, but Israel pushed on with devastating strikes across Lebanon, killing at least 254 and wounding 1,165; Iran is now accusing both the US and Israel of violating the ceasefire framework.</div>
+      <div class="news-source">Al Jazeera · CBS News · ABC News</div>
+    </div>
+    <div class="news-item">
+      <div class="news-headline">Strait of Hormuz Tanker Traffic Suspended, Then Slowly Resuming</div>
+      <div class="news-summary">Iran halted oil tanker passage through the Strait of Hormuz in protest of Israeli actions, but maritime monitoring services are reporting early signs of vessel activity resuming after the ceasefire announcement.</div>
+      <div class="news-source">ABC7 Chicago · MarineTraffic</div>
+    </div>
+    <div class="news-item">
+      <div class="news-headline">Democrats Overperform in Georgia and Wisconsin Special Elections</div>
+      <div class="news-summary">Democrats continued a pattern of outperforming 2024 presidential margins in state-level contests; Wisconsin voters also expanded the liberal majority on the state Supreme Court.</div>
+      <div class="news-source">NPR</div>
+    </div>
+    <div class="news-item">
+      <div class="news-headline">IS-Linked Rebels Kill at Least 43 in Eastern Congo Attack</div>
+      <div class="news-summary">Islamic State-affiliated militants carried out a deadly assault in eastern Democratic Republic of Congo, killing at least 43 people in the latest wave of violence in the region.</div>
+      <div class="news-source">NPR · Reuters</div>
+    </div>
+    <div class="news-item">
+      <div class="news-headline">1.2 Million Displaced in Lebanon as Humanitarian Crisis Deepens</div>
+      <div class="news-summary">One-fifth of Lebanon's entire population — about 1.2 million people — has been forced to flee their homes over the past month amid the ongoing Israeli military campaign in the south.</div>
+      <div class="news-source">Al Jazeera</div>
+    </div>
+  </div>
+
+  <!-- AI NEWS -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">🤖</span>
+      <span class="card-title">AI News</span>
+      <span class="badge">5 stories</span>
+    </div>
+    <div class="news-item">
+      <div class="news-headline">Meta Launches Muse Spark — First Model from New Superintelligence Labs</div>
+      <div class="news-summary">Meta debuted its Muse Spark model, developed under Alexandr Wang's leadership at Meta Superintelligence Labs, with competitive multimodal, reasoning, health, and agentic capabilities; Meta's 2026 AI capex is set between $115B–$135B.</div>
+      <div class="news-source">CNBC</div>
+    </div>
+    <div class="news-item">
+      <div class="news-headline">New Model Releases: Gemma 4, Claude Mythos, Qwen 3.6, MiniMax 2.7</div>
+      <div class="news-summary">A wave of new AI model releases landed this week from Google (Gemma 4), Anthropic (Claude Mythos), Alibaba (Qwen 3.6), and MiniMax — signalling a highly competitive open and closed model landscape.</div>
+      <div class="news-source">Renovate QR · Humai Blog</div>
+    </div>
+    <div class="news-item">
+      <div class="news-headline">Utah Becomes First US State to Let AI Renew Drug Prescriptions</div>
+      <div class="news-summary">Utah passed legislation granting AI systems the authority to renew drug prescriptions autonomously, marking the first major expansion of AI into direct patient-care decisions in the United States.</div>
+      <div class="news-source">Crescendo AI News</div>
+    </div>
+    <div class="news-item">
+      <div class="news-headline">AI Energy Breakthrough: 100× Efficiency Gain Demonstrated</div>
+      <div class="news-summary">Researchers published a proof-of-concept AI system that reduces energy consumption by up to 100 times versus conventional models while also improving task performance, a potential step-change for sustainable AI infrastructure.</div>
+      <div class="news-source">ScienceDaily</div>
+    </div>
+    <div class="news-item">
+      <div class="news-headline">Q1 2026 VC Funding Shatters Records: $300B Invested, 80% Goes to AI</div>
+      <div class="news-summary">Global venture investment hit an all-time high of $300B in Q1 2026 (up 150%+ YoY), with $242B — 80% of the total — flowing into AI companies; Spirit AI also raised $420M in two rounds within 30 days.</div>
+      <div class="news-source">Crunchbase · The AI Insider</div>
+    </div>
+  </div>
+
+  <!-- ELECTRONICS & TECH BRANDS -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">📱</span>
+      <span class="card-title">Electronics &amp; Tech Brands</span>
+      <span class="badge">4 stories</span>
+    </div>
+    <div class="news-item">
+      <div class="news-headline">Microsoft &amp; Google Lock In Multi-Year DRAM Supply Deals with Samsung &amp; SK Hynix</div>
+      <div class="news-summary">Both tech giants are finalizing long-term DDR5 and HBM memory supply contracts worth tens of trillions of Korean won, with Microsoft reportedly making over $10B in prepayments to Samsung alone to secure future AI infrastructure supply.</div>
+      <div class="news-source">TechBriefly · Bloomberg</div>
+    </div>
+    <div class="news-item">
+      <div class="news-headline">Apple Planning AI-Native Hardware Announcements This Week</div>
+      <div class="news-summary">Apple is reportedly set to announce a new line of AI-native hardware devices designed to unlock new services revenue, continuing the company's push to deeply integrate on-device AI across its product lineup.</div>
+      <div class="news-source">PYMNTS.com</div>
+    </div>
+    <div class="news-item">
+      <div class="news-headline">Broadcom Signs Long-Term AI Chip Deal with Google, Expands Anthropic Partnership</div>
+      <div class="news-summary">Broadcom announced a long-term agreement with Google to develop custom AI chips and networking components, while also expanding its work with Anthropic — potentially giving the startup access to 3.5 GW of TPU-based compute from 2027.</div>
+      <div class="news-source">Tech Startups</div>
+    </div>
+    <div class="news-item">
+      <div class="news-headline">AI Data Center Firm Firmus Reaches $5.5B Valuation After Funding Round</div>
+      <div class="news-summary">Nvidia-backed Firmus, a builder of high-density GPU-optimized data centers, hit a $5.5B valuation after a fresh funding round as demand for specialized AI infrastructure continues to outstrip general-purpose capacity.</div>
+      <div class="news-source">Tech Startups</div>
+    </div>
+  </div>
+
+  <!-- NOTION PROJECT REVIEW -->
+  <div class="card full-width">
+    <div class="card-header">
+      <span class="card-icon">📋</span>
+      <span class="card-title">Notion — Web Project Manager</span>
+      <span class="badge">2 open tasks</span>
+    </div>
+
+    <!-- Project header -->
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface2);border-radius:10px;margin-bottom:16px;">
+      <span style="font-size:22px;">⚽</span>
+      <div style="flex:1">
+        <div style="font-size:15px;font-weight:700;">Fotball Team OŠK Kamenná Poruba</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px;"><a href="https://oskkp.sk" style="color:var(--accent);text-decoration:none;">oskkp.sk</a> · Commercial · €350 project + €50/mo maintenance</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:11px;font-weight:700;color:var(--yellow);background:rgba(255,209,102,.12);border:1px solid rgba(255,209,102,.3);border-radius:6px;padding:3px 10px;">🔧 Finishing</div>
+      </div>
+    </div>
+
+    <!-- Open tasks -->
+    <div style="font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">Open Tasks</div>
+
+    <div class="urgent-item">
+      <div class="urgent-dot" style="background:var(--accent2);"></div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="label">Create Pricing web</span>
+          <span style="font-size:10px;font-weight:700;background:rgba(255,101,132,.15);border:1px solid var(--accent2);color:var(--accent2);border-radius:4px;padding:1px 7px;">🔥 Needs done NOW</span>
+          <span style="font-size:10px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:1px 7px;">In Progress</span>
+          <span style="font-size:10px;color:var(--accent2);background:rgba(255,101,132,.08);border:1px solid rgba(255,101,132,.3);border-radius:4px;padding:1px 7px;">⚠️ Overdue since Mar 18</span>
+        </div>
+        <div class="sub" style="margin-top:4px;">Prepare email preset for clients — make sure it contains everything needed for onboarding. Type: Mine.</div>
+        <div style="margin-top:6px;"><a href="https://www.notion.so/31d1c3f6089880b48570ea6e409eee55" style="font-size:11px;color:var(--accent);text-decoration:none;">Open in Notion ↗</a></div>
+      </div>
+    </div>
+
+    <div class="urgent-item">
+      <div class="urgent-dot" style="background:var(--yellow);"></div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span class="label">Save Passwords</span>
+          <span style="font-size:10px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:1px 7px;">In Progress</span>
+          <span style="font-size:10px;color:var(--accent2);background:rgba(255,101,132,.08);border:1px solid rgba(255,101,132,.3);border-radius:4px;padding:1px 7px;">⚠️ Overdue since Mar 18</span>
+        </div>
+        <div class="sub" style="margin-top:4px;">Save all credentials for the project — Instagram, Facebook, Admin panel, and others. Don't leave these floating around.</div>
+        <div style="margin-top:6px;"><a href="https://www.notion.so/3201c3f60898802f8ff4e75a2998c1b6" style="font-size:11px;color:var(--accent);text-decoration:none;">Open in Notion ↗</a></div>
+      </div>
+    </div>
+
+    <!-- Suggested actions from project -->
+    <div style="font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:18px 0 10px;">Suggested actions from this project</div>
+    <div class="action-item">
+      <div class="action-num" style="background:var(--accent2);">1</div>
+      <div>
+        <div class="label">Finish the pricing web email preset</div>
+        <div class="sub">This is your highest priority task — marked urgent and already 3 weeks overdue. Draft the client onboarding email template today and get it done.</div>
+      </div>
+    </div>
+    <div class="action-item">
+      <div class="action-num" style="background:var(--yellow);color:#111;">2</div>
+      <div>
+        <div class="label">Save all project credentials before you forget</div>
+        <div class="sub">IG, FB, Admin — store them securely. This task has been sitting open for weeks and is a liability risk.</div>
+      </div>
+    </div>
+    <div class="action-item">
+      <div class="action-num">3</div>
+      <div>
+        <div class="label">Project is in "Finishing" phase — push toward launch</div>
+        <div class="sub">OŠK Kamenná Poruba is a commercial project at €350 + €50/mo. With only 2 open tasks left, closing them out should get this to Completed.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="card full-width">
+    <div class="card-header">
+      <span class="card-icon">📝</span>
+      <span class="card-title">Suggested Actions — what to tackle first</span>
+    </div>
+    <div class="action-item">
+      <div class="action-num">1</div>
+      <div>
+        <div class="label">🔐 Verify the Microsoft password change was authorized</div>
+        <div class="sub">Check your Microsoft account security page (account.microsoft.com). If you didn't change it, begin account recovery immediately. If you did, proceed to update your app passwords.</div>
+      </div>
+    </div>
+    <div class="action-item">
+      <div class="action-num">2</div>
+      <div>
+        <div class="label">🔑 Update Microsoft app passwords on all devices</div>
+        <div class="sub">You received an email saying app passwords need to be updated due to the password change. Do this for all apps and devices linked to your Microsoft account to avoid losing access.</div>
+      </div>
+    </div>
+    <div class="action-item">
+      <div class="action-num">3</div>
+      <div>
+        <div class="label">🎂 Wish Majo Strba a happy birthday!</div>
+        <div class="sub">It's Majo's birthday today — send a message, call, or post on social to celebrate.</div>
+      </div>
+    </div>
+    <div class="action-item">
+      <div class="action-num">4</div>
+      <div>
+        <div class="label">🔑 Review GitHub PAT tokens added to your account</div>
+        <div class="sub">Two tokens were added overnight — "claude-cowork" (classic, broad admin scopes) and "Claude" (fine-grained). Confirm these are expected from your Cowork setup and consider tightening permissions on the classic token.</div>
+      </div>
+    </div>
+    <div class="tomorrow-label">Can wait until tomorrow</div>
+    <div class="tomorrow-item">• Read up on Meta Muse Spark and new Claude Mythos model details — notable new releases worth tracking.</div>
+    <div class="tomorrow-item">• Review Apple's upcoming AI-native hardware announcements when published later this week.</div>
+    <div class="tomorrow-item">• Monitor Strait of Hormuz situation — could affect global oil/energy markets.</div>
+  </div>
+
+</div>
+
+<div class="footer">Generated by Claude · Thursday, April 9, 2026 at 12:48 PM · <a href="https://github.com/DarkMaster9452/morning-briefing" style="color:var(--accent);text-decoration:none;">GitHub ↗</a></div>
+
+
+<script>
+  // Auto-refresh: reload the page at 6:00 AM each day so the briefing is always fresh
+  (function () {
+    function msUntil6AM() {
+      const now = new Date();
+      const next6AM = new Date(now);
+      next6AM.setHours(6, 0, 0, 0);
+      if (now >= next6AM) next6AM.setDate(next6AM.getDate() + 1);
+      return next6AM - now;
+    }
+    function scheduleRefresh() {
+      const ms = msUntil6AM();
+      console.log('[Morning Briefing] Auto-refresh in ' + Math.round(ms / 60000) + ' min (at 6:00 AM)');
+      setTimeout(function () { location.reload(); }, ms);
+    }
+    scheduleRefresh();
+  })();
+</script>
+</body>
+</html>
