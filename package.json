@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "deploy": "npx vercel --yes",
-    "deploy:prod": "npx vercel --prod --yes"
+    "deploy:prod": "npx vercel --prod --yes",
+    "vercel:build:prod": "npx vercel build --prod",
+    "vercel:deploy:prod": "npx vercel --prod --yes"
   }
 }
