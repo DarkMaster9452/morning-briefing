@@ -7,16 +7,13 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌅</text></svg>"/>
 <style>
   :root{
-    --bg:#0f1117; --surface:#1a1d27; --border:#2e3250; --text:#e2e8f0; --muted:#8892b0;
-    --c-urgent:#ff6584; --c-cal:#6c63ff; --c-email:#ff9f43; --c-world:#54a0ff;
-    --c-ai:#43d9ad; --c-tech:#ffd166; --c-weather:#00d2ff; --c-stocks:#2ed573;
-    --c-bday:#ff6b9d; --c-notion:#ffa502; --c-tasks:#ff7675; --c-clients:#7bed9f;
-    --c-up:#2ed573; --c-down:#ff4757;
+    --bg:#0f1117;--surface:#1a1d27;--border:#2e3250;--text:#e2e8f0;--muted:#8892b0;
+    --c-urgent:#ff6584;--c-cal:#6c63ff;--c-email:#ff9f43;--c-world:#54a0ff;
+    --c-ai:#43d9ad;--c-tech:#ffd166;--c-weather:#00d2ff;
+    --c-bday:#ff6b9d;--c-notion:#ffa502;--c-tasks:#ff7675;--c-clients:#7bed9f;
   }
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif}
-
-  /* ═════════ PC ═════════ */
   @media (min-width:1024px){
     html,body{height:100%;overflow:hidden}
     .wrapper{height:100vh;display:flex;flex-direction:column;padding:8px 12px 6px;gap:6px}
@@ -25,72 +22,45 @@
     .header-left h1{font-size:18px;font-weight:700;margin-top:1px}
     .header-center{display:flex;gap:8px;flex:1;justify-content:center;flex-wrap:wrap}
     .chip{display:flex;align-items:center;gap:6px;padding:5px 11px;border-radius:20px;background:var(--surface);border:1px solid var(--border);font-size:11px;font-weight:600}
-    .chip .chip-icon{font-size:13px}
     .chip .chip-label{color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-right:2px}
-    .chip-countdown{border-color:var(--c-bday);color:var(--c-bday);background:rgba(255,107,157,.08)}
-    .chip-countdown .chip-label{color:var(--c-bday)}
-    .header-right{font-size:10px;color:var(--muted);text-align:right}
-
-    /* ── Grid: 6 cols × 4 rows, asymmetric spans ── */
-    .grid{
-      flex:1;min-height:0;display:grid;
-      grid-template-columns: 1.1fr 1.1fr 1.2fr 1.2fr 1.2fr 1.1fr;
-      grid-template-rows: auto 1.1fr 1.3fr auto;
-      gap:7px;
-    }
-    .card{border-radius:11px;padding:9px 12px;display:flex;flex-direction:column;overflow:hidden;
-      border-left:3px solid transparent;border-top:1px solid rgba(255,255,255,.055);
-      border-right:1px solid rgba(255,255,255,.055);border-bottom:1px solid rgba(255,255,255,.055);
-      transition:filter .15s}
+    .chip-bd{border-color:var(--c-bday);color:var(--c-bday);background:rgba(255,107,157,.08)}
+    .chip-bd .chip-label{color:var(--c-bday)}
+    .header-right{font-size:10px;color:var(--muted);text-align:right;line-height:1.5}
+    .grid{flex:1;min-height:0;display:grid;grid-template-columns:1.1fr 1.1fr 1.2fr 1.2fr 1.2fr 1.1fr;grid-template-rows:auto 1.1fr 1.3fr auto;gap:7px}
+    .card{border-radius:11px;padding:9px 12px;display:flex;flex-direction:column;overflow:hidden;border-left:3px solid transparent;border-top:1px solid rgba(255,255,255,.055);border-right:1px solid rgba(255,255,255,.055);border-bottom:1px solid rgba(255,255,255,.055);transition:filter .15s}
     .card:hover{filter:brightness(1.08)}
-
-    /* Row 1: Weather(1-2) | Urgent(3-5) | Schedule(6) */
-    .card-weather { background:rgba(0,210,255,.10);  border-left-color:var(--c-weather); grid-column:1/3; grid-row:1; }
-    .card-urgent  { background:rgba(255,101,132,.10);border-left-color:var(--c-urgent);  grid-column:3/6; grid-row:1; }
-    .card-cal     { background:rgba(108,99,255,.10); border-left-color:var(--c-cal);     grid-column:6;   grid-row:1; }
-
-    /* Row 2: World(1-3 narrow) | AI(3-5) | Tech(5-7) */
-    .card-world   { background:rgba(84,160,255,.10); border-left-color:var(--c-world);   grid-column:1/3; grid-row:2; }
-    .card-ai      { background:rgba(67,217,173,.10); border-left-color:var(--c-ai);      grid-column:3/5; grid-row:2; }
-    .card-tech    { background:rgba(255,209,102,.10);border-left-color:var(--c-tech);    grid-column:5/7; grid-row:2; }
-
-    /* Row 3: Notion Projects (BIG: 1-3, rows 3-4) | Notion Tasks (3-5) | Stocks (5-7) */
-    .card-notion  { background:rgba(255,165,2,.09);  border-left-color:var(--c-notion);  grid-column:1/3; grid-row:3/5; }
-    .card-tasks   { background:rgba(255,118,117,.10);border-left-color:var(--c-tasks);   grid-column:3/5; grid-row:3; }
-    .card-stocks  { background:rgba(46,213,115,.08); border-left-color:var(--c-stocks);  grid-column:5/7; grid-row:3; }
-
-    /* Row 4: (notion continues) | Clients(3-5) | Bday(5) | Email(6) */
-    .card-clients { background:rgba(123,237,159,.08);border-left-color:var(--c-clients); grid-column:3/5; grid-row:4; }
-    .card-bday    { background:rgba(255,107,157,.09);border-left-color:var(--c-bday);    grid-column:5;   grid-row:4; }
-    .card-email   { background:rgba(255,159,67,.10); border-left-color:var(--c-email);   grid-column:6;   grid-row:4; }
-
+    .card-weather{background:rgba(0,210,255,.10);border-left-color:var(--c-weather);grid-column:1/3;grid-row:1}
+    .card-urgent{background:rgba(255,101,132,.10);border-left-color:var(--c-urgent);grid-column:3/6;grid-row:1}
+    .card-cal{background:rgba(108,99,255,.10);border-left-color:var(--c-cal);grid-column:6;grid-row:1}
+    .card-world{background:rgba(84,160,255,.10);border-left-color:var(--c-world);grid-column:1/3;grid-row:2}
+    .card-ai{background:rgba(67,217,173,.10);border-left-color:var(--c-ai);grid-column:3/5;grid-row:2}
+    .card-tech{background:rgba(255,209,102,.10);border-left-color:var(--c-tech);grid-column:5/7;grid-row:2}
+    .card-notion{background:rgba(255,165,2,.09);border-left-color:var(--c-notion);grid-column:1/3;grid-row:3/5}
+    .card-tasks{background:rgba(255,118,117,.10);border-left-color:var(--c-tasks);grid-column:3/5;grid-row:3}
+    .card-email{background:rgba(255,159,67,.10);border-left-color:var(--c-email);grid-column:5/7;grid-row:3}
+    .card-clients{background:rgba(123,237,159,.08);border-left-color:var(--c-clients);grid-column:3/5;grid-row:4}
+    .card-bday{background:rgba(255,107,157,.09);border-left-color:var(--c-bday);grid-column:5/7;grid-row:4}
     .card-header{display:flex;align-items:center;gap:6px;flex-shrink:0;margin-bottom:6px}
     .card-icon{font-size:14px;line-height:1}
     .card-title{font-size:9px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
     .badge{margin-left:auto;border-radius:20px;font-size:9px;font-weight:700;padding:1px 7px;border:1px solid}
-
     .card-weather .card-title,.card-weather .badge{color:var(--c-weather);border-color:var(--c-weather);background:rgba(0,210,255,.12)}
-    .card-urgent  .card-title,.card-urgent  .badge{color:var(--c-urgent); border-color:var(--c-urgent); background:rgba(255,101,132,.12)}
-    .card-cal     .card-title,.card-cal     .badge{color:var(--c-cal);    border-color:var(--c-cal);    background:rgba(108,99,255,.12)}
-    .card-world   .card-title,.card-world   .badge{color:var(--c-world);  border-color:var(--c-world);  background:rgba(84,160,255,.12)}
-    .card-ai      .card-title,.card-ai      .badge{color:var(--c-ai);     border-color:var(--c-ai);     background:rgba(67,217,173,.12)}
-    .card-tech    .card-title,.card-tech    .badge{color:var(--c-tech);   border-color:var(--c-tech);   background:rgba(255,209,102,.12)}
-    .card-stocks  .card-title,.card-stocks  .badge{color:var(--c-stocks); border-color:var(--c-stocks); background:rgba(46,213,115,.12)}
-    .card-bday    .card-title,.card-bday    .badge{color:var(--c-bday);   border-color:var(--c-bday);   background:rgba(255,107,157,.12)}
-    .card-email   .card-title,.card-email   .badge{color:var(--c-email);  border-color:var(--c-email);  background:rgba(255,159,67,.12)}
-    .card-notion  .card-title,.card-notion  .badge{color:var(--c-notion); border-color:var(--c-notion); background:rgba(255,165,2,.12)}
-    .card-tasks   .card-title,.card-tasks   .badge{color:var(--c-tasks);  border-color:var(--c-tasks);  background:rgba(255,118,117,.12)}
+    .card-urgent .card-title,.card-urgent .badge{color:var(--c-urgent);border-color:var(--c-urgent);background:rgba(255,101,132,.12)}
+    .card-cal .card-title,.card-cal .badge{color:var(--c-cal);border-color:var(--c-cal);background:rgba(108,99,255,.12)}
+    .card-world .card-title,.card-world .badge{color:var(--c-world);border-color:var(--c-world);background:rgba(84,160,255,.12)}
+    .card-ai .card-title,.card-ai .badge{color:var(--c-ai);border-color:var(--c-ai);background:rgba(67,217,173,.12)}
+    .card-tech .card-title,.card-tech .badge{color:var(--c-tech);border-color:var(--c-tech);background:rgba(255,209,102,.12)}
+    .card-email .card-title,.card-email .badge{color:var(--c-email);border-color:var(--c-email);background:rgba(255,159,67,.12)}
+    .card-notion .card-title,.card-notion .badge{color:var(--c-notion);border-color:var(--c-notion);background:rgba(255,165,2,.12)}
+    .card-tasks .card-title,.card-tasks .badge{color:var(--c-tasks);border-color:var(--c-tasks);background:rgba(255,118,117,.12)}
     .card-clients .card-title,.card-clients .badge{color:var(--c-clients);border-color:var(--c-clients);background:rgba(123,237,159,.12)}
-
+    .card-bday .card-title,.card-bday .badge{color:var(--c-bday);border-color:var(--c-bday);background:rgba(255,107,157,.12)}
     .card-body{flex:1;overflow-y:auto;min-height:0;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
     .card-body::-webkit-scrollbar{width:3px}
     .card-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-
     .footer{flex-shrink:0;text-align:center;font-size:9px;color:var(--muted);padding-top:2px;border-top:1px solid var(--border)}
     .footer a{color:var(--c-cal);text-decoration:none}
   }
-
-  /* ═════════ MOBILE ═════════ */
   @media (max-width:1023px){
     body{padding:18px 14px 50px}
     .wrapper{display:block}
@@ -99,19 +69,19 @@
     .header-left h1{font-size:22px;font-weight:700}
     .header-center{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:12px}
     .chip{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;background:var(--surface);border:1px solid var(--border);font-size:12px;font-weight:600}
-    .chip-countdown{border-color:var(--c-bday);color:var(--c-bday);background:rgba(255,107,157,.08)}
+    .chip-bd{border-color:var(--c-bday);color:var(--c-bday);background:rgba(255,107,157,.08)}
     .chip .chip-label{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-right:2px}
     .header-right{font-size:11px;color:var(--muted);margin-top:10px}
     .grid{display:flex;flex-direction:column;gap:14px}
     .card{background:var(--surface);border:1px solid var(--border);border-left:4px solid transparent;border-radius:12px;padding:16px}
-    .card-weather{border-left-color:var(--c-weather)} .card-urgent{border-left-color:var(--c-urgent)}
-    .card-cal{border-left-color:var(--c-cal)} .card-world{border-left-color:var(--c-world)}
-    .card-ai{border-left-color:var(--c-ai)} .card-tech{border-left-color:var(--c-tech)}
-    .card-stocks{border-left-color:var(--c-stocks)} .card-bday{border-left-color:var(--c-bday)}
-    .card-email{border-left-color:var(--c-email)} .card-notion{border-left-color:var(--c-notion)}
-    .card-tasks{border-left-color:var(--c-tasks)} .card-clients{border-left-color:var(--c-clients)}
+    .card-weather{border-left-color:var(--c-weather)}.card-urgent{border-left-color:var(--c-urgent)}
+    .card-cal{border-left-color:var(--c-cal)}.card-world{border-left-color:var(--c-world)}
+    .card-ai{border-left-color:var(--c-ai)}.card-tech{border-left-color:var(--c-tech)}
+    .card-email{border-left-color:var(--c-email)}.card-bday{border-left-color:var(--c-bday)}
+    .card-notion{border-left-color:var(--c-notion)}.card-tasks{border-left-color:var(--c-tasks)}
+    .card-clients{border-left-color:var(--c-clients)}
     .card-header{display:flex;align-items:center;gap:8px;margin-bottom:14px}
-    .card-icon{font-size:18px} .card-title{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+    .card-icon{font-size:18px}.card-title{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
     .badge{margin-left:auto;border-radius:20px;font-size:11px;font-weight:700;padding:2px 9px;border:1px solid}
     .card-weather .card-title,.card-weather .badge{color:var(--c-weather);border-color:var(--c-weather)}
     .card-urgent .card-title,.card-urgent .badge{color:var(--c-urgent);border-color:var(--c-urgent)}
@@ -119,268 +89,386 @@
     .card-world .card-title,.card-world .badge{color:var(--c-world);border-color:var(--c-world)}
     .card-ai .card-title,.card-ai .badge{color:var(--c-ai);border-color:var(--c-ai)}
     .card-tech .card-title,.card-tech .badge{color:var(--c-tech);border-color:var(--c-tech)}
-    .card-stocks .card-title,.card-stocks .badge{color:var(--c-stocks);border-color:var(--c-stocks)}
-    .card-bday .card-title,.card-bday .badge{color:var(--c-bday);border-color:var(--c-bday)}
     .card-email .card-title,.card-email .badge{color:var(--c-email);border-color:var(--c-email)}
     .card-notion .card-title,.card-notion .badge{color:var(--c-notion);border-color:var(--c-notion)}
     .card-tasks .card-title,.card-tasks .badge{color:var(--c-tasks);border-color:var(--c-tasks)}
     .card-clients .card-title,.card-clients .badge{color:var(--c-clients);border-color:var(--c-clients)}
+    .card-bday .card-title,.card-bday .badge{color:var(--c-bday);border-color:var(--c-bday)}
     .card-body{display:block}
     .footer{text-align:center;margin-top:30px;font-size:11px;color:var(--muted)}
     .footer a{color:var(--c-cal);text-decoration:none}
   }
-
-  /* Shared item styles */
+  /* shared */
   .weather-main{display:flex;align-items:center;gap:10px;margin-bottom:4px}
-  .w-emoji{font-size:32px;line-height:1}
+  .w-emoji{font-size:30px;line-height:1}
   .w-temp{font-size:26px;font-weight:700;color:var(--c-weather);line-height:1}
-  .w-sub{font-size:11px;color:var(--muted)}
-  .w-details{display:flex;gap:10px;font-size:10px;color:var(--muted);flex-wrap:wrap;margin-top:4px}
+  .w-sub{font-size:10px;color:var(--muted);margin-top:2px}
+  .w-details{display:flex;gap:9px;font-size:10px;color:var(--muted);flex-wrap:wrap;margin-top:5px}
   .w-details span strong{color:var(--text);font-weight:600}
-
   .u-row{display:flex;align-items:flex-start;gap:9px;padding:5px 0;border-bottom:1px solid rgba(255,101,132,.14)}
   .u-row:last-child{border-bottom:none}
   .u-dot{width:7px;height:7px;border-radius:50%;background:var(--c-urgent);flex-shrink:0;margin-top:5px}
   .u-label{font-size:12px;font-weight:600;margin-bottom:1px}
   .u-sub{font-size:10px;color:var(--muted);line-height:1.4}
-
   .ev-row{display:flex;align-items:flex-start;gap:9px;padding:5px 0;border-bottom:1px solid rgba(108,99,255,.13)}
   .ev-row:last-child{border-bottom:none}
-  .ev-time{font-size:10px;font-weight:700;color:var(--c-cal);min-width:40px;padding-top:2px}
+  .ev-time{font-size:10px;font-weight:700;color:var(--c-cal);min-width:42px;flex-shrink:0;padding-top:2px}
   .ev-title{font-size:12px;font-weight:500}
   .ev-sub{font-size:10px;color:var(--muted);margin-top:1px}
-
+  .ev-empty{font-size:11px;color:var(--muted);font-style:italic;padding:6px 0}
   .news-row{padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05)}
   .news-row:last-child{border-bottom:none}
   .news-title{font-size:11px;font-weight:600;line-height:1.35}
   .news-sub{font-size:9px;color:var(--muted);margin-top:2px}
-
-  .stock-row{display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid rgba(46,213,115,.12)}
-  .stock-row:last-child{border-bottom:none}
-  .stock-sym{font-size:11px;font-weight:700;min-width:44px}
-  .stock-price{font-size:11px;font-weight:600;min-width:60px;text-align:right}
-  .stock-chg{font-size:10px;font-weight:600;min-width:50px;text-align:right}
-  .stock-chg.up{color:var(--c-up)} .stock-chg.down{color:var(--c-down)}
-  .stock-spark{flex:1;height:24px}
-
-  .bday-row{display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid rgba(255,107,157,.13)}
-  .bday-row:last-child{border-bottom:none}
-  .bday-emoji{font-size:16px}
-  .bday-name{font-size:11px;font-weight:600;flex:1}
-  .bday-date{font-size:10px;color:var(--c-bday);font-weight:700}
-
-  .proj-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,165,2,.14)}
+  .htag{display:inline-block;font-size:9px;font-weight:700;padding:1px 5px;border-radius:5px;margin-right:4px;background:rgba(255,71,87,.18);color:#ff4757}
+  .proj-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,165,2,.14)}
   .proj-row:last-child{border-bottom:none}
   .proj-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-  .proj-name{font-size:12px;font-weight:600;flex:1}
+  .proj-name{font-size:11px;font-weight:600;flex:1;line-height:1.3}
+  .proj-meta{font-size:9px;color:var(--muted)}
   .proj-phase{font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;border:1px solid;white-space:nowrap}
-  .phase-design    {color:#54a0ff;border-color:#54a0ff;background:rgba(84,160,255,.1)}
-  .phase-finishing {color:#ffa502;border-color:#ffa502;background:rgba(255,165,2,.1)}
-  .phase-concept   {color:#a29bfe;border-color:#a29bfe;background:rgba(162,155,254,.1)}
-  .phase-potent    {color:#8892b0;border-color:#8892b0;background:rgba(136,146,176,.1)}
-  .phase-complete  {color:#2ed573;border-color:#2ed573;background:rgba(46,213,115,.1)}
-
-  .task-row{display:flex;align-items:center;gap:7px;padding:4px 0;border-bottom:1px solid rgba(255,118,117,.14)}
+  .ph-c{color:#2ed573;border-color:#2ed573;background:rgba(46,213,115,.1)}
+  .ph-d{color:#54a0ff;border-color:#54a0ff;background:rgba(84,160,255,.1)}
+  .ph-co{color:#a29bfe;border-color:#a29bfe;background:rgba(162,155,254,.1)}
+  .ph-p{color:#636e72;border-color:#636e72;background:rgba(99,110,114,.1)}
+  .ph-n{color:#8892b0;border-color:#8892b0;background:rgba(136,146,176,.1)}
+  .task-row{display:flex;align-items:flex-start;gap:7px;padding:5px 0;border-bottom:1px solid rgba(255,118,117,.14)}
   .task-row:last-child{border-bottom:none}
   .task-name{font-size:11px;font-weight:500;flex:1;line-height:1.3}
-  .task-proj{font-size:9px;color:var(--muted)}
-  .task-pri{font-size:9px;font-weight:700;padding:1px 6px;border-radius:8px;border:1px solid;white-space:nowrap}
+  .task-meta{font-size:9px;color:var(--muted);margin-top:1px}
+  .task-pri{font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;border:1px solid;white-space:nowrap;flex-shrink:0;margin-top:1px}
   .pri-now{color:#ff4757;border-color:#ff4757;background:rgba(255,71,87,.12)}
-  .pri-ok {color:#ffd166;border-color:#ffd166;background:rgba(255,209,102,.12)}
-  .pri-low{color:#2ed573;border-color:#2ed573;background:rgba(46,213,115,.12)}
-
-  .client-row{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid rgba(123,237,159,.14)}
-  .client-row:last-child{border-bottom:none}
-  .client-num{font-size:10px;font-weight:700;color:var(--c-clients);min-width:16px}
-  .client-text{font-size:11px;line-height:1.35}
-  .client-sub{font-size:9px;color:var(--muted);margin-top:1px}
-
+  .pri-ok{color:#ffd166;border-color:#ffd166;background:rgba(255,209,102,.12)}
+  .task-empty{font-size:10px;color:var(--muted);font-style:italic;padding:6px 0}
   .email-row{padding:5px 0;border-bottom:1px solid rgba(255,159,67,.13)}
   .email-row:last-child{border-bottom:none}
-  .email-from{font-size:10px;color:var(--c-email);font-weight:700}
-  .email-subj{font-size:11px;font-weight:500;margin-top:1px}
+  .email-from{font-size:10px;color:var(--c-email);font-weight:700;display:flex;align-items:center;gap:5px;margin-bottom:1px}
+  .unread-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--c-urgent);flex-shrink:0}
+  .email-subj{font-size:11px;font-weight:500;line-height:1.3}
+  .email-time{font-size:9px;color:var(--muted);margin-top:1px}
+  .bday-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,107,157,.13)}
+  .bday-row:last-child{border-bottom:none}
+  .bday-name{font-size:11px;font-weight:600;flex:1}
+  .bday-today-tag{color:#fff;background:var(--c-bday);border-radius:8px;padding:1px 7px;font-size:9px;font-weight:700}
+  .client-row{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid rgba(123,237,159,.14)}
+  .client-row:last-child{border-bottom:none}
+  .client-num{font-size:10px;font-weight:700;color:var(--c-clients);min-width:16px;flex-shrink:0;padding-top:1px}
+  .client-text{font-size:11px;line-height:1.35}
+  .client-sub{font-size:9px;color:var(--muted);margin-top:1px}
 </style>
 </head>
 <body>
 <div class="wrapper">
-
   <header class="header">
     <div class="header-left">
       <div class="greeting">Good morning, Martin ☀️</div>
-      <h1>Thursday, April 9, 2026</h1>
+      <h1>Štvrtok, 9. apríla 2026</h1>
     </div>
     <div class="header-center">
-      <div class="chip"><span class="chip-icon">📅</span><span class="chip-label">Week</span>15</div>
-      <div class="chip"><span class="chip-icon">📍</span><span class="chip-label">Loc</span>Rajec, SK</div>
-      <div class="chip chip-countdown"><span class="chip-icon">🎂</span><span class="chip-label">B-day</span>320 days</div>
+      <div class="chip"><span>📅</span><span class="chip-label">Týždeň</span>15</div>
+      <div class="chip"><span>📍</span><span class="chip-label">Miesto</span>Rajec, SK</div>
+      <div class="chip chip-bd"><span>🎂</span><span class="chip-label">Narodeniny za</span>320 dní</div>
     </div>
-    <div class="header-right">Auto-generated<br/>06:30 CET</div>
+    <div class="header-right">Open-Meteo · Gmail · GCal · Notion<br/>Vygenerované 06:30 CET</div>
   </header>
 
   <div class="grid">
 
-    <!-- ── WEATHER ── -->
+    <!-- WEATHER — real Open-Meteo API -->
     <div class="card card-weather">
-      <div class="card-header"><span class="card-icon">🌤️</span><span class="card-title">Weather · Rajec</span><span class="badge">Open-Meteo</span></div>
+      <div class="card-header"><span class="card-icon">☀️</span><span class="card-title">Počasie · Rajec, SK</span><span class="badge">Open-Meteo</span></div>
       <div class="card-body">
         <div class="weather-main">
-          <div class="w-emoji">⛅</div>
+          <div class="w-emoji">☀️</div>
           <div>
-            <div class="w-temp">11°C</div>
-            <div class="w-sub">Partly cloudy · feels 9°</div>
+            <div class="w-temp">3.8°C</div>
+            <div class="w-sub">Jasno · pocitová teplota <strong>−1.5°C</strong></div>
           </div>
         </div>
         <div class="w-details">
-          <span>↑ <strong>14°</strong> / ↓ <strong>3°</strong></span>
-          <span>💨 <strong>12 km/h</strong></span>
-          <span>💧 <strong>10%</strong></span>
-          <span>☀️ <strong>06:04</strong></span>
-          <span>🌙 <strong>19:42</strong></span>
+          <span>↑ <strong>6.8°</strong></span>
+          <span>↓ <strong>−1.3°</strong></span>
+          <span>💨 <strong>17.3 km/h</strong></span>
+          <span>💧 <strong>51% vlhk.</strong></span>
+          <span>🌧 <strong>0% dážď</strong></span>
+          <span>🌅 <strong>06:05</strong></span>
+          <span>🌇 <strong>19:27</strong></span>
         </div>
       </div>
     </div>
 
-    <!-- ── URGENT ── -->
+    <!-- URGENT — real Gmail + Google Calendar -->
     <div class="card card-urgent">
-      <div class="card-header"><span class="card-icon">🔥</span><span class="card-title">Needs your attention</span><span class="badge">3 items</span></div>
+      <div class="card-header"><span class="card-icon">🔔</span><span class="card-title">Potrebuje pozornosť</span><span class="badge">4 položky</span></div>
       <div class="card-body">
-        <div class="u-row"><div class="u-dot"></div><div><div class="u-label">Invoice #2026-041 due tomorrow</div><div class="u-sub">Cofbit Barber's · €450</div></div></div>
-        <div class="u-row"><div class="u-dot"></div><div><div class="u-label">Domain oskkp.sk renews in 12 days</div><div class="u-sub">Renew or transfer before Apr 21</div></div></div>
-        <div class="u-row"><div class="u-dot"></div><div><div class="u-label">Reply to FK Rajec sponsor request</div><div class="u-sub">Waiting 3 days · via email</div></div></div>
+        <div class="u-row"><div class="u-dot"></div><div><div class="u-label">🎂 Majo Strba má dnes narodeniny!</div><div class="u-sub">Google Calendar · celodenná udalosť</div></div></div>
+        <div class="u-row"><div class="u-dot"></div><div><div class="u-label">📦 HBADA EU balík je na ceste</div><div class="u-sub">DPD: 01425110649234 · objednávka HBDEU1845185</div></div></div>
+        <div class="u-row"><div class="u-dot"></div><div><div class="u-label">⚠️ Microsoft konto — heslo zmenené dnes ráno</div><div class="u-sub">Heslá aplikácií treba aktualizovať · Gmail 10:06</div></div></div>
+        <div class="u-row"><div class="u-dot"></div><div><div class="u-label">🔑 GitHub PAT "claude-cowork" bol regenerovaný</div><div class="u-sub">GitHub security email · Gmail 10:59</div></div></div>
       </div>
     </div>
 
-    <!-- ── SCHEDULE ── -->
+    <!-- CALENDAR — real Google Calendar -->
     <div class="card card-cal">
-      <div class="card-header"><span class="card-icon">📆</span><span class="card-title">Today</span><span class="badge">2</span></div>
+      <div class="card-header"><span class="card-icon">📆</span><span class="card-title">Dnešný kalendár</span><span class="badge">GCal</span></div>
       <div class="card-body">
-        <div class="ev-row"><div class="ev-time">10:00</div><div><div class="ev-title">Client call — Cofbit</div><div class="ev-sub">Google Meet · 30 min</div></div></div>
-        <div class="ev-row"><div class="ev-time">15:30</div><div><div class="ev-title">Site visit Rajec</div><div class="ev-sub">FK Rajec clubhouse</div></div></div>
+        <div class="ev-row">
+          <div class="ev-time">Celý deň</div>
+          <div><div class="ev-title">🎂 Majo Strba — narodeniny</div><div class="ev-sub">Opakujúca sa udalosť</div></div>
+        </div>
+        <div class="ev-empty">Žiadne ďalšie udalosti dnes.</div>
       </div>
     </div>
 
-    <!-- ── WORLD NEWS (narrow) ── -->
+    <!-- WORLD NEWS — real web search Apr 9, 2026 -->
     <div class="card card-world">
-      <div class="card-header"><span class="card-icon">🌍</span><span class="card-title">World</span><span class="badge">Top 4</span></div>
+      <div class="card-header"><span class="card-icon">🌍</span><span class="card-title">Svet</span><span class="badge">9. apr 2026</span></div>
       <div class="card-body">
-        <div class="news-row"><div class="news-title">EU finalizes AI Act enforcement phase</div><div class="news-sub">Reuters · 2h ago</div></div>
-        <div class="news-row"><div class="news-title">Slovakia Q1 GDP up 1.8% YoY</div><div class="news-sub">SME · 4h ago</div></div>
-        <div class="news-row"><div class="news-title">ECB holds rates at 2.25%</div><div class="news-sub">FT · 6h ago</div></div>
-        <div class="news-row"><div class="news-title">Ukraine peace talks resume in Geneva</div><div class="news-sub">BBC · 8h ago</div></div>
+        <div class="news-row">
+          <div class="news-title"><span class="htag">URGENT</span>Izrael zaútočil na Libanon — 254+ mŕtvych, deň národného smútku</div>
+          <div class="news-sub">Al Jazeera · CBS News · 9.4.2026</div>
+        </div>
+        <div class="news-row">
+          <div class="news-title">Irán hrozí zastavením tankerov v Hormuzskom prielive — odpoveď na Libanon</div>
+          <div class="news-sub">Reuters · 9.4.2026</div>
+        </div>
+        <div class="news-row">
+          <div class="news-title">USA: Vojenské ciele proti Iránu splnené — dvojtýždňové prímerie platí</div>
+          <div class="news-sub">Xinhua · 8.4.2026</div>
+        </div>
+        <div class="news-row">
+          <div class="news-title">Vietnam zvolil nového premiéra Le Minh Hung (2026–2031)</div>
+          <div class="news-sub">Xinhua · 7.4.2026</div>
+        </div>
+        <div class="news-row">
+          <div class="news-title">Zemetrasenie 4.9 vo vých. Indonézii — 100+ poškodených domov</div>
+          <div class="news-sub">VolcanoDiscovery · 9.4.2026</div>
+        </div>
       </div>
     </div>
 
-    <!-- ── AI NEWS ── -->
+    <!-- AI NEWS — real web search Apr 2026 -->
     <div class="card card-ai">
-      <div class="card-header"><span class="card-icon">🤖</span><span class="card-title">AI</span><span class="badge">5</span></div>
+      <div class="card-header"><span class="card-icon">🤖</span><span class="card-title">AI novinky</span><span class="badge">apr 2026</span></div>
       <div class="card-body">
-        <div class="news-row"><div class="news-title">Anthropic ships Claude Opus 4.6 with longer context</div><div class="news-sub">The Verge</div></div>
-        <div class="news-row"><div class="news-title">OpenAI rolls out agent memory to all Pro users</div><div class="news-sub">TechCrunch</div></div>
-        <div class="news-row"><div class="news-title">Google Gemini 3 benchmarks top coding charts</div><div class="news-sub">ArsTechnica</div></div>
-        <div class="news-row"><div class="news-title">Open-source Llama 4 quantized runs on 16GB laptops</div><div class="news-sub">HackerNews</div></div>
-        <div class="news-row"><div class="news-title">EU AI Act compliance tooling hits GA</div><div class="news-sub">Wired</div></div>
+        <div class="news-row">
+          <div class="news-title">Meta spustila Muse Spark — prvý veľký AI model po angažovaní Alexandr Wanga</div>
+          <div class="news-sub">CNBC · 8.4.2026</div>
+        </div>
+        <div class="news-row">
+          <div class="news-title">DeepSeek V4 — 1T parametrov, Apache 2.0, vytrénovaný za $5.2M</div>
+          <div class="news-sub">Radical Data Science · apr 2026</div>
+        </div>
+        <div class="news-row">
+          <div class="news-title">Google vydal Gemma 4 — open modely pre pokročilé reasoning + agentické workflowy</div>
+          <div class="news-sub">Google DeepMind · apr 2026</div>
+        </div>
+        <div class="news-row">
+          <div class="news-title">AI prieskum: 100× menej energie pri vyššej presnosti (neural + symbolic)</div>
+          <div class="news-sub">ScienceDaily · 5.4.2026</div>
+        </div>
+        <div class="news-row">
+          <div class="news-title">Microsoft investuje $10 mld. do AI infraštruktúry v Japonsku</div>
+          <div class="news-sub">CNBC · apr 2026</div>
+        </div>
       </div>
     </div>
 
-    <!-- ── TECH NEWS ── -->
+    <!-- TECH/WEB DEV — real web search Apr 2026 -->
     <div class="card card-tech">
-      <div class="card-header"><span class="card-icon">💻</span><span class="card-title">Tech / Web Dev</span><span class="badge">5</span></div>
+      <div class="card-header"><span class="card-icon">💻</span><span class="card-title">Tech / Web Dev</span><span class="badge">apr 2026</span></div>
       <div class="card-body">
-        <div class="news-row"><div class="news-title">Next.js 16 released — server actions GA, faster turbopack</div><div class="news-sub">Vercel blog</div></div>
-        <div class="news-row"><div class="news-title">Tailwind v5 beta: zero-config dark mode improvements</div><div class="news-sub">Tailwind blog</div></div>
-        <div class="news-row"><div class="news-title">Astro 6 brings islands to React 19</div><div class="news-sub">Astro</div></div>
-        <div class="news-row"><div class="news-title">Chrome 135 ships native CSS anchor positioning</div><div class="news-sub">web.dev</div></div>
-        <div class="news-row"><div class="news-title">Bun 1.3 now ships stable Windows support</div><div class="news-sub">Bun.sh</div></div>
+        <div class="news-row">
+          <div class="news-title">70%+ vývojárov používa AI coding denne — agentic coding je nový štandard</div>
+          <div class="news-sub">LogRocket Blog · 2026 Web Dev Trends</div>
+        </div>
+        <div class="news-row">
+          <div class="news-title">Server-first architektúra dominuje — RSC + SSR je default vo Next.js / Nuxt</div>
+          <div class="news-sub">DEV.to · talent500.com · 2026</div>
+        </div>
+        <div class="news-row">
+          <div class="news-title">TypeScript je nový štandard — plain JS sa považuje za legacy v 2026</div>
+          <div class="news-sub">Figma Resource Library · 2026</div>
+        </div>
+        <div class="news-row">
+          <div class="news-title">npm supply-chain útoky vzrástli o 150% (2024→2026) — pozor na deps</div>
+          <div class="news-sub">Blacksmith Agency · Security trends 2026</div>
+        </div>
+        <div class="news-row">
+          <div class="news-title">Headless CMS a composable architektúra — v 2026 už praktický baseline</div>
+          <div class="news-sub">Agility CMS · Anchor Points · 2026</div>
+        </div>
       </div>
     </div>
 
-    <!-- ── NOTION PROJECTS (BIG, spans rows 3-4) ── -->
+    <!-- NOTION PROJECTS — real, verified from Notion API -->
     <div class="card card-notion">
-      <div class="card-header"><span class="card-icon">📂</span><span class="card-title">Active Projects · Notion</span><span class="badge">12 total</span></div>
+      <div class="card-header"><span class="card-icon">📂</span><span class="card-title">Projekty · Notion</span><span class="badge">12 projektov</span></div>
       <div class="card-body">
-        <div class="proj-row"><div class="proj-dot" style="background:#ffa502"></div><div class="proj-name">Cofbit Barber's</div><div class="proj-phase phase-finishing">Finishing</div></div>
-        <div class="proj-row"><div class="proj-dot" style="background:#54a0ff"></div><div class="proj-name">Fotball Team OŠK Kamenná Poruba</div><div class="proj-phase phase-design">Design</div></div>
-        <div class="proj-row"><div class="proj-dot" style="background:#54a0ff"></div><div class="proj-name">Fotball Team FK Rajec</div><div class="proj-phase phase-design">Design</div></div>
-        <div class="proj-row"><div class="proj-dot" style="background:#ffa502"></div><div class="proj-name">Fotball Team TJ Partizán Kunerad</div><div class="proj-phase phase-finishing">Finishing</div></div>
-        <div class="proj-row"><div class="proj-dot" style="background:#54a0ff"></div><div class="proj-name">Fotball Team FK Turie</div><div class="proj-phase phase-design">Design</div></div>
-        <div class="proj-row"><div class="proj-dot" style="background:#a29bfe"></div><div class="proj-name">Fotball Team ŠK Lietava</div><div class="proj-phase phase-concept">Concept</div></div>
-        <div class="proj-row"><div class="proj-dot" style="background:#54a0ff"></div><div class="proj-name">Fotball Team FK Ďurčiná</div><div class="proj-phase phase-design">Design</div></div>
-        <div class="proj-row"><div class="proj-dot" style="background:#ffa502"></div><div class="proj-name">Fotball Team TJ Zbyňov</div><div class="proj-phase phase-finishing">Finishing</div></div>
-        <div class="proj-row"><div class="proj-dot" style="background:#a29bfe"></div><div class="proj-name">Fotball Team ŠK Cem. Lietavska Lúčka</div><div class="proj-phase phase-concept">Concept</div></div>
-        <div class="proj-row"><div class="proj-dot" style="background:#8892b0"></div><div class="proj-name">Car Wash — Info</div><div class="proj-phase phase-potent">Potential</div></div>
-        <div class="proj-row"><div class="proj-dot" style="background:#8892b0"></div><div class="proj-name">Excavator — Info</div><div class="proj-phase phase-potent">Potential</div></div>
-        <div class="proj-row"><div class="proj-dot" style="background:#2ed573"></div><div class="proj-name">ALL (Hosting)</div><div class="proj-phase phase-complete">Running</div></div>
+        <div class="proj-row">
+          <div class="proj-dot" style="background:#2ed573"></div>
+          <div style="flex:1"><div class="proj-name">OŠK Kamenná Poruba</div><div class="proj-meta">oskkp.sk · €350 jednorazovo · €50/mes</div></div>
+          <div class="proj-phase ph-c">Completed</div>
+        </div>
+        <div class="proj-row">
+          <div class="proj-dot" style="background:#a29bfe"></div>
+          <div style="flex:1"><div class="proj-name">FK Rajec</div><div class="proj-meta">github.io/FK-Rajec-Web-Koncept · €700 · €50/mes</div></div>
+          <div class="proj-phase ph-co">Concept</div>
+        </div>
+        <div class="proj-row">
+          <div class="proj-dot" style="background:#54a0ff"></div>
+          <div style="flex:1"><div class="proj-name">Excavator — Info</div><div class="proj-meta">michal-baranek.vercel.app · €250 · €35/mes</div></div>
+          <div class="proj-phase ph-d">Design</div>
+        </div>
+        <div class="proj-row">
+          <div class="proj-dot" style="background:#636e72"></div>
+          <div style="flex:1"><div class="proj-name">Cofbit Barber's</div><div class="proj-meta">€400 jednorazovo · €35/mes</div></div>
+          <div class="proj-phase ph-p">Potential</div>
+        </div>
+        <div class="proj-row">
+          <div class="proj-dot" style="background:#636e72"></div>
+          <div style="flex:1"><div class="proj-name">TJ Partizán Kunerad</div><div class="proj-meta">€700 · €50/mes</div></div>
+          <div class="proj-phase ph-p">Potential</div>
+        </div>
+        <div class="proj-row">
+          <div class="proj-dot" style="background:#636e72"></div>
+          <div style="flex:1"><div class="proj-name">FK Turie</div><div class="proj-meta">€700 · €50/mes</div></div>
+          <div class="proj-phase ph-p">Potential</div>
+        </div>
+        <div class="proj-row">
+          <div class="proj-dot" style="background:#636e72"></div>
+          <div style="flex:1"><div class="proj-name">ŠK Lietava</div><div class="proj-meta">€700 · €50/mes</div></div>
+          <div class="proj-phase ph-p">Potential</div>
+        </div>
+        <div class="proj-row">
+          <div class="proj-dot" style="background:#636e72"></div>
+          <div style="flex:1"><div class="proj-name">FK Ďurčiná</div><div class="proj-meta">€700 · €50/mes</div></div>
+          <div class="proj-phase ph-p">Potential</div>
+        </div>
+        <div class="proj-row">
+          <div class="proj-dot" style="background:#636e72"></div>
+          <div style="flex:1"><div class="proj-name">TJ Zbyňov</div><div class="proj-meta">€700 · €50/mes</div></div>
+          <div class="proj-phase ph-p">Potential</div>
+        </div>
+        <div class="proj-row">
+          <div class="proj-dot" style="background:#636e72"></div>
+          <div style="flex:1"><div class="proj-name">ŠK Cementáreň Lúčka</div><div class="proj-meta">€700 · €50/mes</div></div>
+          <div class="proj-phase ph-p">Potential</div>
+        </div>
+        <div class="proj-row">
+          <div class="proj-dot" style="background:#636e72"></div>
+          <div style="flex:1"><div class="proj-name">Car Wash — Info</div><div class="proj-meta">€200 · €35/mes</div></div>
+          <div class="proj-phase ph-p">Potential</div>
+        </div>
+        <div class="proj-row">
+          <div class="proj-dot" style="background:#8892b0"></div>
+          <div style="flex:1"><div class="proj-name">ALL (Hosting)</div><div class="proj-meta">mywebdev-delta.vercel.app</div></div>
+          <div class="proj-phase ph-n">Running</div>
+        </div>
       </div>
     </div>
 
-    <!-- ── NOTION TASKS ── -->
+    <!-- NOTION TASKS — real, only non-Done tasks verified from Notion -->
     <div class="card card-tasks">
-      <div class="card-header"><span class="card-icon">✅</span><span class="card-title">Open Tasks · Notion</span><span class="badge">Top 8</span></div>
+      <div class="card-header"><span class="card-icon">✅</span><span class="card-title">Otvorené úlohy · Notion</span><span class="badge">2 aktívne</span></div>
       <div class="card-body">
-        <div class="task-row"><div class="task-name">Fix API with Sportnet <span class="task-proj">· OŠK KP</span></div><div class="task-pri pri-now">NOW</div></div>
-        <div class="task-row"><div class="task-name">Put Backend to Vercel <span class="task-proj">· OŠK KP</span></div><div class="task-pri pri-now">NOW</div></div>
-        <div class="task-row"><div class="task-name">Create Pricing web <span class="task-proj">· Cofbit</span></div><div class="task-pri pri-now">NOW</div></div>
-        <div class="task-row"><div class="task-name">Add Sponsors to site <span class="task-proj">· FK Rajec</span></div><div class="task-pri pri-ok">OK</div></div>
-        <div class="task-row"><div class="task-name">Add Blog <span class="task-proj">· FK Turie</span></div><div class="task-pri pri-ok">OK</div></div>
-        <div class="task-row"><div class="task-name">Migrate Accs <span class="task-proj">· ALL Hosting</span></div><div class="task-pri pri-ok">OK</div></div>
-        <div class="task-row"><div class="task-name">opravit treningov <span class="task-proj">· OŠK KP</span></div><div class="task-pri pri-ok">OK</div></div>
-        <div class="task-row"><div class="task-name">Save Passwords <span class="task-proj">· Personal</span></div><div class="task-pri pri-low">LATER</div></div>
-        <div class="task-row"><div class="task-name">Create demo web <span class="task-proj">· Sales</span></div><div class="task-pri pri-low">LATER</div></div>
+        <div class="task-row">
+          <div style="flex:1">
+            <div class="task-name">Create Pricing web</div>
+            <div class="task-meta">Status: Finishing · bez projektu</div>
+          </div>
+          <div class="task-pri pri-now">NOW!</div>
+        </div>
+        <div class="task-row">
+          <div style="flex:1">
+            <div class="task-name">Save Passwords</div>
+            <div class="task-meta">Status: Finishing · bez projektu</div>
+          </div>
+          <div class="task-pri pri-ok">OK</div>
+        </div>
+        <div class="task-empty" style="margin-top:8px;font-size:10px">
+          Všetky ostatné overené úlohy sú <strong>Done</strong> ✓<br/>
+          <span style="color:rgba(136,146,176,.6)">(Add Sponsors, Put Backend, Fix API, Add Blog, opravit treningov, Fix login, UI matches, doplnit tim, Add socials, Create demo web, 24/7 live feed, ask claude)</span>
+        </div>
       </div>
     </div>
 
-    <!-- ── STOCKS ── -->
-    <div class="card card-stocks">
-      <div class="card-header"><span class="card-icon">📈</span><span class="card-title">Markets</span><span class="badge">Yahoo</span></div>
-      <div class="card-body">
-        <div class="stock-row"><div class="stock-sym">AAPL</div><svg class="stock-spark" viewBox="0 0 170 24" preserveAspectRatio="none"><polyline fill="none" stroke="#2ed573" stroke-width="1.5" points="0,18 17,15 34,16 51,12 68,13 85,9 102,7 119,8 136,5 153,4 170,3"/></svg><div class="stock-price">$224.50</div><div class="stock-chg up">+1.2%</div></div>
-        <div class="stock-row"><div class="stock-sym">MSFT</div><svg class="stock-spark" viewBox="0 0 170 24" preserveAspectRatio="none"><polyline fill="none" stroke="#2ed573" stroke-width="1.5" points="0,14 17,13 34,15 51,11 68,10 85,12 102,8 119,9 136,6 153,7 170,5"/></svg><div class="stock-price">$438.20</div><div class="stock-chg up">+0.8%</div></div>
-        <div class="stock-row"><div class="stock-sym">NVDA</div><svg class="stock-spark" viewBox="0 0 170 24" preserveAspectRatio="none"><polyline fill="none" stroke="#ff4757" stroke-width="1.5" points="0,5 17,7 34,6 51,9 68,11 85,10 102,13 119,14 136,12 153,16 170,18"/></svg><div class="stock-price">$142.80</div><div class="stock-chg down">-2.1%</div></div>
-        <div class="stock-row"><div class="stock-sym">TSLA</div><svg class="stock-spark" viewBox="0 0 170 24" preserveAspectRatio="none"><polyline fill="none" stroke="#2ed573" stroke-width="1.5" points="0,20 17,18 34,19 51,14 68,16 85,11 102,12 119,9 136,10 153,7 170,6"/></svg><div class="stock-price">$258.40</div><div class="stock-chg up">+3.4%</div></div>
-        <div class="stock-row"><div class="stock-sym">BTC</div><svg class="stock-spark" viewBox="0 0 170 24" preserveAspectRatio="none"><polyline fill="none" stroke="#2ed573" stroke-width="1.5" points="0,15 17,12 34,14 51,10 68,8 85,11 102,7 119,5 136,8 153,4 170,3"/></svg><div class="stock-price">$92,140</div><div class="stock-chg up">+2.7%</div></div>
-      </div>
-    </div>
-
-    <!-- ── GET MORE CLIENTS ── -->
-    <div class="card card-clients">
-      <div class="card-header"><span class="card-icon">💡</span><span class="card-title">Get More Clients — Today</span><span class="badge">8 ideas</span></div>
-      <div class="card-body">
-        <div class="client-row"><div class="client-num">1.</div><div><div class="client-text">Cold email 5 Žilina football clubs missing websites</div><div class="client-sub">Template: the Rajec case study</div></div></div>
-        <div class="client-row"><div class="client-num">2.</div><div><div class="client-text">Post Cofbit before/after on LinkedIn + FB</div><div class="client-sub">Tag the client · ask for a review</div></div></div>
-        <div class="client-row"><div class="client-num">3.</div><div><div class="client-text">Publish "Football club website template" landing page</div><div class="client-sub">Task already in Notion: Create demo web</div></div></div>
-        <div class="client-row"><div class="client-num">4.</div><div><div class="client-text">Ask 3 finished clients for a written testimonial</div><div class="client-sub">Put on pricing page</div></div></div>
-        <div class="client-row"><div class="client-num">5.</div><div><div class="client-text">List services on Bazoš + Profesia.sk</div><div class="client-sub">Local SEO boost, free</div></div></div>
-        <div class="client-row"><div class="client-num">6.</div><div><div class="client-text">DM 10 local barbers / salons with site audit</div><div class="client-sub">Cofbit is your proof</div></div></div>
-        <div class="client-row"><div class="client-num">7.</div><div><div class="client-text">Launch referral: €50 off for every new client referred</div><div class="client-sub">Email existing clients today</div></div></div>
-        <div class="client-row"><div class="client-num">8.</div><div><div class="client-text">Write a blog post: "Why your club needs a website in 2026"</div><div class="client-sub">SEO → organic leads</div></div></div>
-      </div>
-    </div>
-
-    <!-- ── BIRTHDAYS ── -->
-    <div class="card card-bday">
-      <div class="card-header"><span class="card-icon">🎂</span><span class="card-title">Birthdays</span><span class="badge">Soon</span></div>
-      <div class="card-body">
-        <div class="bday-row"><div class="bday-emoji">🎉</div><div class="bday-name">Mama</div><div class="bday-date">Apr 18</div></div>
-        <div class="bday-row"><div class="bday-emoji">🎁</div><div class="bday-name">Tomáš</div><div class="bday-date">May 3</div></div>
-        <div class="bday-row"><div class="bday-emoji">🎈</div><div class="bday-name">Lucia</div><div class="bday-date">May 27</div></div>
-        <div class="bday-row"><div class="bday-emoji">🌟</div><div class="bday-name">You!</div><div class="bday-date">Feb 23</div></div>
-      </div>
-    </div>
-
-    <!-- ── EMAIL ── -->
+    <!-- EMAIL — real Gmail inbox -->
     <div class="card card-email">
-      <div class="card-header"><span class="card-icon">📬</span><span class="card-title">Inbox</span><span class="badge">4 new</span></div>
+      <div class="card-header"><span class="card-icon">📬</span><span class="card-title">Gmail inbox</span><span class="badge">5 neprečítaných</span></div>
       <div class="card-body">
-        <div class="email-row"><div class="email-from">FK Rajec</div><div class="email-subj">Sponsor logos for site</div></div>
-        <div class="email-row"><div class="email-from">Cofbit</div><div class="email-subj">Final payment — confirm IBAN</div></div>
-        <div class="email-row"><div class="email-from">Vercel</div><div class="email-subj">Deployment succeeded</div></div>
-        <div class="email-row"><div class="email-from">Notion</div><div class="email-subj">Weekly digest</div></div>
+        <div class="email-row">
+          <div class="email-from"><span class="unread-dot"></span>Tipli.sk</div>
+          <div class="email-subj">Podeľte sa s nami o skúsenosť s prvou odmenou ⭐</div>
+          <div class="email-time">dnes 14:23</div>
+        </div>
+        <div class="email-row">
+          <div class="email-from"><span class="unread-dot"></span>GitHub</div>
+          <div class="email-subj">[GitHub] PAT "claude-cowork" regenerovaný pre tvoj účet</div>
+          <div class="email-time">dnes 10:59</div>
+        </div>
+        <div class="email-row">
+          <div class="email-from">HBADA EU</div>
+          <div class="email-subj">A shipment from order HBDEU1845185 is on the way</div>
+          <div class="email-time">dnes 10:57</div>
+        </div>
+        <div class="email-row">
+          <div class="email-from"><span class="unread-dot"></span>GitHub</div>
+          <div class="email-subj">[GitHub] Fine-grained PAT (Claude) pridaný k účtu</div>
+          <div class="email-time">dnes 10:26</div>
+        </div>
+        <div class="email-row">
+          <div class="email-from"><span class="unread-dot"></span>Microsoft</div>
+          <div class="email-subj">Heslá aplikácií konta Microsoft treba aktualizovať</div>
+          <div class="email-time">dnes 10:06</div>
+        </div>
+        <div class="email-row">
+          <div class="email-from"><span class="unread-dot"></span>Microsoft</div>
+          <div class="email-subj">Zmena hesla konta Microsoft — 9.4.2026 12:06 CET</div>
+          <div class="email-time">dnes 10:06</div>
+        </div>
+        <div class="email-row">
+          <div class="email-from">HBADA EU</div>
+          <div class="email-subj">HBADA EU — You have earned 509 points!</div>
+          <div class="email-time">dnes 09:54</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUGGESTIONS — AI generated, based on real Notion data -->
+    <div class="card card-clients">
+      <div class="card-header"><span class="card-icon">💡</span><span class="card-title">Tipy na dnes</span><span class="badge">AI návrhy</span></div>
+      <div class="card-body">
+        <div class="client-row"><div class="client-num">1.</div><div><div class="client-text">Dokonči "Create Pricing web" — tvoja Notion priorita #1 (NOW!)</div><div class="client-sub">Status: Finishing · žiadny deadline nastavený</div></div></div>
+        <div class="client-row"><div class="client-num">2.</div><div><div class="client-text">Pošli FK Rajec concept link klientovi na schválenie</div><div class="client-sub">darkmaster9452.github.io/FK-Rajec-Web-Koncept · Phase: Concept</div></div></div>
+        <div class="client-row"><div class="client-num">3.</div><div><div class="client-text">Vyber 2–3 projekty z 9 "Potential" a naplánuj prvý hovor</div><div class="client-sub">FK Turie, Cofbit, Car Wash — pridaj do Calendar</div></div></div>
+        <div class="client-row"><div class="client-num">4.</div><div><div class="client-text">Pridaj OŠK KP ako case study na Excavator referenčný web</div><div class="client-sub">oskkp.sk je Completed — ideálny showcase pre ďalších klientov</div></div></div>
+        <div class="client-row"><div class="client-num">5.</div><div><div class="client-text">Napíš príspevok na Facebook o futbalovom webe — tagni FK Rajec</div><div class="client-sub">Organický dosah = bezplatné leady z regiónu</div></div></div>
+        <div class="client-row"><div class="client-num">6.</div><div><div class="client-text">Ukloč Microsoft account security (zmenené heslo dnes ráno)</div><div class="client-sub">Aktualizuj heslá aplikácií podľa emailu z Microsoftu</div></div></div>
+      </div>
+    </div>
+
+    <!-- BIRTHDAYS — real Google Calendar -->
+    <div class="card card-bday">
+      <div class="card-header"><span class="card-icon">🎂</span><span class="card-title">Narodeniny</span><span class="badge">GCal</span></div>
+      <div class="card-body">
+        <div class="bday-row">
+          <div style="font-size:18px">🎉</div>
+          <div class="bday-name">Majo Strba</div>
+          <div><span class="bday-today-tag">DNES</span></div>
+        </div>
+        <div style="margin-top:10px;font-size:9px;color:var(--muted);font-style:italic;line-height:1.5">
+          Ďalšie narodeniny sa zobrazujú len ak sú v Google Calendar.<br/>Ak chceš viac, pridaj ich tam manuálne.
+        </div>
       </div>
     </div>
 
   </div>
 
-  <footer class="footer">Morning Briefing · auto-generated daily · <a href="https://github.com/DarkMaster9452/morning-briefing">GitHub</a></footer>
+  <footer class="footer">
+    Morning Briefing · <strong>Open-Meteo</strong> · <strong>Gmail</strong> · <strong>Google Calendar</strong> · <strong>Notion</strong> · <strong>Web Search</strong> ·
+    <a href="https://github.com/DarkMaster9452/morning-briefing">GitHub</a>
+  </footer>
 </div>
 </body>
 </html>
