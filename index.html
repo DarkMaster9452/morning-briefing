@@ -206,7 +206,8 @@
   .card{border-radius:11px;padding:9px 12px;display:flex;flex-direction:column;overflow:hidden;
     border-left:3px solid transparent;border-top:1px solid rgba(255,255,255,.055);
     border-right:1px solid rgba(255,255,255,.055);border-bottom:1px solid rgba(255,255,255,.055);
-    transition:filter .15s,box-shadow .15s,outline .1s}
+    transition:filter .15s,box-shadow .15s,outline .1s;
+    position:relative;}
   .card:hover{filter:brightness(1.08)}
   /* colours only — no grid placement (handled by JS) */
   .card-weather{background:rgba(0,210,255,.10);border-left-color:var(--c-weather)}
@@ -255,6 +256,34 @@
     transition:border-color .1s,color .1s;
   }
   .resize-btn:hover{border-color:var(--c-cal);color:var(--c-cal)}
+
+  /* ── EDGE / CORNER RESIZE HANDLES ── */
+  .rh{display:none;position:absolute;z-index:20;transition:background .15s,border-color .15s}
+  body.edit-mode .rh{display:block}
+
+  /* right edge — col resize */
+  .rh-r{
+    right:0;top:20%;bottom:20%;width:10px;cursor:col-resize;
+    border-right:3px solid var(--border);border-radius:0 6px 6px 0;
+    background:transparent;
+  }
+  .rh-r:hover,.rh-r.rh-on{border-right-color:var(--c-cal);background:rgba(108,99,255,.12)}
+
+  /* bottom edge — row resize */
+  .rh-b{
+    bottom:0;left:20%;right:20%;height:10px;cursor:row-resize;
+    border-bottom:3px solid var(--border);border-radius:0 0 6px 6px;
+    background:transparent;
+  }
+  .rh-b:hover,.rh-b.rh-on{border-bottom-color:var(--c-cal);background:rgba(108,99,255,.12)}
+
+  /* corner — both */
+  .rh-c{
+    right:0;bottom:0;width:16px;height:16px;cursor:nwse-resize;
+    border-right:3px solid var(--border);border-bottom:3px solid var(--border);
+    border-radius:0 0 8px 0;background:transparent;
+  }
+  .rh-c:hover,.rh-c.rh-on{border-right-color:var(--c-cal);border-bottom-color:var(--c-cal);background:rgba(108,99,255,.15)}
 
   /* edit-mode toggle btn */
   .edit-layout-btn{
@@ -612,6 +641,7 @@
               <span>🌧 <strong>0%</strong></span><span>🌅 <strong>06:05</strong></span><span>🌇 <strong>19:27</strong></span>
             </div>
           </div>
+          <div class="rh rh-r"></div><div class="rh rh-b"></div><div class="rh rh-c"></div>
         </div>
 
         <!-- URGENT -->
@@ -623,6 +653,7 @@
             <div class="u-row"><div class="u-dot"></div><div><div class="u-label">⚠️ Microsoft konto — heslo zmenené dnes ráno</div><div class="u-sub">Heslá aplikácií treba aktualizovať · Gmail 10:06</div></div></div>
             <div class="u-row"><div class="u-dot"></div><div><div class="u-label">🔑 GitHub PAT "claude-cowork" bol regenerovaný</div><div class="u-sub">GitHub security email · Gmail 10:59</div></div></div>
           </div>
+          <div class="rh rh-r"></div><div class="rh rh-b"></div><div class="rh rh-c"></div>
         </div>
 
         <!-- CALENDAR -->
@@ -632,6 +663,7 @@
             <div class="ev-row"><div class="ev-time">Celý deň</div><div><div class="ev-title">🎂 Majo Strba — narodeniny</div><div class="ev-sub">Opakujúca sa udalosť</div></div></div>
             <div class="ev-empty">Žiadne ďalšie udalosti dnes.</div>
           </div>
+          <div class="rh rh-r"></div><div class="rh rh-b"></div><div class="rh rh-c"></div>
         </div>
 
         <!-- WORLD NEWS -->
@@ -644,6 +676,7 @@
             <div class="news-row"><div class="news-title">Vietnam zvolil nového premiéra Le Minh Hung (2026–2031)</div><div class="news-sub">Xinhua · 7.4.2026</div></div>
             <div class="news-row"><div class="news-title">Zemetrasenie 4.9 vo vých. Indonézii — 100+ poškodených domov</div><div class="news-sub">VolcanoDiscovery · 9.4.2026</div></div>
           </div>
+          <div class="rh rh-r"></div><div class="rh rh-b"></div><div class="rh rh-c"></div>
         </div>
 
         <!-- AI NEWS -->
@@ -656,6 +689,7 @@
             <div class="news-row"><div class="news-title">AI prieskum: 100× menej energie pri vyššej presnosti</div><div class="news-sub">ScienceDaily · 5.4.2026</div></div>
             <div class="news-row"><div class="news-title">Microsoft investuje $10 mld. do AI infraštruktúry v Japonsku</div><div class="news-sub">CNBC · apr 2026</div></div>
           </div>
+          <div class="rh rh-r"></div><div class="rh rh-b"></div><div class="rh rh-c"></div>
         </div>
 
         <!-- TECH -->
@@ -668,6 +702,7 @@
             <div class="news-row"><div class="news-title">npm supply-chain útoky vzrástli o 150% (2024→2026)</div><div class="news-sub">Blacksmith Agency · Security trends</div></div>
             <div class="news-row"><div class="news-title">Headless CMS a composable architektúra — v 2026 praktický baseline</div><div class="news-sub">Agility CMS · Anchor Points</div></div>
           </div>
+          <div class="rh rh-r"></div><div class="rh rh-b"></div><div class="rh rh-c"></div>
         </div>
 
         <!-- NOTION PROJECTS -->
@@ -687,6 +722,7 @@
             <div class="proj-row"><div class="proj-dot" style="background:#636e72"></div><div style="flex:1"><div class="proj-name">Car Wash — Info</div><div class="proj-meta">€200 · €35/mes</div></div><div class="proj-phase ph-p">Potential</div></div>
             <div class="proj-row"><div class="proj-dot" style="background:#8892b0"></div><div style="flex:1"><div class="proj-name">ALL (Hosting)</div><div class="proj-meta">mywebdev-delta.vercel.app</div></div><div class="proj-phase ph-n">Running</div></div>
           </div>
+          <div class="rh rh-r"></div><div class="rh rh-b"></div><div class="rh rh-c"></div>
         </div>
 
         <!-- NOTION TASKS -->
@@ -697,6 +733,7 @@
             <div class="task-row"><div style="flex:1"><div class="task-name">Save Passwords</div><div class="task-meta">Status: Finishing · bez projektu</div></div><div class="task-pri pri-ok">OK</div></div>
             <div class="task-empty" style="margin-top:8px;font-size:10px">Všetky ostatné overené úlohy sú <strong>Done</strong> ✓</div>
           </div>
+          <div class="rh rh-r"></div><div class="rh rh-b"></div><div class="rh rh-c"></div>
         </div>
 
         <!-- EMAIL -->
@@ -711,6 +748,7 @@
             <div class="email-row"><div class="email-from"><span class="unread-dot"></span>Microsoft</div><div class="email-subj">Zmena hesla konta Microsoft — 9.4.2026 12:06 CET</div><div class="email-time">dnes 10:06</div></div>
             <div class="email-row"><div class="email-from">HBADA EU</div><div class="email-subj">HBADA EU — You have earned 509 points!</div><div class="email-time">dnes 09:54</div></div>
           </div>
+          <div class="rh rh-r"></div><div class="rh rh-b"></div><div class="rh rh-c"></div>
         </div>
 
         <!-- SUGGESTIONS -->
@@ -723,6 +761,7 @@
             <div class="client-row"><div class="client-num">4.</div><div><div class="client-text">Pridaj OŠK KP ako case study na Excavator web</div><div class="client-sub">oskkp.sk je Completed — ideálny showcase</div></div></div>
             <div class="client-row"><div class="client-num">5.</div><div><div class="client-text">Ukloč Microsoft account security (zmenené heslo dnes ráno)</div><div class="client-sub">Aktualizuj heslá aplikácií</div></div></div>
           </div>
+          <div class="rh rh-r"></div><div class="rh rh-b"></div><div class="rh rh-c"></div>
         </div>
 
         <!-- BIRTHDAYS -->
@@ -732,6 +771,7 @@
             <div class="bday-row"><div style="font-size:18px">🎉</div><div class="bday-name">Majo Strba</div><span class="bday-today-tag">DNES</span></div>
             <div style="margin-top:10px;font-size:9px;color:var(--muted);font-style:italic;line-height:1.5">Ďalšie narodeniny sa zobrazujú len ak sú v Google Calendar.</div>
           </div>
+          <div class="rh rh-r"></div><div class="rh rh-b"></div><div class="rh rh-c"></div>
         </div>
 
         <!-- VERCEL UPTIME -->
@@ -979,10 +1019,11 @@ loadCurrencies();
 
 /* ══════════════════════════════════════════
    DRAG-AND-DROP LAYOUT CUSTOMIZATION
-   Uses SortableJS — order + sizes saved to localStorage
+   - SortableJS for card reordering (drag handle)
+   - Edge/corner drag handles for col + row resize
+   - All persisted to localStorage
 ══════════════════════════════════════════ */
 
-// Default col-span for each card (rows auto-flow)
 const CARD_SIZES = {
   'card-weather': 2,
   'card-urgent':  3,
@@ -996,17 +1037,36 @@ const CARD_SIZES = {
   'card-clients': 2,
   'card-bday':    2,
   'card-vercel':  2,
+  'card-weather': { cols:2, rows:1 },
+  'card-urgent':  { cols:3, rows:1 },
+  'card-cal':     { cols:1, rows:1 },
+  'card-world':   { cols:2, rows:1 },
+  'card-ai':      { cols:2, rows:1 },
+  'card-tech':    { cols:2, rows:1 },
+  'card-notion':  { cols:2, rows:2 },
+  'card-tasks':   { cols:2, rows:1 },
+  'card-email':   { cols:2, rows:1 },
+  'card-clients': { cols:2, rows:1 },
+  'card-bday':    { cols:2, rows:1 },
 };
 
-const LAYOUT_KEY = 'mb_layout_v1';
+const LAYOUT_KEY = 'mb_layout_v2';
+
+function getSavedLayout() {
+  try { return JSON.parse(localStorage.getItem(LAYOUT_KEY)) || {}; }
+  catch(e) { return {}; }
+}
 
 function applyCardSizes() {
-  const saved = getSavedLayout();
+  const { sizes } = getSavedLayout();
   document.querySelectorAll('.grid .card').forEach(card => {
     const key = card.dataset.card;
     if (!key) return;
-    const cols = (saved.sizes && saved.sizes[key]) || CARD_SIZES[key] || 2;
-    card.style.gridColumn = 'span ' + cols;
+    const def = CARD_SIZES[key] || { cols:2, rows:1 };
+    const s = (sizes && sizes[key]) || def;
+    card.style.gridColumn = 'span ' + (s.cols || def.cols);
+    if ((s.rows || def.rows) > 1) card.style.gridRow = 'span ' + (s.rows || def.rows);
+    else card.style.gridRow = '';
   });
 }
 
@@ -1017,16 +1077,15 @@ function saveLayout() {
     const key = card.dataset.card;
     if (!key) return;
     order.push(key);
-    // Read current span from style or default
-    const match = (card.style.gridColumn || '').match(/span\s+(\d+)/);
-    sizes[key] = match ? parseInt(match[1]) : (CARD_SIZES[key] || 2);
+    const colM = (card.style.gridColumn || '').match(/span\s+(\d+)/);
+    const rowM = (card.style.gridRow    || '').match(/span\s+(\d+)/);
+    const def  = CARD_SIZES[key] || { cols:2, rows:1 };
+    sizes[key] = {
+      cols: colM ? parseInt(colM[1]) : def.cols,
+      rows: rowM ? parseInt(rowM[1]) : def.rows,
+    };
   });
   localStorage.setItem(LAYOUT_KEY, JSON.stringify({ order, sizes }));
-}
-
-function getSavedLayout() {
-  try { return JSON.parse(localStorage.getItem(LAYOUT_KEY)) || {}; }
-  catch(e) { return {}; }
 }
 
 function loadLayout() {
@@ -1036,7 +1095,7 @@ function loadLayout() {
   if (!grid) return;
   order.forEach(key => {
     const card = grid.querySelector('[data-card="' + key + '"]');
-    if (card) grid.appendChild(card); // re-append in saved order
+    if (card) grid.appendChild(card);
   });
 }
 
@@ -1044,24 +1103,88 @@ function toggleEditMode() {
   const isEdit = document.body.classList.toggle('edit-mode');
   const btn = document.getElementById('edit-layout-btn');
   if (btn) btn.textContent = isEdit ? '✅ Hotovo' : '✏️ Edit Layout';
-  if (!isEdit) saveLayout(); // auto-save on exit
+  if (!isEdit) saveLayout();
 }
 
+// ── +/− button resize (still works) ──
 function resizeCard(btn, dir) {
   const card = btn.closest('.card');
   if (!card) return;
-  const match = (card.style.gridColumn || '').match(/span\s+(\d+)/);
-  let cols = match ? parseInt(match[1]) : (CARD_SIZES[card.dataset.card] || 2);
-  if (dir === '+') cols = Math.min(cols + 1, 6);
-  if (dir === '-') cols = Math.max(cols - 1, 1);
+  const m = (card.style.gridColumn || '').match(/span\s+(\d+)/);
+  let cols = m ? parseInt(m[1]) : (CARD_SIZES[card.dataset.card]?.cols || 2);
+  cols = dir === '+' ? Math.min(cols+1, 6) : Math.max(cols-1, 1);
   card.style.gridColumn = 'span ' + cols;
   saveLayout();
 }
 
-// Init layout when app becomes visible
+// ── Edge / corner drag resize ──
+function getGridMetrics() {
+  const grid = document.querySelector('.grid');
+  const gap  = parseFloat(getComputedStyle(grid).columnGap) || 7;
+  const colW = (grid.offsetWidth  - gap * 5) / 6;   // 6 cols
+  // estimate row height from the grid's auto-rows base (90px) + gap
+  const rowH = 90 + gap;
+  return { colW, rowH, gap };
+}
+
+function initResizeHandles() {
+  document.querySelectorAll('.grid .card').forEach(card => {
+    card.querySelector('.rh-r')?.addEventListener('mousedown', e => startEdgeResize(e, card, 'col'));
+    card.querySelector('.rh-b')?.addEventListener('mousedown', e => startEdgeResize(e, card, 'row'));
+    card.querySelector('.rh-c')?.addEventListener('mousedown', e => startEdgeResize(e, card, 'both'));
+  });
+}
+
+function startEdgeResize(e, card, mode) {
+  e.preventDefault();
+  e.stopPropagation();
+
+  const { colW, rowH, gap } = getGridMetrics();
+  const colM = (card.style.gridColumn || '').match(/span\s+(\d+)/);
+  const rowM = (card.style.gridRow    || '').match(/span\s+(\d+)/);
+  const def  = CARD_SIZES[card.dataset.card] || { cols:2, rows:1 };
+  const startCols = colM ? parseInt(colM[1]) : def.cols;
+  const startRows = rowM ? parseInt(rowM[1]) : def.rows;
+  const startX = e.clientX;
+  const startY = e.clientY;
+
+  const handle = e.currentTarget;
+  handle.classList.add('rh-on');
+  document.body.style.userSelect = 'none';
+  document.body.style.cursor =
+    mode === 'col' ? 'col-resize' : mode === 'row' ? 'row-resize' : 'nwse-resize';
+
+  function onMove(ev) {
+    if (mode === 'col' || mode === 'both') {
+      const dx   = ev.clientX - startX;
+      const cols = Math.max(1, Math.min(6, startCols + Math.round(dx / (colW + gap))));
+      card.style.gridColumn = 'span ' + cols;
+    }
+    if (mode === 'row' || mode === 'both') {
+      const dy   = ev.clientY - startY;
+      const rows = Math.max(1, Math.min(4, startRows + Math.round(dy / rowH)));
+      card.style.gridRow = rows > 1 ? 'span ' + rows : '';
+    }
+  }
+
+  function onUp() {
+    handle.classList.remove('rh-on');
+    document.body.style.userSelect = '';
+    document.body.style.cursor = '';
+    saveLayout();
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+  }
+
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+}
+
+// ── SortableJS init ──
 function initLayout() {
   loadLayout();
   applyCardSizes();
+  initResizeHandles();
   const grid = document.querySelector('.grid');
   if (!grid || typeof Sortable === 'undefined') return;
   Sortable.create(grid, {
@@ -1084,18 +1207,20 @@ function initLayout() {
       if (evt.item._savedSpan) evt.item.style.gridColumn = evt.item._savedSpan;
       saveLayout();
     },
+    filter: '.rh',                // don't drag when clicking resize handles
+    preventOnFilter: true,
+    onEnd() { saveLayout(); },
   });
 }
 
-// Patch showApp to init layout after login
+// Patch showApp to init after login
 const _origShowApp = showApp;
 window.showApp = function(user) {
   _origShowApp(user);
-  // Small delay to let DOM render
   setTimeout(initLayout, 50);
 };
 
-// If already logged in from session, init immediately
+// Already logged in from session
 if (sessionStorage.getItem('mb_user')) {
   document.addEventListener('DOMContentLoaded', () => setTimeout(initLayout, 50));
 }
