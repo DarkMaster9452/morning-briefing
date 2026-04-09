@@ -2937,7 +2937,10 @@
        SPOTIFY — PKCE OAuth
        Client ID načítaný z /api/config (Vercel env var)
     ══════════════════════════════════════════ */
-    const SPOTIFY_REDIRECT = window.location.href.split('?')[0].split('#')[0];
+    // Must match EXACTLY what's registered in Spotify Developer Dashboard (no trailing slash)
+    const SPOTIFY_REDIRECT = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? window.location.origin
+      : 'https://morning-briefing-rouge.vercel.app';
     const SPOTIFY_SCOPES   = 'user-read-currently-playing user-read-playback-state';
     let spotifyToken = null, spotifyRefreshTimer = null;
 
@@ -3136,11 +3139,8 @@
 
     function gfitSleepSync() {
       const btn = document.getElementById('sleep-gfit-btn');
-      // If we have a cached token, try to use it directly
-      if (gfitToken) { gfitFetchSleep(); return; }
-      // Otherwise start OAuth
       if (!window.google || !window.google.accounts || !window.google.accounts.oauth2) {
-        if (btn) { btn.textContent = '⚠️ GIS ešte nenačítané, skús znova'; setTimeout(() => { if(btn) btn.textContent = '🔗 Sync zo Zepp / Google Fit'; }, 3000); }
+        if (btn) { btn.textContent = '⚠️ Skús znova o chvíľu'; setTimeout(() => { if(btn) btn.textContent = '🔗 Sync zo Zepp / Google Fit'; }, 3000); }
         return;
       }
       if (btn) btn.textContent = '⏳ Autorizácia…';
@@ -3149,15 +3149,15 @@
         scope: 'https://www.googleapis.com/auth/fitness.sleep.read',
         callback: (response) => {
           if (response.error) {
-            if (btn) { btn.textContent = '❌ ' + response.error; setTimeout(() => { if(btn) btn.textContent = '🔗 Sync zo Zepp / Google Fit'; }, 3000); }
+            if (btn) { btn.textContent = '❌ ' + (response.error_description || response.error); setTimeout(() => { if(btn) btn.textContent = '🔗 Sync zo Zepp / Google Fit'; }, 4000); }
             return;
           }
           gfitToken = response.access_token;
-          // Google token client tokens expire in 1h — don't persist, re-auth each session
           gfitFetchSleep();
         },
       });
-      tokenClient.requestAccessToken({ prompt: 'none' }); // silent if already authorized
+      // First call: show consent screen. Subsequent calls: silent (popup_closed_by_user → ignore)
+      tokenClient.requestAccessToken();
     }
 
     async function gfitFetchSleep() {
