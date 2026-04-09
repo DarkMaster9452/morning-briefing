@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="sk">
 
 <head>
@@ -1879,8 +1879,8 @@
                 class="ql-label">Gmail</span></a>
             <a class="ql-item" href="https://calendar.google.com" target="_blank"><span class="ql-icon">📆</span><span
                 class="ql-label">Google Calendar</span></a>
-            <a class="ql-item" href="https://figma.com" target="_blank"><span class="ql-icon">🎨</span><span
-                class="ql-label">Figma</span></a>
+            <a class="ql-item" href="https://neonomdb.com" target="_blank"><span class="ql-icon">🗄️</span><span
+                class="ql-label">NeonomDB</span></a>
             <a class="ql-item" href="https://chatgpt.com" target="_blank"><span class="ql-icon">🤖</span><span
                 class="ql-label">ChatGPT</span></a>
             <a class="ql-item" href="https://oskkp.sk" target="_blank"><span class="ql-icon">⚽</span><span
@@ -1960,14 +1960,6 @@
             </div>
             <div class="meniny-row"><span class="meniny-day">Pozajtra (11.4.)</span><span
                 class="meniny-name">Július</span></div>
-          </div>
-        </div>
-
-        <!-- Currency / Crypto -->
-        <div class="sb-section">
-          <div class="sb-title"><span>💱</span>Kurzy</div>
-          <div id="currency-list">
-            <div class="cur-loading">Načítavam…</div>
           </div>
         </div>
 
@@ -2664,49 +2656,26 @@
     if (Notification && Notification.permission === 'default') Notification.requestPermission();
 
     /* ══════════════════════════════════════════
-       CURRENCY / CRYPTO (live from free APIs)
-    ══════════════════════════════════════════ */
-    async function loadCurrencies() {
-      const el = document.getElementById('currency-list');
-      try {
-        const [fxRes, btcRes] = await Promise.all([
-          fetch('https://api.frankfurter.app/latest?base=EUR&symbols=USD,CZK,GBP'),
-          fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=eur')
-        ]);
-        const fx = await fxRes.json();
-        const crypto = await btcRes.json();
-        const rates = fx.rates;
-        el.innerHTML = `
-          <div class="cur-row"><span class="cur-sym">EUR/USD</span><span class="cur-val">${rates.USD.toFixed(4)}</span></div>
-          <div class="cur-row"><span class="cur-sym">EUR/CZK</span><span class="cur-val">${rates.CZK.toFixed(2)}</span></div>
-          <div class="cur-row"><span class="cur-sym">EUR/GBP</span><span class="cur-val">${rates.GBP.toFixed(4)}</span></div>
-          <div class="cur-row"><span class="cur-sym">BTC</span><span class="cur-val">€${Math.round(crypto.bitcoin.eur).toLocaleString()}</span></div>
-          <div class="cur-row"><span class="cur-sym">ETH</span><span class="cur-val">€${Math.round(crypto.ethereum.eur).toLocaleString()}</span></div>
-        `;
-      } catch(e) {
-        el.innerHTML = '<div class="cur-loading">Nedostupné (offline?)</div>';
-      }
-    }
-    loadCurrencies();
-
-    /* ══════════════════════════════════════════
        DRAG-AND-DROP LAYOUT CUSTOMIZATION
     ══════════════════════════════════════════ */
     const CARD_SIZES = {
-      'card-weather': 2, 'card-urgent': 3, 'card-cal': 1,
-      'card-world': 2, 'card-ai': 2, 'card-tech': 2,
-      'card-notion': 2, 'card-tasks': 2, 'card-email': 2,
-      'card-clients': 2, 'card-bday': 2, 'card-vercel': 2,
+      'card-weather': {cols:2,rows:1}, 'card-urgent': {cols:3,rows:1}, 'card-cal': {cols:1,rows:1},
+      'card-world': {cols:2,rows:1}, 'card-ai': {cols:2,rows:1}, 'card-tech': {cols:2,rows:1},
+      'card-notion': {cols:2,rows:2}, 'card-tasks': {cols:2,rows:1}, 'card-email': {cols:2,rows:1},
+      'card-clients': {cols:2,rows:1}, 'card-bday': {cols:2,rows:1}, 'card-vercel': {cols:2,rows:1},
     };
-    const LAYOUT_KEY = 'mb_layout_v1';
+    const LAYOUT_KEY = 'mb_layout_v2';
 
     function applyCardSizes() {
       const saved = getSavedLayout();
       document.querySelectorAll('.grid .card').forEach(card => {
         const key = card.dataset.card;
         if (!key) return;
-        const cols = (saved.sizes && saved.sizes[key]) || CARD_SIZES[key] || 2;
-        card.style.gridColumn = 'span ' + cols;
+        const def = CARD_SIZES[key] || {cols:2,rows:1};
+        const s = (saved.sizes && saved.sizes[key]) || def;
+        card.style.gridColumn = 'span ' + (s.cols || def.cols);
+        const rows = s.rows || def.rows;
+        card.style.gridRow = rows > 1 ? 'span ' + rows : '';
       });
     }
 
@@ -2715,8 +2684,13 @@
       document.querySelectorAll('.grid .card').forEach(card => {
         const key = card.dataset.card; if (!key) return;
         order.push(key);
-        const match = (card.style.gridColumn || '').match(/span\s+(\d+)/);
-        sizes[key] = match ? parseInt(match[1]) : (CARD_SIZES[key] || 2);
+        const colM = (card.style.gridColumn || '').match(/span\s+(\d+)/);
+        const rowM = (card.style.gridRow    || '').match(/span\s+(\d+)/);
+        const def  = CARD_SIZES[key] || {cols:2,rows:1};
+        sizes[key] = {
+          cols: colM ? parseInt(colM[1]) : def.cols,
+          rows: rowM ? parseInt(rowM[1]) : def.rows,
+        };
       });
       localStorage.setItem(LAYOUT_KEY, JSON.stringify({ order, sizes }));
     }
@@ -2742,23 +2716,87 @@
       if (!isEdit) saveLayout();
     }
 
-    function resizeCard(btn, dir) {
+    function resizeCard(btn, dir, axis) {
       const card = btn.closest('.card'); if (!card) return;
-      const match = (card.style.gridColumn || '').match(/span\s+(\d+)/);
-      let cols = match ? parseInt(match[1]) : (CARD_SIZES[card.dataset.card] || 2);
-      if (dir === '+') cols = Math.min(cols + 1, 6);
-      if (dir === '-') cols = Math.max(cols - 1, 1);
-      card.style.gridColumn = 'span ' + cols;
+      const def = CARD_SIZES[card.dataset.card] || {cols:2,rows:1};
+      if (axis === 'row') {
+        const rowM = (card.style.gridRow || '').match(/span\s+(\d+)/);
+        let rows = rowM ? parseInt(rowM[1]) : def.rows;
+        rows = dir === '+' ? Math.min(rows + 1, 4) : Math.max(rows - 1, 1);
+        card.style.gridRow = rows > 1 ? 'span ' + rows : '';
+      } else {
+        const colM = (card.style.gridColumn || '').match(/span\s+(\d+)/);
+        let cols = colM ? parseInt(colM[1]) : def.cols;
+        cols = dir === '+' ? Math.min(cols + 1, 6) : Math.max(cols - 1, 1);
+        card.style.gridColumn = 'span ' + cols;
+      }
       saveLayout();
     }
 
+    // ── Edge / corner drag resize ──
+    function getGridMetrics() {
+      const grid = document.querySelector('.grid');
+      const style = getComputedStyle(grid);
+      const gap   = parseFloat(style.columnGap) || 7;
+      const colW  = (grid.offsetWidth - gap * 5) / 6;
+      // measure actual row height from first card
+      const firstCard = grid.querySelector('.card');
+      const rowH = firstCard ? (firstCard.offsetHeight + gap) : (90 + gap);
+      return { colW, rowH, gap };
+    }
+
+    function initResizeHandles() {
+      document.querySelectorAll('.grid .card').forEach(card => {
+        card.querySelector('.rh-r')?.addEventListener('mousedown', e => startEdgeResize(e, card, 'col'));
+        card.querySelector('.rh-b')?.addEventListener('mousedown', e => startEdgeResize(e, card, 'row'));
+        card.querySelector('.rh-c')?.addEventListener('mousedown', e => startEdgeResize(e, card, 'both'));
+      });
+    }
+
+    function startEdgeResize(e, card, mode) {
+      e.preventDefault(); e.stopPropagation();
+      const { colW, rowH, gap } = getGridMetrics();
+      const def = CARD_SIZES[card.dataset.card] || {cols:2,rows:1};
+      const colM = (card.style.gridColumn || '').match(/span\s+(\d+)/);
+      const rowM = (card.style.gridRow    || '').match(/span\s+(\d+)/);
+      const startCols = colM ? parseInt(colM[1]) : def.cols;
+      const startRows = rowM ? parseInt(rowM[1]) : def.rows;
+      const startX = e.clientX, startY = e.clientY;
+      const handle = e.currentTarget;
+      handle.classList.add('rh-on');
+      document.body.style.userSelect = 'none';
+      document.body.style.cursor = mode === 'col' ? 'col-resize' : mode === 'row' ? 'row-resize' : 'nwse-resize';
+
+      function onMove(ev) {
+        if (mode === 'col' || mode === 'both') {
+          const cols = Math.max(1, Math.min(6, startCols + Math.round((ev.clientX - startX) / (colW + gap))));
+          card.style.gridColumn = 'span ' + cols;
+        }
+        if (mode === 'row' || mode === 'both') {
+          const rows = Math.max(1, Math.min(4, startRows + Math.round((ev.clientY - startY) / rowH)));
+          card.style.gridRow = rows > 1 ? 'span ' + rows : '';
+        }
+      }
+      function onUp() {
+        handle.classList.remove('rh-on');
+        document.body.style.userSelect = '';
+        document.body.style.cursor = '';
+        saveLayout();
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+      }
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+    }
+
     function initLayout() {
-      loadLayout(); applyCardSizes();
+      loadLayout(); applyCardSizes(); initResizeHandles();
       const grid = document.querySelector('.grid');
       if (!grid || typeof Sortable === 'undefined') return;
       Sortable.create(grid, {
         handle: '.drag-handle', animation: 150,
         ghostClass: 'sortable-ghost', chosenClass: 'sortable-chosen',
+        filter: '.rh', preventOnFilter: true,
         forceFallback: true, fallbackOnBody: true, fallbackTolerance: 3,
         scroll: true, bubbleScroll: true,
         onStart(evt) { evt.item._savedSpan = evt.item.style.gridColumn || 'span 2'; },
@@ -3136,6 +3174,7 @@
        Requires: Google Cloud → enable Fitness API + add scope.
     ══════════════════════════════════════════ */
     let gfitToken = localStorage.getItem('mb_gfit_token') || null;
+    let gfitTokenExpiry = parseInt(localStorage.getItem('mb_gfit_expiry') || '0');
 
     function gfitSleepSync() {
       const btn = document.getElementById('sleep-gfit-btn');
@@ -3153,6 +3192,10 @@
             return;
           }
           gfitToken = response.access_token;
+          // Save token with expiry (~55 min to be safe)
+          gfitTokenExpiry = Date.now() + 55 * 60 * 1000;
+          localStorage.setItem('mb_gfit_token', gfitToken);
+          localStorage.setItem('mb_gfit_expiry', String(gfitTokenExpiry));
           gfitFetchSleep();
         },
       });
@@ -3184,6 +3227,8 @@
 
         if (res.status === 401) {
           gfitToken = null;
+          localStorage.removeItem('mb_gfit_token');
+          localStorage.removeItem('mb_gfit_expiry');
           if (btn) btn.textContent = '🔗 Sync zo Zepp / Google Fit';
           // Re-auth silently
           gfitSleepSync();
@@ -3265,7 +3310,15 @@
     // Auto-sync sleep from Google Fit on page load if no manual entry today
     function gfitAutoSync() {
       const todayKey = 'mb_sleep_' + new Date().toISOString().slice(0,10);
-      if (!localStorage.getItem(todayKey) && gfitToken) {
+      const hasData = !!localStorage.getItem(todayKey);
+      // Invalidate expired token
+      if (gfitToken && Date.now() > gfitTokenExpiry) {
+        gfitToken = null;
+        localStorage.removeItem('mb_gfit_token');
+        localStorage.removeItem('mb_gfit_expiry');
+      }
+      // Always show stored data; only fetch if no data yet and token is valid
+      if (!hasData && gfitToken) {
         setTimeout(gfitFetchSleep, 800);
       }
     }
