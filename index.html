@@ -1824,7 +1824,7 @@
       ⚙️ <strong>Google Client ID nie je nastavené.</strong><br />
       Choď na <strong>console.cloud.google.com → APIs &amp; Services → Credentials</strong><br />
       Vytvor <strong>OAuth 2.0 Client ID</strong> (Web application)<br />
-      Authorized origin: <code>https://darkmaster9452.github.io</code><br />
+      Authorized origin: <code>https://morning-briefing-rouge.vercel.app</code><br />
       Potom nahraď <code>YOUR_GOOGLE_CLIENT_ID</code> v kóde.
     </div>
   </div>
@@ -2669,95 +2669,58 @@
         const crypto = await btcRes.json();
         const rates = fx.rates;
         el.innerHTML = `
-      <div class="cur-row"><span class="cur-sym">EUR/USD</span><span class="cur-val">${rates.USD.toFixed(4)}</span></div>
-      <div class="cur-row"><span class="cur-sym">EUR/CZK</span><span class="cur-val">${rates.CZK.toFixed(2)}</span></div>
-      <div class="cur-row"><span class="cur-sym">EUR/GBP</span><span class="cur-val">${rates.GBP.toFixed(4)}</span></div>
-      <div class="cur-row"><span class="cur-sym">BTC</span><span class="cur-val">€${Math.round(crypto.bitcoin.eur).toLocaleString()}</span></div>
-      <div class="cur-row"><span class="cur-sym">ETH</span><span class="cur-val">€${Math.round(crypto.ethereum.eur).toLocaleString()}</span></div>
-    `;
-      } catch (e) {
+          <div class="cur-row"><span class="cur-sym">EUR/USD</span><span class="cur-val">${rates.USD.toFixed(4)}</span></div>
+          <div class="cur-row"><span class="cur-sym">EUR/CZK</span><span class="cur-val">${rates.CZK.toFixed(2)}</span></div>
+          <div class="cur-row"><span class="cur-sym">EUR/GBP</span><span class="cur-val">${rates.GBP.toFixed(4)}</span></div>
+          <div class="cur-row"><span class="cur-sym">BTC</span><span class="cur-val">€${Math.round(crypto.bitcoin.eur).toLocaleString()}</span></div>
+          <div class="cur-row"><span class="cur-sym">ETH</span><span class="cur-val">€${Math.round(crypto.ethereum.eur).toLocaleString()}</span></div>
+        `;
+      } catch(e) {
         el.innerHTML = '<div class="cur-loading">Nedostupné (offline?)</div>';
       }
     }
-
     loadCurrencies();
 
     /* ══════════════════════════════════════════
        DRAG-AND-DROP LAYOUT CUSTOMIZATION
-       - SortableJS for card reordering (drag handle)
-       - Edge/corner drag handles for col + row resize
-       - All persisted to localStorage
     ══════════════════════════════════════════ */
-
     const CARD_SIZES = {
-      'card-weather': 2,
-      'card-urgent': 3,
-      'card-cal': 1,
-      'card-world': 2,
-      'card-ai': 2,
-      'card-tech': 2,
-      'card-notion': 2,
-      'card-tasks': 2,
-      'card-email': 2,
-      'card-clients': 2,
-      'card-bday': 2,
-      'card-vercel': 2,
-      'card-weather': { cols: 2, rows: 1 },
-      'card-urgent': { cols: 3, rows: 1 },
-      'card-cal': { cols: 1, rows: 1 },
-      'card-world': { cols: 2, rows: 1 },
-      'card-ai': { cols: 2, rows: 1 },
-      'card-tech': { cols: 2, rows: 1 },
-      'card-notion': { cols: 2, rows: 2 },
-      'card-tasks': { cols: 2, rows: 1 },
-      'card-email': { cols: 2, rows: 1 },
-      'card-clients': { cols: 2, rows: 1 },
-      'card-bday': { cols: 2, rows: 1 },
+      'card-weather': 2, 'card-urgent': 3, 'card-cal': 1,
+      'card-world': 2, 'card-ai': 2, 'card-tech': 2,
+      'card-notion': 2, 'card-tasks': 2, 'card-email': 2,
+      'card-clients': 2, 'card-bday': 2, 'card-vercel': 2,
     };
-
-    const LAYOUT_KEY = 'mb_layout_v2';
-
-    function getSavedLayout() {
-      try { return JSON.parse(localStorage.getItem(LAYOUT_KEY)) || {}; }
-      catch (e) { return {}; }
-    }
+    const LAYOUT_KEY = 'mb_layout_v1';
 
     function applyCardSizes() {
-      const { sizes } = getSavedLayout();
+      const saved = getSavedLayout();
       document.querySelectorAll('.grid .card').forEach(card => {
         const key = card.dataset.card;
         if (!key) return;
-        const def = CARD_SIZES[key] || { cols: 2, rows: 1 };
-        const s = (sizes && sizes[key]) || def;
-        card.style.gridColumn = 'span ' + (s.cols || def.cols);
-        if ((s.rows || def.rows) > 1) card.style.gridRow = 'span ' + (s.rows || def.rows);
-        else card.style.gridRow = '';
+        const cols = (saved.sizes && saved.sizes[key]) || CARD_SIZES[key] || 2;
+        card.style.gridColumn = 'span ' + cols;
       });
     }
 
     function saveLayout() {
-      const order = [];
-      const sizes = {};
+      const order = [], sizes = {};
       document.querySelectorAll('.grid .card').forEach(card => {
-        const key = card.dataset.card;
-        if (!key) return;
+        const key = card.dataset.card; if (!key) return;
         order.push(key);
-        const colM = (card.style.gridColumn || '').match(/span\s+(\d+)/);
-        const rowM = (card.style.gridRow || '').match(/span\s+(\d+)/);
-        const def = CARD_SIZES[key] || { cols: 2, rows: 1 };
-        sizes[key] = {
-          cols: colM ? parseInt(colM[1]) : def.cols,
-          rows: rowM ? parseInt(rowM[1]) : def.rows,
-        };
+        const match = (card.style.gridColumn || '').match(/span\s+(\d+)/);
+        sizes[key] = match ? parseInt(match[1]) : (CARD_SIZES[key] || 2);
       });
       localStorage.setItem(LAYOUT_KEY, JSON.stringify({ order, sizes }));
+    }
+
+    function getSavedLayout() {
+      try { return JSON.parse(localStorage.getItem(LAYOUT_KEY)) || {}; } catch(e) { return {}; }
     }
 
     function loadLayout() {
       const { order } = getSavedLayout();
       if (!order || !order.length) return;
-      const grid = document.querySelector('.grid');
-      if (!grid) return;
+      const grid = document.querySelector('.grid'); if (!grid) return;
       order.forEach(key => {
         const card = grid.querySelector('[data-card="' + key + '"]');
         if (card) grid.appendChild(card);
@@ -2771,133 +2734,57 @@
       if (!isEdit) saveLayout();
     }
 
-    // ── +/− button resize (still works) ──
     function resizeCard(btn, dir) {
-      const card = btn.closest('.card');
-      if (!card) return;
-      const m = (card.style.gridColumn || '').match(/span\s+(\d+)/);
-      let cols = m ? parseInt(m[1]) : (CARD_SIZES[card.dataset.card]?.cols || 2);
-      cols = dir === '+' ? Math.min(cols + 1, 6) : Math.max(cols - 1, 1);
+      const card = btn.closest('.card'); if (!card) return;
+      const match = (card.style.gridColumn || '').match(/span\s+(\d+)/);
+      let cols = match ? parseInt(match[1]) : (CARD_SIZES[card.dataset.card] || 2);
+      if (dir === '+') cols = Math.min(cols + 1, 6);
+      if (dir === '-') cols = Math.max(cols - 1, 1);
       card.style.gridColumn = 'span ' + cols;
       saveLayout();
     }
 
-    // ── Edge / corner drag resize ──
-    function getGridMetrics() {
-      const grid = document.querySelector('.grid');
-      const gap = parseFloat(getComputedStyle(grid).columnGap) || 7;
-      const colW = (grid.offsetWidth - gap * 5) / 6;   // 6 cols
-      // estimate row height from the grid's auto-rows base (90px) + gap
-      const rowH = 90 + gap;
-      return { colW, rowH, gap };
-    }
-
-    function initResizeHandles() {
-      document.querySelectorAll('.grid .card').forEach(card => {
-        card.querySelector('.rh-r')?.addEventListener('mousedown', e => startEdgeResize(e, card, 'col'));
-        card.querySelector('.rh-b')?.addEventListener('mousedown', e => startEdgeResize(e, card, 'row'));
-        card.querySelector('.rh-c')?.addEventListener('mousedown', e => startEdgeResize(e, card, 'both'));
-      });
-    }
-
-    function startEdgeResize(e, card, mode) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      const { colW, rowH, gap } = getGridMetrics();
-      const colM = (card.style.gridColumn || '').match(/span\s+(\d+)/);
-      const rowM = (card.style.gridRow || '').match(/span\s+(\d+)/);
-      const def = CARD_SIZES[card.dataset.card] || { cols: 2, rows: 1 };
-      const startCols = colM ? parseInt(colM[1]) : def.cols;
-      const startRows = rowM ? parseInt(rowM[1]) : def.rows;
-      const startX = e.clientX;
-      const startY = e.clientY;
-
-      const handle = e.currentTarget;
-      handle.classList.add('rh-on');
-      document.body.style.userSelect = 'none';
-      document.body.style.cursor =
-        mode === 'col' ? 'col-resize' : mode === 'row' ? 'row-resize' : 'nwse-resize';
-
-      function onMove(ev) {
-        if (mode === 'col' || mode === 'both') {
-          const dx = ev.clientX - startX;
-          const cols = Math.max(1, Math.min(6, startCols + Math.round(dx / (colW + gap))));
-          card.style.gridColumn = 'span ' + cols;
-        }
-        if (mode === 'row' || mode === 'both') {
-          const dy = ev.clientY - startY;
-          const rows = Math.max(1, Math.min(4, startRows + Math.round(dy / rowH)));
-          card.style.gridRow = rows > 1 ? 'span ' + rows : '';
-        }
-      }
-
-      function onUp() {
-        handle.classList.remove('rh-on');
-        document.body.style.userSelect = '';
-        document.body.style.cursor = '';
-        saveLayout();
-        document.removeEventListener('mousemove', onMove);
-        document.removeEventListener('mouseup', onUp);
-      }
-
-      document.addEventListener('mousemove', onMove);
-      document.addEventListener('mouseup', onUp);
-    }
-
-    // ── SortableJS init ──
     function initLayout() {
-      loadLayout();
-      applyCardSizes();
-      initResizeHandles();
+      loadLayout(); applyCardSizes();
       const grid = document.querySelector('.grid');
       if (!grid || typeof Sortable === 'undefined') return;
       Sortable.create(grid, {
-        handle: '.drag-handle',
-        animation: 150,
-        ghostClass: 'sortable-ghost',
-        chosenClass: 'sortable-chosen',
-        forceFallback: true,
-        fallbackOnBody: true,
-        fallbackTolerance: 3,
-        scroll: true,
-        bubbleScroll: true,
-        onStart(evt) {
-          // preserve grid-column span on the ghost
-          const span = evt.item.style.gridColumn || 'span 2';
-          evt.item._savedSpan = span;
-        },
+        handle: '.drag-handle', animation: 150,
+        ghostClass: 'sortable-ghost', chosenClass: 'sortable-chosen',
+        forceFallback: true, fallbackOnBody: true, fallbackTolerance: 3,
+        scroll: true, bubbleScroll: true,
+        onStart(evt) { evt.item._savedSpan = evt.item.style.gridColumn || 'span 2'; },
         onEnd(evt) {
-          // restore span after drop
           if (evt.item._savedSpan) evt.item.style.gridColumn = evt.item._savedSpan;
           saveLayout();
         },
-        filter: '.rh',                // don't drag when clicking resize handles
-        preventOnFilter: true,
-        onEnd() { saveLayout(); },
       });
     }
 
-    // Patch showApp to init after login
     const _origShowApp = showApp;
-    window.showApp = function (user) {
-      _origShowApp(user);
-      setTimeout(initLayout, 50);
-    };
-
-    // Already logged in from session
+    window.showApp = function(user) { _origShowApp(user); setTimeout(initLayout, 50); };
     if (sessionStorage.getItem('mb_user')) {
       document.addEventListener('DOMContentLoaded', () => setTimeout(initLayout, 50));
     }
 
     /* ══════════════════════════════════════════
+       CONFIG — načítaj Spotify Client ID z /api/config
+    ══════════════════════════════════════════ */
+    let SPOTIFY_CLIENT_ID = '';
+    async function loadConfig() {
+      try {
+        const res = await fetch('/api/config');
+        if (!res.ok) return;
+        const cfg = await res.json();
+        SPOTIFY_CLIENT_ID = cfg.spotifyClientId || '';
+      } catch(e) { console.warn('Config load failed:', e); }
+    }
+
+    /* ══════════════════════════════════════════
        SLEEP LOG
-       Stores: mb_sleep_YYYY-MM-DD = { hours, quality }
     ══════════════════════════════════════════ */
     let sleepQuality = 0;
-
     (function initSleepLog() {
-      // Star rating
       const stars = document.querySelectorAll('.sleep-star');
       stars.forEach(star => {
         star.addEventListener('click', () => {
@@ -2905,8 +2792,7 @@
           stars.forEach(s => s.classList.toggle('active', parseInt(s.dataset.v) <= sleepQuality));
         });
       });
-      // Load today's value if exists
-      const todayKey = 'mb_sleep_' + new Date().toISOString().slice(0, 10);
+      const todayKey = 'mb_sleep_' + new Date().toISOString().slice(0,10);
       const todayData = JSON.parse(localStorage.getItem(todayKey) || 'null');
       if (todayData) {
         document.getElementById('sleep-hours').value = todayData.hours;
@@ -2919,7 +2805,7 @@
     function sleepSave() {
       const hours = parseFloat(document.getElementById('sleep-hours').value);
       if (isNaN(hours) || hours < 0) return;
-      const key = 'mb_sleep_' + new Date().toISOString().slice(0, 10);
+      const key = 'mb_sleep_' + new Date().toISOString().slice(0,10);
       localStorage.setItem(key, JSON.stringify({ hours, quality: sleepQuality }));
       renderSleepHistory();
     }
@@ -2927,13 +2813,13 @@
     function renderSleepHistory() {
       const container = document.getElementById('sleep-history');
       const label = document.getElementById('sleep-today-label');
+      if (!container) return;
       const days = [];
       for (let i = 6; i >= 0; i--) {
         const d = new Date(); d.setDate(d.getDate() - i);
-        const key = 'mb_sleep_' + d.toISOString().slice(0, 10);
+        const key = 'mb_sleep_' + d.toISOString().slice(0,10);
         const data = JSON.parse(localStorage.getItem(key) || 'null');
-        const dayName = d.toLocaleDateString('sk', { weekday: 'short' });
-        days.push({ dayName, data, isToday: i === 0 });
+        days.push({ dayName: d.toLocaleDateString('sk', { weekday: 'short' }), data, isToday: i === 0 });
       }
       const maxH = Math.max(...days.map(d => d.data ? d.data.hours : 0), 8);
       container.innerHTML = days.map(d => {
@@ -2942,23 +2828,16 @@
         const col = d.isToday ? 'var(--c-ai)' : 'var(--c-cal)';
         const op = d.isToday ? '1' : '0.5';
         return `<div class="sleep-bar-wrap" title="${d.dayName}: ${h}h">
-      <div class="sleep-bar" style="height:${pct}%;background:${col};opacity:${op}"></div>
-      <div class="sleep-bar-label">${d.dayName.slice(0, 2)}</div>
-    </div>`;
+          <div class="sleep-bar" style="height:${pct}%;background:${col};opacity:${op}"></div>
+          <div class="sleep-bar-label">${d.dayName.slice(0,2)}</div>
+        </div>`;
       }).join('');
-      // Today's summary
       const today = days[6];
-      if (today.data) {
-        const stars = '⭐'.repeat(today.data.quality);
-        label.textContent = `Dnes: ${today.data.hours}h ${stars}`;
-      } else {
-        label.textContent = 'Dnes: nezadané';
-      }
+      if (label) label.textContent = today.data ? `Dnes: ${today.data.hours}h ${'⭐'.repeat(today.data.quality)}` : 'Dnes: nezadané';
     }
 
     /* ══════════════════════════════════════════
        VERCEL UPTIME MONITOR
-       Stores token in localStorage: mb_vercel_token
     ══════════════════════════════════════════ */
     (function initVercel() {
       const token = localStorage.getItem('mb_vercel_token');
@@ -2982,37 +2861,34 @@
       const el = document.getElementById('vercel-projects-list');
       el.innerHTML = '<div style="font-size:10px;color:var(--muted)">Načítavam projekty…</div>';
       try {
-        const res = await fetch('https://api.vercel.com/v9/projects?limit=10', {
+        const res = await fetch('https://api.vercel.com/v9/projects?limit=15', {
           headers: { Authorization: 'Bearer ' + token }
         });
         if (!res.ok) throw new Error('Token neplatný alebo vypršal');
         const data = await res.json();
         const projects = data.projects || [];
         if (!projects.length) { el.innerHTML = '<div style="font-size:10px;color:var(--muted)">Žiadne projekty.</div>'; return; }
-        // For each project, get latest deployment status
         el.innerHTML = projects.map(p => `
-      <div class="uptime-row" id="vp-${p.id}">
-        <div class="uptime-dot up-loading"></div>
-        <div class="uptime-name">${p.name}</div>
-        <div class="uptime-state loading">…</div>
-      </div>`).join('') +
+          <div class="uptime-row" id="vp-${p.id}">
+            <div class="uptime-dot up-loading"></div>
+            <div class="uptime-name">${p.name}</div>
+            <div class="uptime-state loading">…</div>
+          </div>`).join('') +
           `<div style="margin-top:6px;font-size:9px;color:var(--muted2);display:flex;justify-content:space-between;">
-        <span id="vercel-last-check">Kontrolujem…</span>
-        <button onclick="vercelReset()" style="background:none;border:none;color:var(--muted2);font-size:9px;cursor:pointer;">Zmeniť token</button>
-      </div>`;
-        // Check each project
+            <span id="vercel-last-check">Kontrolujem…</span>
+            <button onclick="vercelReset()" style="background:none;border:none;color:var(--muted2);font-size:9px;cursor:pointer;">Zmeniť token</button>
+          </div>`;
         await Promise.all(projects.map(p => checkVercelProject(p, token)));
-        document.getElementById('vercel-last-check').textContent =
-          'Aktualizované: ' + new Date().toLocaleTimeString('sk', { hour: '2-digit', minute: '2-digit' });
-      } catch (e) {
+        const checkEl = document.getElementById('vercel-last-check');
+        if (checkEl) checkEl.textContent = 'Aktualizované: ' + new Date().toLocaleTimeString('sk', {hour:'2-digit',minute:'2-digit'});
+      } catch(e) {
         el.innerHTML = `<div style="font-size:10px;color:var(--c-urgent)">${e.message}</div>
-      <button onclick="vercelReset()" style="margin-top:6px;font-size:9px;color:var(--muted);background:none;border:none;cursor:pointer;">Skúsiť znova</button>`;
+          <button onclick="vercelReset()" style="margin-top:6px;font-size:9px;color:var(--muted);background:none;border:none;cursor:pointer;">Skúsiť znova</button>`;
       }
     }
 
     async function checkVercelProject(project, token) {
-      const row = document.getElementById('vp-' + project.id);
-      if (!row) return;
+      const row = document.getElementById('vp-' + project.id); if (!row) return;
       try {
         const res = await fetch(`https://api.vercel.com/v6/deployments?projectId=${project.id}&limit=1&target=production`, {
           headers: { Authorization: 'Bearer ' + token }
@@ -3021,26 +2897,20 @@
         const dep = data.deployments && data.deployments[0];
         const dot = row.querySelector('.uptime-dot');
         const state = row.querySelector('.uptime-state');
-        if (!dep) {
-          dot.className = 'uptime-dot up-loading';
-          state.className = 'uptime-state loading'; state.textContent = '—';
-          return;
-        }
+        if (!dep) { dot.className = 'uptime-dot up-loading'; state.className = 'uptime-state loading'; state.textContent = '—'; return; }
         const isOk = dep.state === 'READY';
         dot.className = 'uptime-dot ' + (isOk ? 'up-ok' : 'up-err');
         state.className = 'uptime-state ' + (isOk ? 'ok' : 'err');
         state.textContent = isOk ? 'READY' : (dep.state || 'ERROR');
-        // Add domain hint
-        const meta = document.createElement('div');
-        meta.className = 'uptime-meta';
-        const url = dep.url ? dep.url : (project.alias && project.alias[0] ? project.alias[0] : '');
-        meta.textContent = url;
-        row.insertBefore(meta, state);
-      } catch (e) {
-        const dot = row.querySelector('.uptime-dot');
-        const state = row.querySelector('.uptime-state');
-        dot.className = 'uptime-dot up-err';
-        state.className = 'uptime-state err'; state.textContent = 'ERR';
+        if (dep.url) {
+          const meta = document.createElement('div');
+          meta.className = 'uptime-meta'; meta.textContent = dep.url;
+          row.insertBefore(meta, state);
+        }
+      } catch(e) {
+        const dot = row.querySelector('.uptime-dot'); const state = row.querySelector('.uptime-state');
+        if (dot) dot.className = 'uptime-dot up-err';
+        if (state) { state.className = 'uptime-state err'; state.textContent = 'ERR'; }
       }
     }
 
@@ -3053,213 +2923,166 @@
 
     /* ══════════════════════════════════════════
        SPOTIFY — PKCE OAuth
-       Requires Spotify App (free):
-       1. developer.spotify.com → Create App
-       2. Redirect URI: https://darkmaster9452.github.io/morning-briefing/ (alebo cesta k tomuto súboru)
-       3. Nahraď SPOTIFY_CLIENT_ID nižšie
+       Client ID načítaný z /api/config (Vercel env var)
     ══════════════════════════════════════════ */
-    const SPOTIFY_CLIENT_ID = 'YOUR_SPOTIFY_CLIENT_ID'; // ← nahraď
     const SPOTIFY_REDIRECT = window.location.href.split('?')[0].split('#')[0];
-    const SPOTIFY_SCOPES = 'user-read-currently-playing user-read-playback-state';
-
-    let spotifyToken = null;
-    let spotifyRefreshTimer = null;
+    const SPOTIFY_SCOPES   = 'user-read-currently-playing user-read-playback-state';
+    let spotifyToken = null, spotifyRefreshTimer = null;
 
     function spotifyBase64url(bytes) {
-      return btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+      return btoa(String.fromCharCode(...bytes)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
     }
     async function spotifyGeneratePKCE() {
       const verifier = spotifyBase64url(crypto.getRandomValues(new Uint8Array(32)));
       const hashed = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier));
-      const challenge = spotifyBase64url(new Uint8Array(hashed));
-      return { verifier, challenge };
+      return { verifier, challenge: spotifyBase64url(new Uint8Array(hashed)) };
     }
 
     async function spotifyConnect() {
-      if (SPOTIFY_CLIENT_ID === 'YOUR_SPOTIFY_CLIENT_ID') {
-        alert('⚠️ Nastav SPOTIFY_CLIENT_ID v kóde dashboardu!\n\n1. Choď na developer.spotify.com\n2. Vytvor App (free)\n3. Pridaj Redirect URI: ' + SPOTIFY_REDIRECT + '\n4. Skopíruj Client ID do kódu');
+      if (!SPOTIFY_CLIENT_ID) await loadConfig();
+      if (!SPOTIFY_CLIENT_ID) {
+        alert('⚠️ SPOTIFY_CLIENT_ID nie je nastavené v Vercel env vars!\n\nChoď na: Vercel → Settings → Environment Variables');
         return;
       }
       const { verifier, challenge } = await spotifyGeneratePKCE();
       sessionStorage.setItem('sp_verifier', verifier);
       const params = new URLSearchParams({
-        client_id: SPOTIFY_CLIENT_ID,
-        response_type: 'code',
-        redirect_uri: SPOTIFY_REDIRECT,
-        code_challenge_method: 'S256',
-        code_challenge: challenge,
-        scope: SPOTIFY_SCOPES,
+        client_id: SPOTIFY_CLIENT_ID, response_type: 'code',
+        redirect_uri: SPOTIFY_REDIRECT, code_challenge_method: 'S256',
+        code_challenge: challenge, scope: SPOTIFY_SCOPES,
       });
       window.location.href = 'https://accounts.spotify.com/authorize?' + params;
     }
 
     async function spotifyHandleCallback() {
       const params = new URLSearchParams(window.location.search);
-      const code = params.get('code');
-      if (!code) return false;
-      const verifier = sessionStorage.getItem('sp_verifier');
-      if (!verifier) return false;
-      // Clean URL
+      const code = params.get('code'); if (!code) return false;
+      const verifier = sessionStorage.getItem('sp_verifier'); if (!verifier) return false;
       window.history.replaceState({}, '', window.location.pathname);
+      if (!SPOTIFY_CLIENT_ID) await loadConfig();
       try {
         const res = await fetch('https://accounts.spotify.com/api/token', {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: new URLSearchParams({
-            client_id: SPOTIFY_CLIENT_ID,
-            grant_type: 'authorization_code',
-            code,
-            redirect_uri: SPOTIFY_REDIRECT,
-            code_verifier: verifier,
+            client_id: SPOTIFY_CLIENT_ID, grant_type: 'authorization_code',
+            code, redirect_uri: SPOTIFY_REDIRECT, code_verifier: verifier,
           }),
         });
         const data = await res.json();
         if (data.access_token) {
-          const expiry = Date.now() + (data.expires_in - 60) * 1000;
           localStorage.setItem('mb_sp_token', data.access_token);
-          localStorage.setItem('mb_sp_expiry', expiry);
+          localStorage.setItem('mb_sp_expiry', Date.now() + (data.expires_in - 60) * 1000);
           if (data.refresh_token) localStorage.setItem('mb_sp_refresh', data.refresh_token);
-          spotifyToken = data.access_token;
-          return true;
+          spotifyToken = data.access_token; return true;
         }
-      } catch (e) { }
+      } catch(e) {}
       return false;
     }
 
     async function spotifyRefreshToken() {
-      const refresh = localStorage.getItem('mb_sp_refresh');
-      if (!refresh || SPOTIFY_CLIENT_ID === 'YOUR_SPOTIFY_CLIENT_ID') return false;
+      const refresh = localStorage.getItem('mb_sp_refresh'); if (!refresh) return false;
+      if (!SPOTIFY_CLIENT_ID) await loadConfig();
+      if (!SPOTIFY_CLIENT_ID) return false;
       try {
         const res = await fetch('https://accounts.spotify.com/api/token', {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams({
-            client_id: SPOTIFY_CLIENT_ID,
-            grant_type: 'refresh_token',
-            refresh_token: refresh,
-          }),
+          body: new URLSearchParams({ client_id: SPOTIFY_CLIENT_ID, grant_type: 'refresh_token', refresh_token: refresh }),
         });
         const data = await res.json();
         if (data.access_token) {
-          const expiry = Date.now() + (data.expires_in - 60) * 1000;
           localStorage.setItem('mb_sp_token', data.access_token);
-          localStorage.setItem('mb_sp_expiry', expiry);
-          spotifyToken = data.access_token;
-          return true;
+          localStorage.setItem('mb_sp_expiry', Date.now() + (data.expires_in - 60) * 1000);
+          spotifyToken = data.access_token; return true;
         }
-      } catch (e) { }
+      } catch(e) {}
       return false;
     }
 
     async function spotifyInit() {
-      // Check if returning from OAuth
+      await loadConfig();
       const gotToken = await spotifyHandleCallback();
       if (!gotToken) {
-        // Try stored token
         const stored = localStorage.getItem('mb_sp_token');
         const expiry = parseInt(localStorage.getItem('mb_sp_expiry') || '0');
-        if (stored && Date.now() < expiry) {
-          spotifyToken = stored;
-        } else if (localStorage.getItem('mb_sp_refresh')) {
-          await spotifyRefreshToken();
-        }
+        if (stored && Date.now() < expiry) { spotifyToken = stored; }
+        else if (localStorage.getItem('mb_sp_refresh')) { await spotifyRefreshToken(); }
       }
-      if (spotifyToken) {
-        spotifyRender();
-        spotifyStartPolling();
-      }
+      if (spotifyToken) { spotifyRender(); spotifyStartPolling(); }
     }
 
     async function spotifyFetchNowPlaying() {
       if (!spotifyToken) return null;
-      // Refresh if expired
-      const expiry = parseInt(localStorage.getItem('mb_sp_expiry') || '0');
-      if (Date.now() >= expiry) {
-        const ok = await spotifyRefreshToken();
-        if (!ok) { spotifyToken = null; return null; }
+      if (Date.now() >= parseInt(localStorage.getItem('mb_sp_expiry') || '0')) {
+        const ok = await spotifyRefreshToken(); if (!ok) { spotifyToken = null; return null; }
       }
       try {
         const res = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
           headers: { Authorization: 'Bearer ' + spotifyToken }
         });
-        if (res.status === 204) return { playing: false }; // nothing playing
+        if (res.status === 204) return { is_playing: false };
         if (res.status === 401) { spotifyToken = null; return null; }
         if (!res.ok) return null;
         return await res.json();
-      } catch (e) { return null; }
+      } catch(e) { return null; }
     }
 
     async function spotifyRender() {
-      const widget = document.getElementById('spotify-widget');
-      if (!widget) return;
+      const widget = document.getElementById('spotify-widget'); if (!widget) return;
       const data = await spotifyFetchNowPlaying();
       if (!spotifyToken || data === null) {
-        widget.innerHTML = `<button class="spotify-connect-btn" onclick="spotifyConnect()">🔗 Pripojiť Spotify</button>`;
-        return;
+        widget.innerHTML = `<button class="spotify-connect-btn" onclick="spotifyConnect()">🔗 Pripojiť Spotify</button>`; return;
       }
       if (!data.is_playing || !data.item) {
-        widget.innerHTML = `
-      <div class="spotify-status"><span>⏸</span> Nič nehrá</div>
-      <button class="spotify-disconnect" onclick="spotifyDisconnect()">Odpojiť</button>`;
-        return;
+        widget.innerHTML = `<div class="spotify-status"><span>⏸</span> Nič nehrá</div>
+          <button class="spotify-disconnect" onclick="spotifyDisconnect()">Odpojiť</button>`; return;
       }
       const track = data.item;
       const artist = track.artists.map(a => a.name).join(', ');
       const art = track.album.images[2] ? track.album.images[2].url : '';
-      const progress = data.progress_ms || 0;
-      const duration = track.duration_ms || 1;
-      const pct = Math.round((progress / duration) * 100);
-      const fmt = ms => `${Math.floor(ms / 60000)}:${String(Math.floor((ms % 60000) / 1000)).padStart(2, '0')}`;
-
+      const pct = Math.round(((data.progress_ms||0) / (track.duration_ms||1)) * 100);
+      const fmt = ms => `${Math.floor(ms/60000)}:${String(Math.floor((ms%60000)/1000)).padStart(2,'0')}`;
       widget.innerHTML = `
-    <div class="spotify-track">
-      ${art ? `<img class="spotify-art" src="${art}" alt="art"/>` : '<div class="spotify-art-placeholder">🎵</div>'}
-      <div class="spotify-info">
-        <div class="spotify-song" title="${track.name}">${track.name}</div>
-        <div class="spotify-artist">${artist}</div>
-      </div>
-    </div>
-    <div class="spotify-bar"><div class="spotify-bar-fill" id="sp-bar" style="width:${pct}%"></div></div>
-    <div class="spotify-status">
-      <span class="spotify-playing-dot"></span>
-      <span>${fmt(progress)} / ${fmt(duration)}</span>
-      <button class="spotify-disconnect" onclick="spotifyDisconnect()">Odpojiť</button>
-    </div>`;
+        <div class="spotify-track">
+          ${art ? `<img class="spotify-art" src="${art}" alt="art"/>` : '<div class="spotify-art-placeholder">🎵</div>'}
+          <div class="spotify-info">
+            <div class="spotify-song" title="${track.name}">${track.name}</div>
+            <div class="spotify-artist">${artist}</div>
+          </div>
+        </div>
+        <div class="spotify-bar"><div class="spotify-bar-fill" style="width:${pct}%"></div></div>
+        <div class="spotify-status">
+          <span class="spotify-playing-dot"></span>
+          <span>${fmt(data.progress_ms||0)} / ${fmt(track.duration_ms||0)}</span>
+          <button class="spotify-disconnect" onclick="spotifyDisconnect()">Odpojiť</button>
+        </div>`;
     }
 
     function spotifyStartPolling() {
       clearInterval(spotifyRefreshTimer);
-      spotifyRender();
       spotifyRefreshTimer = setInterval(spotifyRender, 30000);
     }
 
     function spotifyDisconnect() {
-      clearInterval(spotifyRefreshTimer);
-      spotifyToken = null;
-      localStorage.removeItem('mb_sp_token');
-      localStorage.removeItem('mb_sp_expiry');
-      localStorage.removeItem('mb_sp_refresh');
-      const widget = document.getElementById('spotify-widget');
-      if (widget) widget.innerHTML = `<button class="spotify-connect-btn" onclick="spotifyConnect()">🔗 Pripojiť Spotify</button>`;
+      clearInterval(spotifyRefreshTimer); spotifyToken = null;
+      ['mb_sp_token','mb_sp_expiry','mb_sp_refresh'].forEach(k => localStorage.removeItem(k));
+      const w = document.getElementById('spotify-widget');
+      if (w) w.innerHTML = `<button class="spotify-connect-btn" onclick="spotifyConnect()">🔗 Pripojiť Spotify</button>`;
     }
 
-    // Init Spotify after app loads
+    /* Init Spotify after login */
     const _origShowApp2 = window.showApp;
-    window.showApp = function (user) {
-      _origShowApp2(user);
-      setTimeout(spotifyInit, 100);
-    };
+    window.showApp = function(user) { _origShowApp2(user); setTimeout(spotifyInit, 200); };
     if (sessionStorage.getItem('mb_user')) {
-      window.addEventListener('load', () => setTimeout(spotifyInit, 200));
+      window.addEventListener('load', () => setTimeout(spotifyInit, 300));
     }
-    // Also handle case page loads fresh with Spotify callback
     if (new URLSearchParams(window.location.search).has('code')) {
       window.addEventListener('load', async () => {
         const stored = sessionStorage.getItem('mb_user');
-        if (stored) { showApp(JSON.parse(stored)); setTimeout(spotifyInit, 300); }
+        if (stored) { showApp(JSON.parse(stored)); setTimeout(spotifyInit, 400); }
       });
     }
   </script>
 </body>
-
 </html>
