@@ -7,20 +7,28 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌅</text></svg>"/>
   <style>
     :root {
-      --bg:       #0f1117;
-      --surface:  #1a1d27;
-      --surface2: #22263a;
-      --border:   #2e3250;
-      --text:     #e2e8f0;
-      --muted:    #8892b0;
+      --bg:        #0f1117;
+      --surface:   #1a1d27;
+      --surface2:  #22263a;
+      --border:    #2e3250;
+      --text:      #e2e8f0;
+      --muted:     #8892b0;
 
-      --c-urgent: #ff6584;
-      --c-cal:    #6c63ff;
-      --c-email:  #ff9f43;
-      --c-world:  #54a0ff;
-      --c-ai:     #43d9ad;
-      --c-tech:   #ffd166;
-      --c-action: #a29bfe;
+      --c-urgent:  #ff6584;
+      --c-cal:     #6c63ff;
+      --c-email:   #ff9f43;
+      --c-world:   #54a0ff;
+      --c-ai:      #43d9ad;
+      --c-tech:    #ffd166;
+      --c-action:  #a29bfe;
+      --c-weather: #00d2ff;
+      --c-stocks:  #2ed573;
+      --c-bday:    #ff6b9d;
+      --c-notion:  #ffa502;
+      --c-clients: #7bed9f;
+
+      --c-up:      #2ed573;
+      --c-down:    #ff4757;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -36,8 +44,8 @@
         height: 100vh;
         display: flex;
         flex-direction: column;
-        padding: 9px 14px 7px;
-        gap: 7px;
+        padding: 8px 12px 6px;
+        gap: 6px;
       }
 
       /* ── Header ── */
@@ -46,31 +54,56 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding-bottom: 8px;
+        padding-bottom: 6px;
         border-bottom: 1px solid var(--border);
+        gap: 14px;
       }
-      .header-left .greeting { font-size: 10px; color: var(--muted); letter-spacing: .12em; text-transform: uppercase; }
-      .header-left h1        { font-size: 20px; font-weight: 700; margin-top: 1px; }
-      .header-right          { font-size: 11px; color: var(--muted); }
+      .header-left .greeting { font-size: 9px; color: var(--muted); letter-spacing: .13em; text-transform: uppercase; }
+      .header-left h1        { font-size: 18px; font-weight: 700; margin-top: 1px; }
+
+      .header-center {
+        display: flex;
+        gap: 8px;
+        flex: 1;
+        justify-content: center;
+      }
+      .chip {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 11px;
+        border-radius: 20px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        font-size: 11px;
+        font-weight: 600;
+      }
+      .chip .chip-icon { font-size: 13px; }
+      .chip .chip-label { color: var(--muted); font-size: 9px; text-transform: uppercase; letter-spacing: .06em; font-weight: 700; margin-right: 2px; }
+      .chip-countdown { border-color: var(--c-bday); color: var(--c-bday); background: rgba(255,107,157,.08); }
+      .chip-countdown .chip-label { color: var(--c-bday); }
+
+      .header-right          { font-size: 10px; color: var(--muted); text-align: right; }
 
       /* ── Grid
-         Row 1 (auto)  → shrinks to content: urgent + schedule + emails
-         Row 2 (1fr)   → fills remaining: news sections
-         Row 3 (auto)  → shrinks to content: actions bar
+         Row 1 (auto)  → Weather | Urgent | Schedule
+         Row 2 (1fr)   → News sections (main focus)
+         Row 3 (auto)  → Stocks | Birthdays | Emails
+         Row 4 (auto)  → Notion Projects | Get More Clients
       ── */
       .grid {
         flex: 1;
         min-height: 0;
         display: grid;
-        grid-template-columns: 2fr 1.15fr 1.15fr 1.5fr;
-        grid-template-rows: auto 1fr auto;
-        gap: 8px;
+        grid-template-columns: 1.1fr 1.4fr 1.4fr 1.1fr;
+        grid-template-rows: auto 1fr auto auto;
+        gap: 7px;
       }
 
       /* ── Card base ── */
       .card {
         border-radius: 11px;
-        padding: 10px 13px;
+        padding: 9px 12px;
         display: flex;
         flex-direction: column;
         overflow: hidden;
@@ -82,30 +115,40 @@
       }
       .card:hover { filter: brightness(1.08); }
 
-      /* ── Card placement + colours ── */
-      .card-urgent { background: rgba(255,101,132,.10); border-left-color: var(--c-urgent); grid-column: 1 / 3; grid-row: 1; }
-      .card-cal    { background: rgba(108,99,255,.10);  border-left-color: var(--c-cal);    grid-column: 3;     grid-row: 1; }
-      .card-email  { background: rgba(255,159,67,.10);  border-left-color: var(--c-email);  grid-column: 4;     grid-row: 1; }
-      .card-world  { background: rgba(84,160,255,.10);  border-left-color: var(--c-world);  grid-column: 1 / 3; grid-row: 2; }
-      .card-ai     { background: rgba(67,217,173,.10);  border-left-color: var(--c-ai);     grid-column: 3;     grid-row: 2; }
-      .card-tech   { background: rgba(255,209,102,.10); border-left-color: var(--c-tech);   grid-column: 4;     grid-row: 2; }
-      .card-actions{ background: rgba(162,155,254,.07); border-left-color: var(--c-action); grid-column: 1/-1;  grid-row: 3; }
+      /* ── Placement + colours ── */
+      .card-weather { background: rgba(  0,210,255,.10); border-left-color: var(--c-weather); grid-column: 1;     grid-row: 1; }
+      .card-urgent  { background: rgba(255,101,132,.10); border-left-color: var(--c-urgent);  grid-column: 2 / 4; grid-row: 1; }
+      .card-cal     { background: rgba(108, 99,255,.10); border-left-color: var(--c-cal);     grid-column: 4;     grid-row: 1; }
+
+      .card-world   { background: rgba( 84,160,255,.10); border-left-color: var(--c-world);   grid-column: 1 / 3; grid-row: 2; }
+      .card-ai      { background: rgba( 67,217,173,.10); border-left-color: var(--c-ai);      grid-column: 3;     grid-row: 2; }
+      .card-tech    { background: rgba(255,209,102,.10); border-left-color: var(--c-tech);    grid-column: 4;     grid-row: 2; }
+
+      .card-stocks  { background: rgba( 46,213,115,.08); border-left-color: var(--c-stocks);  grid-column: 1 / 3; grid-row: 3; }
+      .card-bday    { background: rgba(255,107,157,.09); border-left-color: var(--c-bday);    grid-column: 3;     grid-row: 3; }
+      .card-email   { background: rgba(255,159, 67,.10); border-left-color: var(--c-email);   grid-column: 4;     grid-row: 3; }
+
+      .card-notion  { background: rgba(255,165,  2,.08); border-left-color: var(--c-notion);  grid-column: 1 / 3; grid-row: 4; }
+      .card-clients { background: rgba(123,237,159,.08); border-left-color: var(--c-clients); grid-column: 3 / 5; grid-row: 4; }
 
       /* ── Card header ── */
-      .card-header { display: flex; align-items: center; gap: 7px; flex-shrink: 0; margin-bottom: 7px; }
+      .card-header { display: flex; align-items: center; gap: 6px; flex-shrink: 0; margin-bottom: 6px; }
       .card-icon   { font-size: 14px; line-height: 1; }
-      .card-title  { font-size: 10px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; }
-      .badge       { margin-left: auto; border-radius: 20px; font-size: 10px; font-weight: 700; padding: 1px 8px; border: 1px solid; }
+      .card-title  { font-size: 9px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; }
+      .badge       { margin-left: auto; border-radius: 20px; font-size: 9px; font-weight: 700; padding: 1px 7px; border: 1px solid; }
 
-      .card-urgent  .card-title, .card-urgent  .badge { color: var(--c-urgent); border-color: var(--c-urgent); background: rgba(255,101,132,.12); }
-      .card-cal     .card-title, .card-cal     .badge { color: var(--c-cal);    border-color: var(--c-cal);    background: rgba(108, 99,255,.12); }
-      .card-email   .card-title, .card-email   .badge { color: var(--c-email);  border-color: var(--c-email);  background: rgba(255,159, 67,.12); }
-      .card-world   .card-title, .card-world   .badge { color: var(--c-world);  border-color: var(--c-world);  background: rgba( 84,160,255,.12); }
-      .card-ai      .card-title, .card-ai      .badge { color: var(--c-ai);     border-color: var(--c-ai);     background: rgba( 67,217,173,.12); }
-      .card-tech    .card-title, .card-tech    .badge { color: var(--c-tech);   border-color: var(--c-tech);   background: rgba(255,209,102,.12); }
-      .card-actions .card-title                       { color: var(--c-action); }
+      .card-weather .card-title, .card-weather .badge { color: var(--c-weather); border-color: var(--c-weather); background: rgba(  0,210,255,.12); }
+      .card-urgent  .card-title, .card-urgent  .badge { color: var(--c-urgent);  border-color: var(--c-urgent);  background: rgba(255,101,132,.12); }
+      .card-cal     .card-title, .card-cal     .badge { color: var(--c-cal);     border-color: var(--c-cal);     background: rgba(108, 99,255,.12); }
+      .card-world   .card-title, .card-world   .badge { color: var(--c-world);   border-color: var(--c-world);   background: rgba( 84,160,255,.12); }
+      .card-ai      .card-title, .card-ai      .badge { color: var(--c-ai);      border-color: var(--c-ai);      background: rgba( 67,217,173,.12); }
+      .card-tech    .card-title, .card-tech    .badge { color: var(--c-tech);    border-color: var(--c-tech);    background: rgba(255,209,102,.12); }
+      .card-stocks  .card-title, .card-stocks  .badge { color: var(--c-stocks);  border-color: var(--c-stocks);  background: rgba( 46,213,115,.12); }
+      .card-bday    .card-title, .card-bday    .badge { color: var(--c-bday);    border-color: var(--c-bday);    background: rgba(255,107,157,.12); }
+      .card-email   .card-title, .card-email   .badge { color: var(--c-email);   border-color: var(--c-email);   background: rgba(255,159, 67,.12); }
+      .card-notion  .card-title, .card-notion  .badge { color: var(--c-notion);  border-color: var(--c-notion);  background: rgba(255,165,  2,.12); }
+      .card-clients .card-title, .card-clients .badge { color: var(--c-clients); border-color: var(--c-clients); background: rgba(123,237,159,.12); }
 
-      /* ── Scrollable card body (row 2 news cards only really scroll) ── */
       .card-body {
         flex: 1;
         overflow-y: auto;
@@ -116,30 +159,7 @@
       .card-body::-webkit-scrollbar { width: 3px; }
       .card-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
-      /* ── Actions: horizontal tiles ── */
-      .actions-strip { display: flex; gap: 8px; align-items: stretch; }
-      .action-tile {
-        flex: 1;
-        background: var(--surface2);
-        border: 1px solid rgba(162,155,254,.18);
-        border-radius: 8px;
-        padding: 8px 11px;
-        display: flex;
-        align-items: flex-start;
-        gap: 8px;
-      }
-      .action-num {
-        width: 19px; height: 19px; border-radius: 50%;
-        background: var(--c-action); color: #fff;
-        font-size: 10px; font-weight: 800;
-        display: flex; align-items: center; justify-content: center;
-        flex-shrink: 0; margin-top: 1px;
-      }
-      .a-label { font-size: 12px; font-weight: 600; line-height: 1.3; }
-      .a-sub   { font-size: 10px; color: var(--muted); margin-top: 2px; line-height: 1.3; }
-
-      /* ── Footer ── */
-      .footer { flex-shrink: 0; text-align: center; font-size: 10px; color: var(--muted); padding-top: 3px; border-top: 1px solid var(--border); }
+      .footer { flex-shrink: 0; text-align: center; font-size: 9px; color: var(--muted); padding-top: 2px; border-top: 1px solid var(--border); }
       .footer a { color: var(--c-cal); text-decoration: none; }
     }
 
@@ -149,11 +169,14 @@
     @media (max-width: 1023px) {
       body { padding: 18px 14px 50px; }
       .wrapper { display: block; }
-
-      .header { text-align: center; margin-bottom: 24px; }
+      .header { text-align: center; margin-bottom: 20px; }
       .header-left .greeting { font-size: 11px; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 4px; }
       .header-left h1        { font-size: 22px; font-weight: 700; }
-      .header-right          { font-size: 11px; color: var(--muted); margin-top: 5px; }
+      .header-center         { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 12px; }
+      .chip                  { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; background: var(--surface); border: 1px solid var(--border); font-size: 12px; font-weight: 600; }
+      .chip-countdown        { border-color: var(--c-bday); color: var(--c-bday); background: rgba(255,107,157,.08); }
+      .chip .chip-label      { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .06em; font-weight: 700; margin-right: 2px; }
+      .header-right          { font-size: 11px; color: var(--muted); margin-top: 10px; }
 
       .grid { display: flex; flex-direction: column; gap: 14px; }
 
@@ -164,47 +187,36 @@
         border-radius: 12px;
         padding: 16px;
       }
+      .card-weather { border-left-color: var(--c-weather); }
       .card-urgent  { border-left-color: var(--c-urgent); }
       .card-cal     { border-left-color: var(--c-cal); }
-      .card-email   { border-left-color: var(--c-email); }
       .card-world   { border-left-color: var(--c-world); }
       .card-ai      { border-left-color: var(--c-ai); }
       .card-tech    { border-left-color: var(--c-tech); }
-      .card-actions { border-left-color: var(--c-action); }
+      .card-stocks  { border-left-color: var(--c-stocks); }
+      .card-bday    { border-left-color: var(--c-bday); }
+      .card-email   { border-left-color: var(--c-email); }
+      .card-notion  { border-left-color: var(--c-notion); }
+      .card-clients { border-left-color: var(--c-clients); }
 
       .card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
       .card-icon   { font-size: 18px; }
       .card-title  { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
       .badge       { margin-left: auto; border-radius: 20px; font-size: 11px; font-weight: 700; padding: 2px 9px; border: 1px solid; }
 
-      .card-urgent  .card-title, .card-urgent  .badge { color: var(--c-urgent); border-color: var(--c-urgent); }
-      .card-cal     .card-title, .card-cal     .badge { color: var(--c-cal);    border-color: var(--c-cal); }
-      .card-email   .card-title, .card-email   .badge { color: var(--c-email);  border-color: var(--c-email); }
-      .card-world   .card-title, .card-world   .badge { color: var(--c-world);  border-color: var(--c-world); }
-      .card-ai      .card-title, .card-ai      .badge { color: var(--c-ai);     border-color: var(--c-ai); }
-      .card-tech    .card-title, .card-tech    .badge { color: var(--c-tech);   border-color: var(--c-tech); }
-      .card-actions .card-title                       { color: var(--c-action); }
+      .card-weather .card-title, .card-weather .badge { color: var(--c-weather); border-color: var(--c-weather); }
+      .card-urgent  .card-title, .card-urgent  .badge { color: var(--c-urgent);  border-color: var(--c-urgent); }
+      .card-cal     .card-title, .card-cal     .badge { color: var(--c-cal);     border-color: var(--c-cal); }
+      .card-world   .card-title, .card-world   .badge { color: var(--c-world);   border-color: var(--c-world); }
+      .card-ai      .card-title, .card-ai      .badge { color: var(--c-ai);      border-color: var(--c-ai); }
+      .card-tech    .card-title, .card-tech    .badge { color: var(--c-tech);    border-color: var(--c-tech); }
+      .card-stocks  .card-title, .card-stocks  .badge { color: var(--c-stocks);  border-color: var(--c-stocks); }
+      .card-bday    .card-title, .card-bday    .badge { color: var(--c-bday);    border-color: var(--c-bday); }
+      .card-email   .card-title, .card-email   .badge { color: var(--c-email);   border-color: var(--c-email); }
+      .card-notion  .card-title, .card-notion  .badge { color: var(--c-notion);  border-color: var(--c-notion); }
+      .card-clients .card-title, .card-clients .badge { color: var(--c-clients); border-color: var(--c-clients); }
 
       .card-body { display: block; }
-
-      .actions-strip { display: flex; flex-direction: column; gap: 10px; }
-      .action-tile {
-        background: var(--surface2);
-        border: 1px solid rgba(162,155,254,.2);
-        border-radius: 9px;
-        padding: 12px;
-        display: flex; align-items: flex-start; gap: 10px;
-      }
-      .action-num {
-        width: 22px; height: 22px; border-radius: 50%;
-        background: var(--c-action); color: #fff;
-        font-size: 11px; font-weight: 800;
-        display: flex; align-items: center; justify-content: center;
-        flex-shrink: 0; margin-top: 1px;
-      }
-      .a-label { font-size: 13px; font-weight: 600; line-height: 1.3; }
-      .a-sub   { font-size: 12px; color: var(--muted); margin-top: 3px; }
-
       .footer { text-align: center; margin-top: 30px; font-size: 11px; color: var(--muted); }
       .footer a { color: var(--c-cal); text-decoration: none; }
     }
@@ -215,56 +227,163 @@
     .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--c-ai); margin-right: 5px; animation: pulse 2s infinite; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
 
+    /* Weather */
+    .weather-main { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .w-emoji { font-size: 32px; line-height: 1; }
+    .w-temp  { font-size: 26px; font-weight: 700; color: var(--c-weather); line-height: 1; }
+    .w-sub   { font-size: 11px; color: var(--muted); }
+    .w-details { display: flex; gap: 10px; font-size: 10px; color: var(--muted); flex-wrap: wrap; margin-top: 4px; }
+    .w-details span strong { color: var(--text); font-weight: 600; }
+
     /* Urgent */
-    .u-row { display: flex; align-items: flex-start; gap: 9px; padding: 7px 0; border-bottom: 1px solid rgba(255,101,132,.14); }
+    .u-row { display: flex; align-items: flex-start; gap: 9px; padding: 5px 0; border-bottom: 1px solid rgba(255,101,132,.14); }
     .u-row:last-child { border-bottom: none; }
     .u-dot   { width: 7px; height: 7px; border-radius: 50%; background: var(--c-urgent); flex-shrink: 0; margin-top: 5px; }
-    .u-label { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
-    .u-sub   { font-size: 11px; color: var(--muted); line-height: 1.4; }
+    .u-label { font-size: 12px; font-weight: 600; margin-bottom: 1px; }
+    .u-sub   { font-size: 10px; color: var(--muted); line-height: 1.4; }
 
     /* Calendar */
-    .ev-row   { display: flex; align-items: flex-start; gap: 10px; padding: 7px 0; border-bottom: 1px solid rgba(108,99,255,.13); }
+    .ev-row   { display: flex; align-items: flex-start; gap: 9px; padding: 5px 0; border-bottom: 1px solid rgba(108,99,255,.13); }
     .ev-row:last-child { border-bottom: none; }
-    .ev-time  { font-size: 11px; font-weight: 700; color: var(--c-cal); min-width: 44px; padding-top: 2px; }
-    .ev-title { font-size: 13px; font-weight: 500; }
-    .ev-sub   { font-size: 11px; color: var(--muted); margin-top: 2px; }
-    .tag { display: inline-block; font-size: 10px; font-weight: 600; border-radius: 4px; padding: 1px 5px; margin-left: 5px; }
+    .ev-time  { font-size: 10px; font-weight: 700; color: var(--c-cal); min-width: 40px; padding-top: 2px; }
+    .ev-title { font-size: 12px; font-weight: 500; }
+    .ev-sub   { font-size: 10px; color: var(--muted); margin-top: 1px; }
+    .tag { display: inline-block; font-size: 9px; font-weight: 600; border-radius: 4px; padding: 1px 5px; margin-left: 5px; }
     .tag-bday { color: var(--c-tech); background: rgba(255,209,102,.1); border: 1px solid rgba(255,209,102,.3); }
 
     /* Emails */
-    .em-group   { font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); margin: 5px 0 5px; }
-    .em-row     { padding: 6px 0; border-bottom: 1px solid rgba(255,159,67,.1); }
+    .em-group   { font-size: 9px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); margin: 4px 0 4px; }
+    .em-row     { padding: 4px 0; border-bottom: 1px solid rgba(255,159,67,.1); }
     .em-row:last-child { border-bottom: none; }
-    .em-sender  { font-size: 12px; font-weight: 700; color: var(--c-email); }
-    .em-subject { font-size: 11px; color: var(--muted); margin-top: 1px; }
-    .em-summary { font-size: 11px; margin-top: 3px; opacity: .8; }
+    .em-sender  { font-size: 11px; font-weight: 700; color: var(--c-email); }
+    .em-subject { font-size: 10px; color: var(--muted); margin-top: 1px; }
+    .em-summary { font-size: 10px; margin-top: 2px; opacity: .8; }
 
     /* News */
-    .n-row     { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,.05); }
+    .n-row     { padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,.05); }
     .n-row:last-child { border-bottom: none; }
-    .n-headline{ font-size: 13px; font-weight: 500; line-height: 1.35; margin-bottom: 3px; }
-    .n-summary { font-size: 11px; color: var(--muted); line-height: 1.4; }
-    .n-source  { font-size: 10px; font-weight: 700; margin-top: 3px; letter-spacing: .04em; }
+    .n-headline{ font-size: 12px; font-weight: 500; line-height: 1.35; margin-bottom: 3px; }
+    .n-summary { font-size: 10px; color: var(--muted); line-height: 1.4; }
+    .n-source  { font-size: 9px; font-weight: 700; margin-top: 3px; letter-spacing: .04em; }
     .card-world .n-source { color: var(--c-world); }
     .card-ai    .n-source { color: var(--c-ai); }
     .card-tech  .n-source { color: var(--c-tech); }
+
+    /* Stocks */
+    .stocks-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px 12px; }
+    .stock-tile  { display: flex; align-items: center; gap: 9px; padding: 5px 0; border-bottom: 1px solid rgba(46,213,115,.1); }
+    .stock-tile:nth-last-child(-n+2) { border-bottom: none; }
+    .stock-info  { display: flex; flex-direction: column; min-width: 62px; }
+    .stock-symbol { font-size: 11px; font-weight: 800; color: var(--text); letter-spacing: .03em; }
+    .stock-price  { font-size: 12px; font-weight: 600; margin-top: 1px; }
+    .stock-change { font-size: 10px; font-weight: 700; margin-top: 1px; }
+    .stock-up   { color: var(--c-up); }
+    .stock-down { color: var(--c-down); }
+    .spark      { flex: 1; min-width: 90px; height: 42px; }
+
+    /* Birthdays */
+    .bday-row { display: flex; align-items: center; gap: 8px; padding: 4px 0; border-bottom: 1px solid rgba(255,107,157,.12); }
+    .bday-row:last-child { border-bottom: none; }
+    .bday-date {
+      font-size: 9px; font-weight: 700; color: var(--c-bday);
+      background: rgba(255,107,157,.1); border: 1px solid rgba(255,107,157,.3);
+      border-radius: 6px; padding: 2px 6px; min-width: 48px; text-align: center;
+      flex-shrink: 0;
+    }
+    .bday-name { font-size: 11px; font-weight: 500; flex: 1; }
+    .bday-in   { font-size: 9px; color: var(--muted); }
+
+    /* Notion Projects */
+    .proj-row { display: flex; align-items: flex-start; gap: 8px; padding: 4px 0; border-bottom: 1px solid rgba(255,165,2,.1); }
+    .proj-row:last-child { border-bottom: none; }
+    .proj-phase {
+      font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+      padding: 2px 6px; border-radius: 4px; flex-shrink: 0; margin-top: 2px; min-width: 66px; text-align: center;
+    }
+    .ph-progress { background: rgba(108, 99,255,.15); color: var(--c-cal);    border: 1px solid rgba(108, 99,255,.35); }
+    .ph-design   { background: rgba( 84,160,255,.15); color: var(--c-world);  border: 1px solid rgba( 84,160,255,.35); }
+    .ph-finish   { background: rgba(255,159, 67,.15); color: var(--c-email);  border: 1px solid rgba(255,159, 67,.35); }
+    .ph-concept  { background: rgba(162,155,254,.15); color: var(--c-action); border: 1px solid rgba(162,155,254,.35); }
+    .ph-potential{ background: rgba(136,146,176,.15); color: var(--muted);    border: 1px solid rgba(136,146,176,.35); }
+    .proj-body { flex: 1; min-width: 0; }
+    .proj-name { font-size: 11px; font-weight: 600; }
+    .proj-meta { font-size: 9px; color: var(--muted); margin-top: 1px; }
+    .proj-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+
+    /* Get More Clients */
+    .cli-row { display: flex; align-items: flex-start; gap: 8px; padding: 5px 0; border-bottom: 1px solid rgba(123,237,159,.12); }
+    .cli-row:last-child { border-bottom: none; }
+    .cli-num {
+      width: 18px; height: 18px; border-radius: 50%;
+      background: var(--c-clients); color: #0f1117;
+      font-size: 10px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+    }
+    .cli-label { font-size: 11px; font-weight: 600; }
+    .cli-sub   { font-size: 10px; color: var(--muted); margin-top: 1px; line-height: 1.35; }
   </style>
 </head>
 <body>
 <div class="wrapper">
 
-  <!-- HEADER -->
+  <!-- ══════════ HEADER ══════════ -->
   <div class="header">
     <div class="header-left">
       <div class="greeting">Good morning, Martin</div>
       <h1>🌅 Thursday, April 9, 2026</h1>
     </div>
+    <div class="header-center">
+      <div class="chip chip-countdown">
+        <span class="chip-icon">🎂</span>
+        <span class="chip-label">Your birthday</span>
+        <strong>320 days</strong>
+        <span style="color:var(--muted);font-weight:500;">· Feb 23</span>
+      </div>
+      <div class="chip">
+        <span class="chip-icon">📍</span>
+        <span class="chip-label">Rajec</span>
+        <strong>4°C</strong>
+        <span style="color:var(--muted);font-weight:500;">· clear</span>
+      </div>
+    </div>
     <div class="header-right">
-      <span class="dot"></span>Last updated at 06:06 PM · Auto-refreshes daily
+      <div><span class="dot"></span>Last updated 18:15 CET</div>
+      <div style="margin-top:2px;">Auto-refresh daily</div>
     </div>
   </div>
 
+  <!-- ══════════ GRID ══════════ -->
   <div class="grid">
+
+    <!-- 🌤️ WEATHER -->
+    <div class="card card-weather">
+      <div class="card-header">
+        <span class="card-icon">🌤️</span>
+        <span class="card-title">Weather — Rajec</span>
+        <span class="badge">today</span>
+      </div>
+      <div class="card-body">
+        <div class="weather-main">
+          <span class="w-emoji">☀️</span>
+          <div>
+            <div class="w-temp">4°C</div>
+            <div class="w-sub">Clear · feels cool</div>
+          </div>
+        </div>
+        <div class="w-details">
+          <span>📈 <strong>7°C</strong> max</span>
+          <span>📉 <strong>-1°C</strong> min</span>
+          <span>💧 <strong>0%</strong> rain</span>
+          <span>💨 <strong>13</strong> km/h</span>
+        </div>
+        <div class="w-details" style="margin-top:3px;">
+          <span>🌅 <strong>06:05</strong></span>
+          <span>🌇 <strong>19:28</strong></span>
+          <span>💦 <strong>52%</strong> hum.</span>
+        </div>
+      </div>
+    </div>
 
     <!-- ⚡ URGENT -->
     <div class="card card-urgent">
@@ -277,15 +396,15 @@
         <div class="u-row">
           <span class="u-dot"></span>
           <div>
-            <div class="u-label">🔒 Microsoft account password changed today</div>
-            <div class="u-sub">Changed Apr 9 at 12:06 CET. If this wasn't you — change it immediately and revoke all active sessions.</div>
+            <div class="u-label">🔒 Microsoft account password changed today at 12:06 CET</div>
+            <div class="u-sub">If this wasn't you — change it immediately and revoke all active sessions.</div>
           </div>
         </div>
         <div class="u-row">
           <span class="u-dot"></span>
           <div>
             <div class="u-label">🔑 App passwords must be updated</div>
-            <div class="u-sub">With 2FA enabled, all apps using the old password will stop working. Go to account.microsoft.com → Security → App passwords.</div>
+            <div class="u-sub">With 2FA enabled, all apps using the old password will stop working. account.microsoft.com → Security → App passwords.</div>
           </div>
         </div>
       </div>
@@ -302,42 +421,9 @@
         <div class="ev-row">
           <div class="ev-time">All day</div>
           <div>
-            <div class="ev-title">Majo Strba — narodeniny <span class="tag tag-bday">🎂 BIRTHDAY</span></div>
-            <div class="ev-sub">Don't forget to send a birthday message!</div>
+            <div class="ev-title">Majo Strba <span class="tag tag-bday">🎂 BIRTHDAY</span></div>
+            <div class="ev-sub">Don't forget to send a message!</div>
           </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 📧 EMAILS -->
-    <div class="card card-email">
-      <div class="card-header">
-        <span class="card-icon">📧</span>
-        <span class="card-title">Emails</span>
-        <span class="badge">5 unread</span>
-      </div>
-      <div class="card-body">
-        <div class="em-group">⚠️ Needs action</div>
-        <div class="em-row">
-          <div class="em-sender">Microsoft Account</div>
-          <div class="em-subject">Zmena hesla konta Microsoft</div>
-          <div class="em-summary">Password changed Apr 9 at 12:06 CET — verify this was you.</div>
-        </div>
-        <div class="em-row">
-          <div class="em-sender">Microsoft Account</div>
-          <div class="em-subject">Heslá aplikácií treba aktualizovať</div>
-          <div class="em-summary">App passwords need refreshing after the change.</div>
-        </div>
-        <div class="em-group" style="margin-top:8px;">FYI — no action needed</div>
-        <div class="em-row">
-          <div class="em-sender">GitHub</div>
-          <div class="em-subject">Fine-grained PAT "Claude" added</div>
-          <div class="em-summary">New Cowork token added to your account.</div>
-        </div>
-        <div class="em-row">
-          <div class="em-sender">GitHub</div>
-          <div class="em-subject">Classic PAT "claude-cowork" added &amp; regenerated</div>
-          <div class="em-summary">Token with admin scopes was created and refreshed.</div>
         </div>
       </div>
     </div>
@@ -357,17 +443,17 @@
         </div>
         <div class="n-row">
           <div class="n-headline">🗳️ Democrats overperform in Wisconsin Supreme Court election</div>
-          <div class="n-summary">Wisconsin voters elected a new liberal justice, expanding the court's progressive majority and continuing Democrat outperformance in special elections.</div>
+          <div class="n-summary">Wisconsin voters elected a new liberal justice, expanding the court's progressive majority in special elections.</div>
           <div class="n-source">NPR</div>
         </div>
         <div class="n-row">
           <div class="n-headline">📺 OpenAI acquires Silicon Valley insider talk show</div>
-          <div class="n-summary">OpenAI purchased a niche tech-insider talk show as a strategic move to shape public narrative around artificial intelligence.</div>
+          <div class="n-summary">OpenAI purchased a niche tech-insider talk show as a strategic move to shape public narrative around AI.</div>
           <div class="n-source">NBC News</div>
         </div>
         <div class="n-row">
           <div class="n-headline">🕵️ ICE using spyware to intercept encrypted fentanyl trafficker messages</div>
-          <div class="n-summary">ICE's top official revealed to Congress the agency deployed spyware to break into encrypted communications in drug investigations.</div>
+          <div class="n-summary">ICE's top official revealed to Congress the agency deployed spyware to break into encrypted communications.</div>
           <div class="n-source">NBC News</div>
         </div>
       </div>
@@ -383,98 +469,316 @@
       <div class="card-body">
         <div class="n-row">
           <div class="n-headline">Utah first to authorize AI prescription renewals</div>
-          <div class="n-summary">A new law lets AI systems autonomously renew drug prescriptions — first state to move AI beyond diagnosis into treatment.</div>
+          <div class="n-summary">New law lets AI systems autonomously renew drug prescriptions — first state to extend AI beyond diagnosis.</div>
           <div class="n-source">HumAI Blog</div>
         </div>
         <div class="n-row">
-          <div class="n-headline">Meta releases Muse Spark — ranks #4 on AI Intelligence Index</div>
+          <div class="n-headline">Meta releases Muse Spark — ranks #4 on AI Index</div>
           <div class="n-summary">Closed-source model scores 52 on Artificial Analysis Index v4, strong at figure understanding and medical reasoning.</div>
           <div class="n-source">Artificial Analysis</div>
         </div>
         <div class="n-row">
-          <div class="n-headline">AI industry enters consolidation phase — hype gives way to results</div>
-          <div class="n-summary">Q1 deployments deliver first real outcomes; sector shifts toward pragmatic enterprise use over speculative launches.</div>
+          <div class="n-headline">AI industry enters consolidation — hype gives way to results</div>
+          <div class="n-summary">Q1 deployments deliver first real outcomes; sector shifts toward pragmatic enterprise use.</div>
           <div class="n-source">TechCrunch</div>
         </div>
         <div class="n-row">
           <div class="n-headline">Physical AI robots accelerate solar farm buildouts</div>
-          <div class="n-summary">AI-powered field robots (Maximo, Aigen) cut installation time and herbicide use dramatically across renewable energy sites.</div>
+          <div class="n-summary">AI-powered field robots cut installation time and herbicide use across renewable sites.</div>
           <div class="n-source">NVIDIA Blog</div>
         </div>
       </div>
     </div>
 
-    <!-- 📱 TECH & ELECTRONICS -->
+    <!-- 📱 TECH -->
     <div class="card card-tech">
       <div class="card-header">
         <span class="card-icon">📱</span>
-        <span class="card-title">Electronics &amp; Tech Brands</span>
+        <span class="card-title">Electronics &amp; Tech</span>
         <span class="badge">4 stories</span>
       </div>
       <div class="card-body">
         <div class="n-row">
           <div class="n-headline">Apple confirms US Mac manufacturing in 2026</div>
-          <div class="n-summary">Apple plans to produce select Mac models domestically this year in response to ongoing tariff pressure.</div>
+          <div class="n-summary">Apple plans to produce select Mac models domestically this year in response to tariff pressure.</div>
           <div class="n-source">Engadget</div>
         </div>
         <div class="n-row">
-          <div class="n-headline">Sony unveils "True RGB" display technology brand</div>
-          <div class="n-summary">Sony introduces "True RGB" brand name for its proprietary display pipeline, competing against Samsung QD-OLED and LG WRGB.</div>
+          <div class="n-headline">Sony unveils "True RGB" display technology</div>
+          <div class="n-summary">Sony introduces "True RGB" brand name for its proprietary display pipeline to compete with QD-OLED.</div>
           <div class="n-source">TechRadar</div>
         </div>
         <div class="n-row">
           <div class="n-headline">Meta launches improved WhatsApp for CarPlay</div>
-          <div class="n-summary">New WhatsApp CarPlay update brings deeper Apple integration with hands-free messaging and better audio routing.</div>
+          <div class="n-summary">New update brings deeper Apple integration with hands-free messaging and better audio routing.</div>
           <div class="n-source">Engadget</div>
         </div>
         <div class="n-row">
-          <div class="n-headline">Smartwatches dominate wearable AI market in 2026</div>
-          <div class="n-summary">North America leads global wearable AI adoption; smartwatches hold the largest share with health monitoring, payments, and voice AI.</div>
+          <div class="n-headline">Smartwatches dominate wearable AI market 2026</div>
+          <div class="n-summary">North America leads adoption; smartwatches hold largest share with health, payments, voice AI.</div>
           <div class="n-source">Yahoo Finance</div>
         </div>
       </div>
     </div>
 
-    <!-- 📝 ACTIONS -->
-    <div class="card card-actions">
+    <!-- 📈 STOCKS -->
+    <div class="card card-stocks">
       <div class="card-header">
-        <span class="card-icon">📝</span>
-        <span class="card-title">Suggested Actions — what to tackle first</span>
+        <span class="card-icon">📈</span>
+        <span class="card-title">Stocks — 1 month trend</span>
+        <span class="badge">4 tickers</span>
       </div>
-      <div class="actions-strip">
-        <div class="action-tile">
-          <div class="action-num">1</div>
+      <div class="card-body">
+        <div class="stocks-grid">
+
+          <div class="stock-tile">
+            <div class="stock-info">
+              <div class="stock-symbol">AAPL</div>
+              <div class="stock-price">$259.02</div>
+              <div class="stock-change stock-down">▼ 0.33%</div>
+            </div>
+            <svg class="spark" viewBox="0 0 170 42" preserveAspectRatio="none">
+              <path d="M 2.0,5.4 L 9.5,3.0 L 17.1,3.1 L 24.6,15.9 L 32.2,30.2 L 39.7,23.3 L 47.3,19.7 L 54.8,30.6 L 62.4,33.1 L 69.9,35.6 L 77.5,26.7 L 85.0,26.3 L 92.5,23.8 L 100.1,23.1 L 107.6,33.5 L 115.2,39.0 L 122.7,20.8 L 130.3,16.2 L 137.8,15.4 L 145.4,8.0 L 152.9,21.6 L 160.5,7.9 L 168.0,7.6"
+                fill="none" stroke="#ff4757" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+
+          <div class="stock-tile">
+            <div class="stock-info">
+              <div class="stock-symbol">NVDA</div>
+              <div class="stock-price">$183.35</div>
+              <div class="stock-change stock-up">▲ 0.38%</div>
+            </div>
+            <svg class="spark" viewBox="0 0 170 42" preserveAspectRatio="none">
+              <path d="M 2.0,8.8 L 9.5,5.2 L 17.1,3.0 L 24.6,8.0 L 32.2,13.0 L 39.7,7.8 L 47.3,10.1 L 54.8,12.7 L 62.4,15.9 L 69.9,26.0 L 77.5,20.9 L 85.0,21.7 L 92.5,15.7 L 100.1,28.5 L 107.6,34.9 L 115.2,39.0 L 122.7,23.1 L 130.3,20.7 L 137.8,17.9 L 145.4,17.5 L 152.9,16.7 L 160.5,9.8 L 168.0,7.6"
+                fill="none" stroke="#2ed573" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+
+          <div class="stock-tile">
+            <div class="stock-info">
+              <div class="stock-symbol">MSFT</div>
+              <div class="stock-price">$371.20</div>
+              <div class="stock-change stock-down">▼ 9.33%</div>
+            </div>
+            <svg class="spark" viewBox="0 0 170 42" preserveAspectRatio="none">
+              <path d="M 2.0,3.0 L 9.5,5.5 L 17.1,6.1 L 24.6,8.2 L 32.2,12.5 L 39.7,9.5 L 47.3,9.8 L 54.8,15.1 L 62.4,16.9 L 69.9,21.8 L 77.5,21.1 L 85.0,28.1 L 92.5,29.2 L 100.1,32.7 L 107.6,39.0 L 115.2,37.5 L 122.7,29.8 L 130.3,30.4 L 137.8,27.6 L 145.4,28.0 L 152.9,28.4 L 160.5,27.0 L 168.0,29.1"
+                fill="none" stroke="#ff4757" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+
+          <div class="stock-tile">
+            <div class="stock-info">
+              <div class="stock-symbol">TSLA</div>
+              <div class="stock-price">$347.71</div>
+              <div class="stock-change stock-down">▼ 12.78%</div>
+            </div>
+            <svg class="spark" viewBox="0 0 170 42" preserveAspectRatio="none">
+              <path d="M 2.0,8.1 L 9.5,7.8 L 17.1,3.0 L 24.6,10.1 L 32.2,12.3 L 39.7,9.8 L 47.3,7.8 L 54.8,11.4 L 62.4,18.3 L 69.9,25.2 L 77.5,18.0 L 85.0,16.8 L 92.5,15.2 L 100.1,22.9 L 107.6,28.6 L 115.2,32.3 L 122.7,23.1 L 130.3,17.8 L 137.8,29.3 L 145.4,33.7 L 152.9,37.1 L 160.5,39.0 L 168.0,36.5"
+                fill="none" stroke="#ff4757" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- 🎂 UPCOMING BIRTHDAYS -->
+    <div class="card card-bday">
+      <div class="card-header">
+        <span class="card-icon">🎂</span>
+        <span class="card-title">Upcoming Birthdays</span>
+        <span class="badge">next 30d</span>
+      </div>
+      <div class="card-body">
+        <div class="bday-row">
+          <div class="bday-date">Apr 16</div>
+          <div class="bday-name">Mama Darina</div>
+          <div class="bday-in">in 7d</div>
+        </div>
+        <div class="bday-row">
+          <div class="bday-date">Apr 22</div>
+          <div class="bday-name">Milan Mydlo</div>
+          <div class="bday-in">in 13d</div>
+        </div>
+        <div class="bday-row">
+          <div class="bday-date">Apr 23</div>
+          <div class="bday-name">Saška Straňanková</div>
+          <div class="bday-in">in 14d</div>
+        </div>
+        <div class="bday-row">
+          <div class="bday-date">Apr 26</div>
+          <div class="bday-name">Danko Kecera</div>
+          <div class="bday-in">in 17d</div>
+        </div>
+        <div class="bday-row">
+          <div class="bday-date">May 2</div>
+          <div class="bday-name">Katarína Strbová</div>
+          <div class="bday-in">in 23d</div>
+        </div>
+        <div class="bday-row">
+          <div class="bday-date">May 3</div>
+          <div class="bday-name">Zuzana Straňanková</div>
+          <div class="bday-in">in 24d</div>
+        </div>
+        <div class="bday-row">
+          <div class="bday-date">May 8</div>
+          <div class="bday-name">Roman Kotrík</div>
+          <div class="bday-in">in 29d</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 📧 EMAILS -->
+    <div class="card card-email">
+      <div class="card-header">
+        <span class="card-icon">📧</span>
+        <span class="card-title">Emails</span>
+        <span class="badge">5 unread</span>
+      </div>
+      <div class="card-body">
+        <div class="em-group">⚠️ Needs action</div>
+        <div class="em-row">
+          <div class="em-sender">Microsoft Account</div>
+          <div class="em-subject">Zmena hesla konta</div>
+          <div class="em-summary">Verify this was you — 12:06 CET.</div>
+        </div>
+        <div class="em-row">
+          <div class="em-sender">Microsoft Account</div>
+          <div class="em-subject">Heslá aplikácií treba aktualizovať</div>
+          <div class="em-summary">App passwords need refresh.</div>
+        </div>
+        <div class="em-group" style="margin-top:6px;">FYI</div>
+        <div class="em-row">
+          <div class="em-sender">GitHub</div>
+          <div class="em-subject">Fine-grained PAT "Claude" added</div>
+        </div>
+        <div class="em-row">
+          <div class="em-sender">GitHub</div>
+          <div class="em-subject">Classic PAT "claude-cowork" regenerated</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 📋 NOTION — ACTIVE PROJECTS -->
+    <div class="card card-notion">
+      <div class="card-header">
+        <span class="card-icon">📋</span>
+        <span class="card-title">Notion — Active Web Projects</span>
+        <span class="badge">11 projects</span>
+      </div>
+      <div class="card-body">
+        <div class="proj-cols">
+
+          <div class="proj-row">
+            <div class="proj-phase ph-progress">In Progress</div>
+            <div class="proj-body">
+              <div class="proj-name">⚽ OŠK Kamenná Poruba</div>
+              <div class="proj-meta">oskkp.sk · 14 open tasks</div>
+            </div>
+          </div>
+
+          <div class="proj-row">
+            <div class="proj-phase ph-finish">Finishing</div>
+            <div class="proj-body">
+              <div class="proj-name">💈 Cofbit Barber's</div>
+              <div class="proj-meta">Commercial · review pending</div>
+            </div>
+          </div>
+
+          <div class="proj-row">
+            <div class="proj-phase ph-design">Design</div>
+            <div class="proj-body">
+              <div class="proj-name">⚽ TJ Zbyňov</div>
+              <div class="proj-meta">Football template reuse</div>
+            </div>
+          </div>
+
+          <div class="proj-row">
+            <div class="proj-phase ph-design">Design</div>
+            <div class="proj-body">
+              <div class="proj-name">⚽ FK Rajec</div>
+              <div class="proj-meta">Local — same town as you</div>
+            </div>
+          </div>
+
+          <div class="proj-row">
+            <div class="proj-phase ph-concept">Concept</div>
+            <div class="proj-body">
+              <div class="proj-name">⚽ ŠK Lietava</div>
+              <div class="proj-meta">Waiting on client content</div>
+            </div>
+          </div>
+
+          <div class="proj-row">
+            <div class="proj-phase ph-concept">Concept</div>
+            <div class="proj-body">
+              <div class="proj-name">⚽ FK Turie</div>
+              <div class="proj-meta">Hosting-only package</div>
+            </div>
+          </div>
+
+          <div class="proj-row">
+            <div class="proj-phase ph-potential">Potential</div>
+            <div class="proj-body">
+              <div class="proj-name">🚗 Car Wash (Rajec)</div>
+              <div class="proj-meta">Needs first pitch</div>
+            </div>
+          </div>
+
+          <div class="proj-row">
+            <div class="proj-phase ph-potential">Potential</div>
+            <div class="proj-body">
+              <div class="proj-name">🚜 Excavator service</div>
+              <div class="proj-meta">Local biz · lead</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- 💼 GET MORE CLIENTS -->
+    <div class="card card-clients">
+      <div class="card-header">
+        <span class="card-icon">💼</span>
+        <span class="card-title">Suggested — get more clients</span>
+        <span class="badge">5 ideas</span>
+      </div>
+      <div class="card-body">
+        <div class="cli-row">
+          <div class="cli-num">1</div>
           <div>
-            <div class="a-label">🔒 Verify Microsoft account</div>
-            <div class="a-sub">Check if YOU changed the password at 12:06 CET — if not, secure immediately.</div>
+            <div class="cli-label">🏁 Finish the pricing page (it's already on your task list)</div>
+            <div class="cli-sub">"Create Pricing web" is open in Notion. A public pricing page lets leads self-qualify → fewer unpaid calls, faster quotes. Ship a simple 3-tier layout this week.</div>
           </div>
         </div>
-        <div class="action-tile">
-          <div class="action-num">2</div>
+        <div class="cli-row">
+          <div class="cli-num">2</div>
           <div>
-            <div class="a-label">🔑 Update app passwords</div>
-            <div class="a-sub">Required after password change with 2FA. account.microsoft.com → Security</div>
+            <div class="cli-label">📸 Turn OŠK KP into your headline case study</div>
+            <div class="cli-sub">You have 7 football clubs in the pipeline — a proper case study (before/after, metrics, testimonial) will convert the other 6 faster. Pitch it as "same as OŠK".</div>
           </div>
         </div>
-        <div class="action-tile">
-          <div class="action-num">3</div>
+        <div class="cli-row">
+          <div class="cli-num">3</div>
           <div>
-            <div class="a-label">🎂 Wish Majo Strba happy birthday</div>
-            <div class="a-sub">Today is their birthday — send a message now.</div>
+            <div class="cli-label">🔍 Run a weblead-scout scan on Rajec + Žilina</div>
+            <div class="cli-sub">Your skill already finds local businesses with bad sites. Run it for the Rajec/Žilina area and pitch 5 shops this week — you already live there, reference it.</div>
           </div>
         </div>
-        <div class="action-tile">
-          <div class="action-num">4</div>
+        <div class="cli-row">
+          <div class="cli-num">4</div>
           <div>
-            <div class="a-label">🐙 Review GitHub PAT scopes</div>
-            <div class="a-sub">Two new tokens created today — verify access levels are appropriate.</div>
+            <div class="cli-label">💈 Upsell Cofbit Barber's to monthly content</div>
+            <div class="cli-sub">Once the site ships, pitch a €30/mo "photo refresh + social posts" retainer. Recurring revenue beats one-offs — same workflow, fraction of the time.</div>
           </div>
         </div>
-        <div class="action-tile">
-          <div class="action-num">5</div>
+        <div class="cli-row">
+          <div class="cli-num">5</div>
           <div>
-            <div class="a-label">🌍 Monitor Middle East situation</div>
-            <div class="a-sub">US-Iran ceasefire is fragile; Israeli strikes on Lebanon are ongoing.</div>
+            <div class="cli-label">🚗 Close the two "Potential" local leads (Car Wash, Excavator)</div>
+            <div class="cli-sub">Both are in Notion with no next step. Send each a 2-min Loom walkthrough showing their current site vs. a 5-min mockup you build with your football template.</div>
           </div>
         </div>
       </div>
@@ -483,7 +787,7 @@
   </div><!-- /grid -->
 
   <div class="footer">
-    Generated by Claude · Thursday, April 9, 2026 at 06:06 PM ·
+    Generated by Claude · Thursday, April 9, 2026 at 18:15 CET ·
     <a href="https://github.com/DarkMaster9452/morning-briefing" target="_blank">GitHub ↗</a>
   </div>
 </div>
