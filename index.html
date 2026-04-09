@@ -1579,6 +1579,13 @@
       margin-top: 4px;
       text-align: center
     }
+    .sleep-gfit-btn{
+      width:100%;margin-top:6px;padding:4px 8px;border-radius:6px;
+      border:1px solid rgba(66,133,244,.4);background:rgba(66,133,244,.1);
+      color:#4285f4;font-size:9px;font-weight:700;cursor:pointer;transition:background .15s;
+    }
+    .sleep-gfit-btn:hover{background:rgba(66,133,244,.22)}
+    .sleep-gfit-btn.synced{border-color:var(--c-ai);background:rgba(67,217,173,.1);color:var(--c-ai)}
 
     /* ══════════════════════════════════════════
      VERCEL UPTIME CARD
@@ -1929,6 +1936,7 @@
           </div>
           <div class="sleep-history" id="sleep-history"></div>
           <div class="sleep-today-label" id="sleep-today-label"></div>
+          <button class="sleep-gfit-btn" id="sleep-gfit-btn" onclick="gfitSleepSync()">🔗 Sync zo Zepp / Google Fit</button>
         </div>
 
         <!-- Pomodoro -->
@@ -2770,14 +2778,18 @@
     /* ══════════════════════════════════════════
        CONFIG — načítaj Spotify Client ID z /api/config
     ══════════════════════════════════════════ */
-    let SPOTIFY_CLIENT_ID = '';
+    // Spotify Client ID — loads from localStorage (set once via UI), with /api/config as bonus fallback
+    let SPOTIFY_CLIENT_ID = localStorage.getItem('mb_sp_client_id') || '';
     async function loadConfig() {
       try {
         const res = await fetch('/api/config');
         if (!res.ok) return;
         const cfg = await res.json();
-        SPOTIFY_CLIENT_ID = cfg.spotifyClientId || '';
-      } catch(e) { console.warn('Config load failed:', e); }
+        if (cfg.spotifyClientId) {
+          SPOTIFY_CLIENT_ID = cfg.spotifyClientId;
+          localStorage.setItem('mb_sp_client_id', SPOTIFY_CLIENT_ID); // cache locally too
+        }
+      } catch(e) { /* /api/config might not be deployed — use localStorage */ }
     }
 
     /* ══════════════════════════════════════════
@@ -3001,15 +3013,59 @@
     }
 
     async function spotifyInit() {
+      // Try API config first (if deployed), falls back to localStorage silently
       await loadConfig();
+      // Handle OAuth redirect callback
       const gotToken = await spotifyHandleCallback();
       if (!gotToken) {
         const stored = localStorage.getItem('mb_sp_token');
         const expiry = parseInt(localStorage.getItem('mb_sp_expiry') || '0');
-        if (stored && Date.now() < expiry) { spotifyToken = stored; }
-        else if (localStorage.getItem('mb_sp_refresh')) { await spotifyRefreshToken(); }
+        if (stored && Date.now() < expiry) {
+          spotifyToken = stored;
+        } else if (localStorage.getItem('mb_sp_refresh')) {
+          await spotifyRefreshToken(); // silently refresh — no user action needed
+        }
       }
-      if (spotifyToken) { spotifyRender(); spotifyStartPolling(); }
+      if (spotifyToken) {
+        spotifyRender();
+        spotifyStartPolling();
+      } else {
+        spotifyShowSetup(); // show setup form or connect button
+      }
+    }
+
+    function spotifyShowSetup() {
+      const widget = document.getElementById('spotify-widget');
+      if (!widget) return;
+      if (SPOTIFY_CLIENT_ID) {
+        // Has Client ID saved but no valid token → one-time connect button
+        widget.innerHTML = `
+          <button class="spotify-connect-btn" onclick="spotifyConnect()">🔗 Pripojiť Spotify</button>
+          <button class="spotify-disconnect" onclick="spotifyResetClientId()" style="margin-top:4px">Zmeniť Client ID</button>`;
+      } else {
+        // First time — ask for Client ID (not a secret, safe to store locally)
+        widget.innerHTML = `
+          <div style="font-size:9px;color:var(--muted);margin-bottom:5px;line-height:1.5">
+            Vlož <strong style="color:var(--text)">Spotify Client ID</strong>:<br>
+            <span style="opacity:.6">developer.spotify.com → tvoja app</span>
+          </div>
+          <input id="sp-client-input" style="width:100%;padding:4px 6px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:10px;outline:none;margin-bottom:5px;box-sizing:border-box" placeholder="1a2b3c4d5e6f…" autocomplete="off"/>
+          <button class="spotify-connect-btn" onclick="spotifySaveClientId()">💾 Uložiť a pripojiť</button>`;
+      }
+    }
+
+    function spotifySaveClientId() {
+      const inp = document.getElementById('sp-client-input');
+      if (!inp || !inp.value.trim()) return;
+      SPOTIFY_CLIENT_ID = inp.value.trim();
+      localStorage.setItem('mb_sp_client_id', SPOTIFY_CLIENT_ID);
+      spotifyConnect(); // immediately start OAuth
+    }
+
+    function spotifyResetClientId() {
+      SPOTIFY_CLIENT_ID = '';
+      localStorage.removeItem('mb_sp_client_id');
+      spotifyDisconnect();
     }
 
     async function spotifyFetchNowPlaying() {
@@ -3067,15 +3123,165 @@
     function spotifyDisconnect() {
       clearInterval(spotifyRefreshTimer); spotifyToken = null;
       ['mb_sp_token','mb_sp_expiry','mb_sp_refresh'].forEach(k => localStorage.removeItem(k));
-      const w = document.getElementById('spotify-widget');
-      if (w) w.innerHTML = `<button class="spotify-connect-btn" onclick="spotifyConnect()">🔗 Pripojiť Spotify</button>`;
+      spotifyShowSetup();
+    }
+
+    /* ══════════════════════════════════════════
+       ZEPP SLEEP via GOOGLE FIT API
+       Zepp app syncs automatically to Google Fit (Android).
+       We use GIS token client (same library already loaded).
+       Requires: Google Cloud → enable Fitness API + add scope.
+    ══════════════════════════════════════════ */
+    let gfitToken = localStorage.getItem('mb_gfit_token') || null;
+
+    function gfitSleepSync() {
+      const btn = document.getElementById('sleep-gfit-btn');
+      // If we have a cached token, try to use it directly
+      if (gfitToken) { gfitFetchSleep(); return; }
+      // Otherwise start OAuth
+      if (!window.google || !window.google.accounts || !window.google.accounts.oauth2) {
+        if (btn) { btn.textContent = '⚠️ GIS ešte nenačítané, skús znova'; setTimeout(() => { if(btn) btn.textContent = '🔗 Sync zo Zepp / Google Fit'; }, 3000); }
+        return;
+      }
+      if (btn) btn.textContent = '⏳ Autorizácia…';
+      const tokenClient = window.google.accounts.oauth2.initTokenClient({
+        client_id: GOOGLE_CLIENT_ID,
+        scope: 'https://www.googleapis.com/auth/fitness.sleep.read',
+        callback: (response) => {
+          if (response.error) {
+            if (btn) { btn.textContent = '❌ ' + response.error; setTimeout(() => { if(btn) btn.textContent = '🔗 Sync zo Zepp / Google Fit'; }, 3000); }
+            return;
+          }
+          gfitToken = response.access_token;
+          // Google token client tokens expire in 1h — don't persist, re-auth each session
+          gfitFetchSleep();
+        },
+      });
+      tokenClient.requestAccessToken({ prompt: 'none' }); // silent if already authorized
+    }
+
+    async function gfitFetchSleep() {
+      const btn = document.getElementById('sleep-gfit-btn');
+      if (btn) btn.textContent = '⏳ Načítavam…';
+
+      // Time window: yesterday 6pm → today noon (covers a full night)
+      const now = new Date();
+      const endMs   = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 14, 0, 0).getTime();
+      const startMs = endMs - (22 * 3600 * 1000);
+
+      try {
+        // Aggregate sleep data using Google Fit dataset:aggregate
+        const body = {
+          aggregateBy: [{ dataTypeName: 'com.google.sleep.segment' }],
+          startTimeMillis: startMs,
+          endTimeMillis: endMs,
+        };
+        const res = await fetch('https://www.googleapis.com/fitness/v1/users/me/dataset:aggregate', {
+          method: 'POST',
+          headers: { Authorization: 'Bearer ' + gfitToken, 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+
+        if (res.status === 401) {
+          gfitToken = null;
+          if (btn) btn.textContent = '🔗 Sync zo Zepp / Google Fit';
+          // Re-auth silently
+          gfitSleepSync();
+          return;
+        }
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+
+        const data = await res.json();
+        let totalSleepMs = 0;
+        let deepMs = 0, lightMs = 0, remMs = 0;
+
+        (data.bucket || []).forEach(bucket => {
+          (bucket.dataset || []).forEach(ds => {
+            (ds.point || []).forEach(pt => {
+              const val = pt.value && pt.value[0] ? pt.value[0].intVal : null;
+              const dur = (pt.endTimeNanos - pt.startTimeNanos) / 1e6;
+              // Sleep stages: 1=awake, 2=sleep(generic), 3=OOS, 4=light, 5=deep, 6=REM
+              if (val >= 2) { totalSleepMs += dur; }
+              if (val === 5) deepMs += dur;
+              if (val === 4) lightMs += dur;
+              if (val === 6) remMs += dur;
+            });
+          });
+        });
+
+        if (totalSleepMs < 60000) {
+          // Try sessions endpoint as fallback
+          const sRes = await fetch(
+            `https://www.googleapis.com/fitness/v1/users/me/sessions?activityType=72&startTime=${new Date(startMs).toISOString()}&endTime=${new Date(endMs).toISOString()}`,
+            { headers: { Authorization: 'Bearer ' + gfitToken } }
+          );
+          if (sRes.ok) {
+            const sData = await sRes.json();
+            const sessions = sData.session || [];
+            if (sessions.length) {
+              const main = sessions.reduce((b, s) => {
+                return (s.endTimeMillis - s.startTimeMillis) > (b ? b.endTimeMillis - b.startTimeMillis : 0) ? s : b;
+              }, null);
+              if (main) totalSleepMs = main.endTimeMillis - main.startTimeMillis;
+            }
+          }
+        }
+
+        if (totalSleepMs < 60000) {
+          if (btn) { btn.textContent = '⚠️ Žiadne sleep dáta (synkuj Zepp app)'; setTimeout(() => { if(btn) btn.textContent = '🔗 Sync zo Zepp / Google Fit'; }, 4000); }
+          return;
+        }
+
+        const hours = Math.round((totalSleepMs / 3600000) * 10) / 10;
+
+        // Auto-fill sleep hours
+        const hoursEl = document.getElementById('sleep-hours');
+        if (hoursEl) hoursEl.value = hours;
+
+        // Quality estimate from deep+REM ratio
+        const goodSleepRatio = totalSleepMs > 0 ? (deepMs + remMs) / totalSleepMs : 0;
+        const quality = hours >= 8 && goodSleepRatio > 0.25 ? 5
+          : hours >= 7 ? 4
+          : hours >= 6 ? 3
+          : hours >= 5 ? 2 : 1;
+        sleepQuality = quality;
+        document.querySelectorAll('.sleep-star').forEach(s =>
+          s.classList.toggle('active', parseInt(s.dataset.v) <= sleepQuality));
+
+        // Auto-save
+        sleepSave();
+
+        if (btn) {
+          btn.textContent = `✅ ${hours}h (deep ${Math.round(deepMs/60000)}min, REM ${Math.round(remMs/60000)}min)`;
+          btn.classList.add('synced');
+          setTimeout(() => { if(btn) { btn.textContent = '🔄 Sync zo Zepp'; btn.classList.remove('synced'); } }, 5000);
+        }
+
+      } catch(e) {
+        if (btn) { btn.textContent = '❌ Chyba: ' + e.message; setTimeout(() => { if(btn) btn.textContent = '🔗 Sync zo Zepp / Google Fit'; }, 4000); }
+      }
+    }
+
+    // Auto-sync sleep from Google Fit on page load if no manual entry today
+    function gfitAutoSync() {
+      const todayKey = 'mb_sleep_' + new Date().toISOString().slice(0,10);
+      if (!localStorage.getItem(todayKey) && gfitToken) {
+        setTimeout(gfitFetchSleep, 800);
+      }
     }
 
     /* Init Spotify after login */
     const _origShowApp2 = window.showApp;
-    window.showApp = function(user) { _origShowApp2(user); setTimeout(spotifyInit, 200); };
+    window.showApp = function(user) {
+      _origShowApp2(user);
+      setTimeout(spotifyInit, 200);
+      setTimeout(gfitAutoSync, 1000);
+    };
     if (sessionStorage.getItem('mb_user')) {
-      window.addEventListener('load', () => setTimeout(spotifyInit, 300));
+      window.addEventListener('load', () => {
+        setTimeout(spotifyInit, 300);
+        setTimeout(gfitAutoSync, 1000);
+      });
     }
     if (new URLSearchParams(window.location.search).has('code')) {
       window.addEventListener('load', async () => {
