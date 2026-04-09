@@ -283,7 +283,7 @@ git clone "$MOUNT_PATH" "$TMPDIR" 2>&1
 cp "$MOUNT_PATH/morning-briefing.html" "$TMPDIR/morning-briefing.html"
 cd "$TMPDIR"
 git config user.email "strananekm@gmail.com"
-git config user.name "Martin Strananec"
+git config user.name "Martin Strananek"
 git remote set-url origin "$REPO_URL"
 git add morning-briefing.html
 git commit -m "Morning briefing update — $TODAY"
