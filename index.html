@@ -8,86 +8,114 @@
     :root {
       --bg:#0f1117; --surface:#1a1d27; --surface2:#22263a; --border:#2e3250;
       --accent:#6c63ff; --accent2:#ff6584; --green:#43d9ad; --yellow:#ffd166;
-      --blue:#64b5f6; --text:#e2e8f0; --muted:#8892b0;
+      --spotify:#1db954; --text:#e2e8f0; --muted:#8892b0;
     }
-    * { box-sizing:border-box; margin:0; padding:0; }
-    body { background:var(--bg); color:var(--text); font-family:'Segoe UI',system-ui,sans-serif; min-height:100vh; padding:28px 20px 60px; }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;padding:28px 20px 60px}
 
-    /* HEADER */
-    .header { text-align:center; margin-bottom:36px; }
-    .header .greeting { font-size:12px; color:var(--muted); letter-spacing:.12em; text-transform:uppercase; margin-bottom:6px; }
-    .header h1 { font-size:26px; font-weight:700; margin-bottom:4px; }
-    .header .live-time { font-size:28px; font-weight:300; color:var(--accent); font-variant-numeric:tabular-nums; letter-spacing:.04em; margin:6px 0 4px; }
-    .header .dateline { font-size:13px; color:var(--muted); margin-bottom:10px; }
-    .header .status-bar { display:flex; align-items:center; justify-content:center; gap:18px; font-size:11px; color:var(--muted); }
-    .dot { display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--green); margin-right:5px; animation:pulse 2s infinite; }
-    .dot.yellow { background:var(--yellow); }
-    .dot.red { background:var(--accent2); }
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
-    .refresh-btn { background:var(--surface2); border:1px solid var(--border); color:var(--muted); padding:4px 14px; border-radius:20px; font-size:11px; font-weight:600; cursor:pointer; transition:.15s; }
-    .refresh-btn:hover { border-color:var(--accent); color:var(--accent); }
+    /* ── HEADER ── */
+    .header{text-align:center;margin-bottom:32px}
+    .greeting{font-size:11px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px}
+    .header h1{font-size:24px;font-weight:700;margin-bottom:4px}
+    .live-clock{font-size:46px;font-weight:200;color:var(--accent);font-variant-numeric:tabular-nums;letter-spacing:.03em;line-height:1;margin:6px 0}
+    .dateline{font-size:13px;color:var(--muted);margin-bottom:12px}
+    .status-bar{display:flex;align-items:center;justify-content:center;gap:16px;font-size:11px;color:var(--muted)}
+    .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:4px;animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+    .refresh-btn{background:var(--surface2);border:1px solid var(--border);color:var(--muted);padding:5px 14px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;transition:.15s}
+    .refresh-btn:hover{border-color:var(--accent);color:var(--accent)}
 
-    /* GRID */
-    .grid { max-width:980px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+    /* ── GRID ── */
+    .grid{max-width:980px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:18px}
 
-    /* CARDS */
-    .card { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:22px; transition:border-color .2s; }
-    .card:hover { border-color:rgba(108,99,255,.4); }
-    .card.full { grid-column:1/-1; }
-    .card.weather-card { grid-column:1/-1; }
-    .card-header { display:flex; align-items:center; gap:9px; margin-bottom:16px; }
-    .card-icon { font-size:18px; }
-    .card-title { font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
-    .badge { margin-left:auto; background:var(--surface2); border:1px solid var(--border); border-radius:20px; font-size:11px; font-weight:600; color:var(--muted); padding:2px 10px; }
-    .loading { color:var(--muted); font-size:13px; text-align:center; padding:20px; opacity:.6; }
-    .error-msg { color:var(--accent2); font-size:12px; text-align:center; padding:12px; opacity:.8; }
+    /* ── CARDS ── */
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;transition:border-color .2s}
+    .card:hover{border-color:rgba(108,99,255,.35)}
+    .card.full{grid-column:1/-1}
+    .card-header{display:flex;align-items:center;gap:9px;margin-bottom:16px}
+    .card-icon{font-size:18px}
+    .card-title{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+    .badge{margin-left:auto;background:var(--surface2);border:1px solid var(--border);border-radius:20px;font-size:11px;font-weight:600;color:var(--muted);padding:2px 10px}
+    .badge.green{background:rgba(67,217,173,.1);border-color:var(--green);color:var(--green)}
 
-    /* WEATHER */
-    .weather-main { display:flex; align-items:flex-start; gap:32px; margin-bottom:20px; flex-wrap:wrap; }
-    .weather-now { display:flex; align-items:center; gap:16px; }
-    .weather-icon-big { font-size:56px; line-height:1; }
-    .weather-temp { font-size:52px; font-weight:200; line-height:1; }
-    .weather-temp sup { font-size:22px; font-weight:400; vertical-align:super; }
-    .weather-desc { font-size:14px; color:var(--muted); margin-top:4px; }
-    .weather-details { display:flex; flex-direction:column; gap:6px; padding-top:6px; }
-    .weather-detail { font-size:13px; color:var(--muted); display:flex; align-items:center; gap:6px; }
-    .weather-detail span:first-child { color:var(--text); opacity:.5; font-size:14px; }
-    .forecast { display:flex; gap:12px; flex-wrap:wrap; }
-    .forecast-day { background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:12px 16px; text-align:center; min-width:80px; flex:1; }
-    .forecast-day .day-name { font-size:11px; font-weight:600; text-transform:uppercase; color:var(--muted); letter-spacing:.06em; margin-bottom:6px; }
-    .forecast-day .day-icon { font-size:24px; margin:4px 0; }
-    .forecast-day .day-temp { font-size:13px; }
-    .forecast-day .day-temp .hi { color:var(--text); font-weight:600; }
-    .forecast-day .day-temp .lo { color:var(--muted); }
+    /* ── LOADING / ERROR ── */
+    .loading{color:var(--muted);font-size:13px;text-align:center;padding:22px 0;opacity:.55}
+    .error-box{font-size:12px;color:var(--accent2);background:rgba(255,101,132,.07);border:1px solid rgba(255,101,132,.25);border-radius:8px;padding:14px;text-align:center}
+    .connect-btn{display:inline-block;margin-top:10px;padding:7px 18px;border-radius:20px;font-size:12px;font-weight:600;text-decoration:none;color:#fff;cursor:pointer}
+    .connect-btn.google{background:#4285f4}
+    .connect-btn.spotify{background:var(--spotify)}
 
-    /* NEWS */
-    .news-item { padding:10px 0; border-bottom:1px solid var(--border); }
-    .news-item:last-child { border-bottom:none; }
-    .news-headline { font-size:13px; font-weight:500; margin-bottom:3px; line-height:1.4; }
-    .news-headline a { color:var(--text); text-decoration:none; }
-    .news-headline a:hover { color:var(--accent); }
-    .news-summary { font-size:11px; color:var(--muted); line-height:1.5; }
-    .news-meta { font-size:10px; color:var(--accent); margin-top:3px; }
+    /* ── WEATHER ── */
+    .weather-main{display:flex;align-items:flex-start;gap:28px;margin-bottom:18px;flex-wrap:wrap}
+    .w-now{display:flex;align-items:center;gap:14px}
+    .w-icon{font-size:52px;line-height:1}
+    .w-temp{font-size:48px;font-weight:200;line-height:1}
+    .w-temp sup{font-size:20px;font-weight:400;vertical-align:super}
+    .w-desc{font-size:13px;color:var(--muted);margin-top:3px}
+    .w-details{display:flex;flex-direction:column;gap:5px;padding-top:4px}
+    .w-detail{font-size:12px;color:var(--muted);display:flex;gap:6px;align-items:center}
+    .forecast{display:flex;gap:10px;flex-wrap:wrap}
+    .fc-day{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;text-align:center;flex:1;min-width:72px}
+    .fc-day .fc-name{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px}
+    .fc-day .fc-ico{font-size:22px;margin:3px 0}
+    .fc-day .fc-tmp .hi{font-weight:600}
+    .fc-day .fc-tmp .lo{color:var(--muted)}
 
-    /* CLOCK CARD */
-    .clock-row { display:flex; gap:16px; align-items:stretch; flex-wrap:wrap; }
-    .timezone-block { background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:14px 18px; flex:1; min-width:110px; }
-    .tz-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); margin-bottom:6px; }
-    .tz-time { font-size:20px; font-weight:300; font-variant-numeric:tabular-nums; color:var(--text); }
-    .tz-offset { font-size:10px; color:var(--muted); margin-top:2px; }
+    /* ── WORLD CLOCKS ── */
+    .clocks{display:flex;gap:10px;flex-wrap:wrap}
+    .tz{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;flex:1;min-width:100px}
+    .tz-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:5px}
+    .tz-time{font-size:19px;font-weight:300;font-variant-numeric:tabular-nums}
+    .tz-date{font-size:10px;color:var(--muted);margin-top:2px}
 
-    /* CALENDAR placeholder */
-    .cal-notice { font-size:13px; color:var(--muted); background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:12px 16px; }
+    /* ── GMAIL ── */
+    .email-item{padding:10px 0;border-bottom:1px solid var(--border)}
+    .email-item:last-child{border-bottom:none}
+    .email-from{font-size:13px;font-weight:600;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .email-subject{font-size:12px;color:var(--muted);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .email-snippet{font-size:11px;color:var(--muted);opacity:.8;line-height:1.5}
 
-    /* FOOTER */
-    .footer { text-align:center; margin-top:36px; font-size:11px; color:var(--muted); }
-    .footer a { color:var(--accent); text-decoration:none; }
+    /* ── CALENDAR ── */
+    .event-item{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border)}
+    .event-item:last-child{border-bottom:none}
+    .event-time{font-size:11px;font-weight:700;color:var(--accent);min-width:48px;padding-top:2px}
+    .event-title{font-size:13px;font-weight:500}
+    .event-meta{font-size:11px;color:var(--muted);margin-top:2px}
+    .all-day-badge{font-size:10px;color:var(--yellow);background:rgba(255,209,102,.1);border:1px solid rgba(255,209,102,.3);border-radius:4px;padding:1px 6px}
+
+    /* ── SPOTIFY ── */
+    .spotify-now{display:flex;align-items:center;gap:16px}
+    .spotify-art{width:64px;height:64px;border-radius:8px;object-fit:cover;flex-shrink:0}
+    .spotify-placeholder{width:64px;height:64px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+    .spotify-track{font-size:14px;font-weight:600;margin-bottom:3px}
+    .spotify-artist{font-size:12px;color:var(--muted);margin-bottom:3px}
+    .spotify-album{font-size:11px;color:var(--muted);opacity:.7}
+    .progress-bar{height:3px;background:var(--border);border-radius:2px;margin-top:10px;overflow:hidden}
+    .progress-fill{height:100%;background:var(--spotify);border-radius:2px;transition:width 1s linear}
+    .sp-status{font-size:11px;font-weight:600;color:var(--spotify);margin-bottom:10px}
+    .recent-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:14px 0 8px}
+    .recent-item{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border)}
+    .recent-item:last-child{border-bottom:none}
+    .recent-art{width:36px;height:36px;border-radius:5px;object-fit:cover;flex-shrink:0}
+    .recent-name{font-size:12px;font-weight:500}
+    .recent-artist{font-size:11px;color:var(--muted)}
+
+    /* ── NEWS ── */
+    .news-item{padding:10px 0;border-bottom:1px solid var(--border)}
+    .news-item:last-child{border-bottom:none}
+    .news-headline{font-size:13px;font-weight:500;line-height:1.4;margin-bottom:3px}
+    .news-headline a{color:var(--text);text-decoration:none}
+    .news-headline a:hover{color:var(--accent)}
+    .news-desc{font-size:11px;color:var(--muted);line-height:1.5}
+    .news-meta{font-size:10px;color:var(--accent);margin-top:3px}
+
+    .footer{text-align:center;margin-top:36px;font-size:11px;color:var(--muted)}
+    .footer a{color:var(--accent);text-decoration:none}
 
     @media(max-width:640px){
-      .grid { grid-template-columns:1fr; }
-      .card.full, .card.weather-card { grid-column:1; }
-      .weather-main { gap:16px; }
-      .weather-temp { font-size:40px; }
+      .grid{grid-template-columns:1fr}
+      .card.full{grid-column:1}
+      .live-clock{font-size:36px}
     }
   </style>
 </head>
@@ -96,64 +124,55 @@
 <div class="header">
   <div class="greeting">Good morning, Martin</div>
   <h1 id="dateHeading">🌅 Loading...</h1>
-  <div class="live-time" id="liveClock">--:--:--</div>
-  <div class="dateline" id="dateline">Bratislava, Slovakia</div>
+  <div class="live-clock" id="liveClock">--:--:--</div>
+  <div class="dateline">Bratislava, Slovakia 🇸🇰</div>
   <div class="status-bar">
     <span><span class="dot"></span>Live</span>
-    <button class="refresh-btn" onclick="refreshAll()">↻ Refresh</button>
-    <span id="lastUpdated" style="font-size:10px;">Fetching data...</span>
+    <button class="refresh-btn" onclick="refreshAll()">↻ Refresh all</button>
+    <span id="lastUpdated">Loading...</span>
   </div>
 </div>
 
 <div class="grid">
 
-  <!-- WEATHER -->
-  <div class="card weather-card">
-    <div class="card-header">
-      <span class="card-icon">🌤️</span>
-      <span class="card-title">Live Weather — Bratislava</span>
-      <span class="badge" id="weather-badge">Loading</span>
-    </div>
+  <div class="card full">
+    <div class="card-header"><span class="card-icon">🌤️</span><span class="card-title">Live Weather — Bratislava</span><span class="badge" id="weather-badge">–</span></div>
     <div id="weather-content"><div class="loading">⏳ Fetching weather...</div></div>
   </div>
 
-  <!-- WORLD CLOCKS -->
   <div class="card full">
-    <div class="card-header">
-      <span class="card-icon">🕐</span>
-      <span class="card-title">World Clocks</span>
-    </div>
-    <div class="clock-row" id="worldClocks"></div>
+    <div class="card-header"><span class="card-icon">🕐</span><span class="card-title">World Clocks</span></div>
+    <div class="clocks" id="worldClocks"></div>
   </div>
 
-  <!-- WORLD NEWS -->
+  <div class="card">
+    <div class="card-header"><span class="card-icon">📧</span><span class="card-title">Gmail — Unread</span><span class="badge" id="gmail-badge">–</span></div>
+    <div id="gmail-content"><div class="loading">⏳ Loading emails...</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><span class="card-icon">📅</span><span class="card-title">Today's Schedule</span><span class="badge" id="cal-badge">–</span></div>
+    <div id="cal-content"><div class="loading">⏳ Loading calendar...</div></div>
+  </div>
+
   <div class="card full">
-    <div class="card-header">
-      <span class="card-icon">🌍</span>
-      <span class="card-title">World News</span>
-      <span class="badge" id="world-badge">Loading</span>
-    </div>
+    <div class="card-header"><span class="card-icon">🎵</span><span class="card-title">Spotify</span><span class="badge" id="spotify-badge">–</span></div>
+    <div id="spotify-content"><div class="loading">⏳ Loading Spotify...</div></div>
+  </div>
+
+  <div class="card full">
+    <div class="card-header"><span class="card-icon">🌍</span><span class="card-title">World News</span><span class="badge" id="world-badge">–</span></div>
     <div id="world-news"><div class="loading">⏳ Fetching headlines...</div></div>
   </div>
 
-  <!-- AI NEWS -->
   <div class="card">
-    <div class="card-header">
-      <span class="card-icon">🤖</span>
-      <span class="card-title">AI News</span>
-      <span class="badge" id="ai-badge">Loading</span>
-    </div>
-    <div id="ai-news"><div class="loading">⏳ Fetching AI news...</div></div>
+    <div class="card-header"><span class="card-icon">🤖</span><span class="card-title">AI News</span><span class="badge" id="ai-badge">–</span></div>
+    <div id="ai-news"><div class="loading">⏳ Loading...</div></div>
   </div>
 
-  <!-- TECH NEWS -->
   <div class="card">
-    <div class="card-header">
-      <span class="card-icon">📱</span>
-      <span class="card-title">Tech &amp; Electronics</span>
-      <span class="badge" id="tech-badge">Loading</span>
-    </div>
-    <div id="tech-news"><div class="loading">⏳ Fetching tech news...</div></div>
+    <div class="card-header"><span class="card-icon">📱</span><span class="card-title">Tech &amp; Electronics</span><span class="badge" id="tech-badge">–</span></div>
+    <div id="tech-news"><div class="loading">⏳ Loading...</div></div>
   </div>
 
 </div>
@@ -161,189 +180,182 @@
 <div class="footer">
   🤖 Live Morning Briefing by Claude &nbsp;·&nbsp;
   <a href="https://github.com/DarkMaster9452/morning-briefing" target="_blank">GitHub ↗</a>
-  &nbsp;·&nbsp; Auto-updates every 30 min
+  &nbsp;·&nbsp; Auto-refreshes every 5 min
 </div>
 
 <script>
-// ─── CLOCK ───────────────────────────────────────────────────────────────────
-const DAYS   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const p=n=>String(n).padStart(2,'0');
 
-function pad(n){ return String(n).padStart(2,'0'); }
-
+// ── CLOCK ───────────────────────────────────────────────────────────────────
 function updateClock(){
-  const now = new Date();
-  const h = pad(now.getHours()), m = pad(now.getMinutes()), s = pad(now.getSeconds());
-  document.getElementById('liveClock').textContent = `${h}:${m}:${s}`;
-  document.getElementById('dateHeading').textContent = `🌅 ${DAYS[now.getDay()]}, ${MONTHS[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
-  updateWorldClocks(now);
+  const now=new Date();
+  document.getElementById('liveClock').textContent=`${p(now.getHours())}:${p(now.getMinutes())}:${p(now.getSeconds())}`;
+  document.getElementById('dateHeading').textContent=`🌅 ${DAYS[now.getDay()]}, ${MONTHS[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+  renderClocks(now);
 }
+setInterval(updateClock,1000); updateClock();
 
-const TZ_LIST = [
-  { label:'Bratislava', tz:'Europe/Bratislava', offset:'+2' },
-  { label:'London',     tz:'Europe/London',     offset:'+1' },
-  { label:'New York',   tz:'America/New_York',  offset:'-4' },
-  { label:'Tokyo',      tz:'Asia/Tokyo',        offset:'+9' },
-  { label:'Dubai',      tz:'Asia/Dubai',        offset:'+4' },
-  { label:'San Francisco', tz:'America/Los_Angeles', offset:'-7' },
+// ── WORLD CLOCKS ────────────────────────────────────────────────────────────
+const TZS=[
+  {label:'Bratislava',tz:'Europe/Bratislava'},
+  {label:'London',tz:'Europe/London'},
+  {label:'New York',tz:'America/New_York'},
+  {label:'Dubai',tz:'Asia/Dubai'},
+  {label:'Tokyo',tz:'Asia/Tokyo'},
+  {label:'San Francisco',tz:'America/Los_Angeles'},
 ];
-
-function updateWorldClocks(now){
-  const html = TZ_LIST.map(z => {
-    const t = now.toLocaleTimeString('en-US',{timeZone:z.tz,hour:'2-digit',minute:'2-digit',hour12:false});
-    return `<div class="timezone-block">
-      <div class="tz-label">${z.label}</div>
-      <div class="tz-time">${t}</div>
-      <div class="tz-offset">UTC${z.offset}</div>
-    </div>`;
+function renderClocks(now){
+  document.getElementById('worldClocks').innerHTML=TZS.map(z=>{
+    const t=now.toLocaleTimeString('en-GB',{timeZone:z.tz,hour:'2-digit',minute:'2-digit'});
+    const d=now.toLocaleDateString('en-GB',{timeZone:z.tz,weekday:'short',day:'numeric',month:'short'});
+    return `<div class="tz"><div class="tz-label">${z.label}</div><div class="tz-time">${t}</div><div class="tz-date">${d}</div></div>`;
   }).join('');
-  document.getElementById('worldClocks').innerHTML = html;
 }
 
-setInterval(updateClock, 1000);
-updateClock();
-
-// ─── WEATHER ─────────────────────────────────────────────────────────────────
-const WC_MAP = {
-  0:['☀️','Clear'],1:['🌤️','Mainly Clear'],2:['⛅','Partly Cloudy'],3:['☁️','Overcast'],
-  45:['🌫️','Fog'],48:['🌫️','Icy Fog'],
-  51:['🌦️','Light Drizzle'],53:['🌦️','Drizzle'],55:['🌦️','Heavy Drizzle'],
-  61:['🌧️','Light Rain'],63:['🌧️','Rain'],65:['🌧️','Heavy Rain'],
-  71:['❄️','Light Snow'],73:['❄️','Snow'],75:['❄️','Heavy Snow'],77:['🌨️','Snow Grains'],
-  80:['🌦️','Light Showers'],81:['🌦️','Showers'],82:['⛈️','Heavy Showers'],
-  85:['🌨️','Snow Showers'],86:['🌨️','Heavy Snow Showers'],
-  95:['⛈️','Thunderstorm'],96:['⛈️','Thunderstorm + Hail'],99:['⛈️','Severe Thunderstorm'],
-};
-function wc(code){ return WC_MAP[code] || ['🌡️','Unknown']; }
+// ── WEATHER ─────────────────────────────────────────────────────────────────
+const WC={0:['☀️','Clear'],1:['🌤️','Mainly Clear'],2:['⛅','Partly Cloudy'],3:['☁️','Overcast'],45:['🌫️','Fog'],48:['🌫️','Icy Fog'],51:['🌦️','Light Drizzle'],53:['🌦️','Drizzle'],55:['🌦️','Heavy Drizzle'],61:['🌧️','Light Rain'],63:['🌧️','Rain'],65:['🌧️','Heavy Rain'],71:['❄️','Light Snow'],73:['❄️','Snow'],75:['❄️','Heavy Snow'],77:['🌨️','Snow Grains'],80:['🌦️','Light Showers'],81:['🌦️','Showers'],82:['⛈️','Heavy Showers'],95:['⛈️','Thunderstorm'],96:['⛈️','Thunderstorm+Hail'],99:['⛈️','Severe Storm']};
+function wc(c){return WC[c]||['🌡️','Unknown']}
 
 async function fetchWeather(){
-  const url = 'https://api.open-meteo.com/v1/forecast?latitude=48.1486&longitude=17.1077' +
-    '&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,relative_humidity_2m,precipitation' +
-    '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum' +
-    '&timezone=Europe%2FBratislava&forecast_days=4';
-  try {
-    const r = await fetch(url);
-    const d = await r.json();
-    const c = d.current;
-    const [icon, desc] = wc(c.weather_code);
-    document.getElementById('weather-badge').textContent = `${Math.round(c.temperature_2m)}°C`;
-
-    const forecastDays = d.daily.time.slice(1,4).map((t,i) => {
-      const dt = new Date(t+'T12:00:00');
-      const dayName = i===0 ? 'Tomorrow' : DAYS[dt.getDay()].substring(0,3);
-      const [di,] = wc(d.daily.weather_code[i+1]);
-      return `<div class="forecast-day">
-        <div class="day-name">${dayName}</div>
-        <div class="day-icon">${di}</div>
-        <div class="day-temp"><span class="hi">${Math.round(d.daily.temperature_2m_max[i+1])}°</span> <span class="lo">${Math.round(d.daily.temperature_2m_min[i+1])}°</span></div>
-      </div>`;
+  try{
+    const d=await fetch('/api/weather').then(r=>r.json());
+    const c=d.current;
+    const[icon,desc]=wc(c.weather_code);
+    document.getElementById('weather-badge').textContent=`${Math.round(c.temperature_2m)}°C ${icon}`;
+    const fc=d.daily.time.slice(1,4).map((t,i)=>{
+      const dt=new Date(t+'T12:00:00');
+      const name=i===0?'Tomorrow':DAYS[dt.getDay()].slice(0,3);
+      const[di]=wc(d.daily.weather_code[i+1]);
+      return `<div class="fc-day"><div class="fc-name">${name}</div><div class="fc-ico">${di}</div><div class="fc-tmp"><span class="hi">${Math.round(d.daily.temperature_2m_max[i+1])}°</span> <span class="lo">${Math.round(d.daily.temperature_2m_min[i+1])}°</span></div></div>`;
     }).join('');
-
-    document.getElementById('weather-content').innerHTML = `
+    document.getElementById('weather-content').innerHTML=`
       <div class="weather-main">
-        <div class="weather-now">
-          <div class="weather-icon-big">${icon}</div>
-          <div>
-            <div class="weather-temp">${Math.round(c.temperature_2m)}<sup>°C</sup></div>
-            <div class="weather-desc">${desc}</div>
-          </div>
+        <div class="w-now"><div class="w-icon">${icon}</div>
+          <div><div class="w-temp">${Math.round(c.temperature_2m)}<sup>°C</sup></div><div class="w-desc">${desc}</div></div>
         </div>
-        <div class="weather-details">
-          <div class="weather-detail"><span>🌡️</span> Feels like ${Math.round(c.apparent_temperature)}°C</div>
-          <div class="weather-detail"><span>💧</span> Humidity ${c.relative_humidity_2m}%</div>
-          <div class="weather-detail"><span>💨</span> Wind ${Math.round(c.wind_speed_10m)} km/h</div>
-          <div class="weather-detail"><span>🌧️</span> Precipitation ${c.precipitation} mm</div>
+        <div class="w-details">
+          <div class="w-detail">🌡️ Feels like <strong>${Math.round(c.apparent_temperature)}°C</strong></div>
+          <div class="w-detail">💧 Humidity <strong>${c.relative_humidity_2m}%</strong></div>
+          <div class="w-detail">💨 Wind <strong>${Math.round(c.wind_speed_10m)} km/h</strong></div>
+          <div class="w-detail">🌧️ Precipitation <strong>${c.precipitation} mm</strong></div>
         </div>
       </div>
-      <div class="forecast">${forecastDays}</div>`;
-  } catch(e) {
-    document.getElementById('weather-content').innerHTML = `<div class="error-msg">⚠️ Could not load weather data</div>`;
-  }
+      <div class="forecast">${fc}</div>`;
+  }catch(e){document.getElementById('weather-content').innerHTML=`<div class="error-box">⚠️ Weather unavailable</div>`}
 }
 
-// ─── NEWS via allorigins CORS proxy ──────────────────────────────────────────
-async function fetchRSS(feedUrl, maxItems=5){
-  const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(feedUrl)}`;
-  const r = await fetch(proxy);
-  const j = await r.json();
-  const xml = j.contents;
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(xml, 'application/xml');
-  const items = Array.from(doc.querySelectorAll('item')).slice(0, maxItems);
-  return items.map(item => ({
-    title: item.querySelector('title')?.textContent?.trim() || '',
-    link:  item.querySelector('link')?.textContent?.trim() || '',
-    desc:  (item.querySelector('description')?.textContent?.trim() || '')
-              .replace(/<[^>]*>/g,'').replace(/&nbsp;/g,' ').replace(/&amp;/g,'&').substring(0,160),
-    pub:   item.querySelector('pubDate')?.textContent?.trim() || '',
-    source: new URL(feedUrl).hostname.replace('www.','').replace('feeds.',''),
-  }));
+// ── GMAIL ───────────────────────────────────────────────────────────────────
+async function fetchGmail(){
+  try{
+    const d=await fetch('/api/gmail').then(r=>r.json());
+    if(d.needsAuth){
+      document.getElementById('gmail-badge').textContent='not connected';
+      document.getElementById('gmail-content').innerHTML=`<div class="error-box">Gmail not connected<br><a href="/api/auth/google-redirect" class="connect-btn google">Connect Google Account</a></div>`;
+      return;
+    }
+    const{emails=[],total=0}=d;
+    document.getElementById('gmail-badge').textContent=`${total} unread`;
+    if(!emails.length){document.getElementById('gmail-content').innerHTML=`<div style="color:var(--green);font-size:13px;padding:8px 0">✅ Inbox zero!</div>`;return}
+    document.getElementById('gmail-content').innerHTML=emails.map(e=>{
+      const from=e.from.replace(/<[^>]+>/,'').replace(/"/g,'').trim();
+      return `<div class="email-item"><div class="email-from">${from}</div><div class="email-subject">${e.subject}</div><div class="email-snippet">${e.snippet}</div></div>`;
+    }).join('');
+  }catch(e){document.getElementById('gmail-content').innerHTML=`<div class="error-box">⚠️ ${e.message}</div>`}
 }
 
-function renderNews(items, badgeId, containerId){
-  document.getElementById(badgeId).textContent = `${items.length} stories`;
-  document.getElementById(containerId).innerHTML = items.map(item => `
-    <div class="news-item">
-      <div class="news-headline"><a href="${item.link}" target="_blank" rel="noopener">${item.title}</a></div>
-      ${item.desc ? `<div class="news-summary">${item.desc}...</div>` : ''}
-      <div class="news-meta">${item.source} · ${formatPubDate(item.pub)}</div>
-    </div>`).join('');
+// ── CALENDAR ────────────────────────────────────────────────────────────────
+async function fetchCalendar(){
+  try{
+    const d=await fetch('/api/calendar').then(r=>r.json());
+    if(d.needsAuth){
+      document.getElementById('cal-badge').textContent='not connected';
+      document.getElementById('cal-content').innerHTML=`<div class="error-box">Calendar not connected<br><a href="/api/auth/google-redirect" class="connect-btn google">Connect Google Account</a></div>`;
+      return;
+    }
+    const{events=[]}=d;
+    document.getElementById('cal-badge').textContent=`${events.length} events`;
+    if(!events.length){document.getElementById('cal-content').innerHTML=`<div style="color:var(--green);font-size:13px;padding:8px 0">✅ Nothing scheduled today</div>`;return}
+    document.getElementById('cal-content').innerHTML=events.map(ev=>{
+      const time=ev.allDay?`<span class="all-day-badge">All day</span>`:(()=>{const s=new Date(ev.start);return `${p(s.getHours())}:${p(s.getMinutes())}`})();
+      const meta=[ev.location?`📍 ${ev.location}`:'',ev.attendees>1?`👥 ${ev.attendees}`:''].filter(Boolean).join(' · ');
+      return `<div class="event-item"><div class="event-time">${time}</div><div><div class="event-title">${ev.title}</div>${meta?`<div class="event-meta">${meta}</div>`:''}</div></div>`;
+    }).join('');
+  }catch(e){document.getElementById('cal-content').innerHTML=`<div class="error-box">⚠️ ${e.message}</div>`}
 }
 
-function formatPubDate(str){
-  if(!str) return '';
-  try {
-    const d = new Date(str);
-    const diff = Math.floor((Date.now()-d)/60000);
-    if(diff < 60) return `${diff}m ago`;
-    if(diff < 1440) return `${Math.floor(diff/60)}h ago`;
-    return d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
-  } catch{ return str; }
+// ── SPOTIFY ─────────────────────────────────────────────────────────────────
+let spInterval=null;
+async function fetchSpotify(){
+  try{
+    const d=await fetch('/api/spotify').then(r=>r.json());
+    if(d.needsAuth){
+      document.getElementById('spotify-badge').textContent='not connected';
+      document.getElementById('spotify-content').innerHTML=`<div class="error-box">Spotify not connected<br><a href="/api/auth/spotify-redirect" class="connect-btn spotify">Connect Spotify</a></div>`;
+      return;
+    }
+    if(spInterval)clearInterval(spInterval);
+    if(d.playing&&d.track){
+      const t=d.track;
+      const pct=d.duration?Math.round((d.progress/d.duration)*100):0;
+      document.getElementById('spotify-badge').className='badge green';
+      document.getElementById('spotify-badge').textContent='▶ Playing';
+      document.getElementById('spotify-content').innerHTML=`
+        <div class="sp-status">▶ Now Playing</div>
+        <div class="spotify-now">
+          ${t.image?`<img class="spotify-art" src="${t.image}" alt="">`:`<div class="spotify-placeholder">🎵</div>`}
+          <div>
+            <div class="spotify-track"><a href="${t.url}" target="_blank" style="color:var(--text);text-decoration:none">${t.name}</a></div>
+            <div class="spotify-artist">${t.artist}</div>
+            <div class="spotify-album">${t.album}</div>
+          </div>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="spProg" style="width:${pct}%"></div></div>`;
+      let prog=d.progress,dur=d.duration;
+      spInterval=setInterval(()=>{prog+=1000;const el=document.getElementById('spProg');if(el)el.style.width=Math.min(100,Math.round((prog/dur)*100))+'%';else clearInterval(spInterval)},1000);
+    }else{
+      document.getElementById('spotify-badge').textContent='⏸ Paused';
+      const rec=d.recent||[];
+      document.getElementById('spotify-content').innerHTML=`
+        <div class="sp-status" style="color:var(--muted)">⏸ Nothing playing right now</div>
+        ${rec.length?`<div class="recent-label">Recently played</div>${rec.map(t=>`<div class="recent-item">${t.image?`<img class="recent-art" src="${t.image}" alt="">`:'<div style="width:36px;height:36px;background:var(--surface2);border-radius:5px"></div>'}<div><div class="recent-name">${t.name}</div><div class="recent-artist">${t.artist}</div></div></div>`).join('')}`:''}`;
+    }
+  }catch(e){document.getElementById('spotify-content').innerHTML=`<div class="error-box">⚠️ ${e.message}</div>`}
 }
 
-async function fetchWorldNews(){
-  try {
-    const items = await fetchRSS('https://feeds.bbci.co.uk/news/world/rss.xml', 5);
-    renderNews(items, 'world-badge', 'world-news');
-  } catch(e){
-    document.getElementById('world-badge').textContent = 'error';
-    document.getElementById('world-news').innerHTML = `<div class="error-msg">⚠️ Could not load world news</div>`;
-  }
+// ── NEWS ────────────────────────────────────────────────────────────────────
+function ago(str){
+  try{const diff=Math.floor((Date.now()-new Date(str))/60000);return diff<60?`${diff}m ago`:diff<1440?`${Math.floor(diff/60)}h ago`:new Date(str).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}catch{return''}
+}
+async function fetchNews(type,badgeId,contentId,src){
+  try{
+    const{items=[]}=await fetch(`/api/news?type=${type}`).then(r=>r.json());
+    document.getElementById(badgeId).textContent=`${items.length} stories`;
+    document.getElementById(contentId).innerHTML=items.map(it=>`
+      <div class="news-item">
+        <div class="news-headline"><a href="${it.link}" target="_blank" rel="noopener">${it.title}</a></div>
+        ${it.desc?`<div class="news-desc">${it.desc}…</div>`:''}
+        <div class="news-meta">${src} · ${ago(it.pub)}</div>
+      </div>`).join('');
+  }catch(e){document.getElementById(contentId).innerHTML=`<div class="error-box">⚠️ Could not load news</div>`}
 }
 
-async function fetchAINews(){
-  try {
-    const items = await fetchRSS('https://techcrunch.com/category/artificial-intelligence/feed/', 5);
-    renderNews(items, 'ai-badge', 'ai-news');
-  } catch(e){
-    document.getElementById('ai-badge').textContent = 'error';
-    document.getElementById('ai-news').innerHTML = `<div class="error-msg">⚠️ Could not load AI news</div>`;
-  }
-}
-
-async function fetchTechNews(){
-  try {
-    const items = await fetchRSS('https://www.theverge.com/rss/index.xml', 5);
-    renderNews(items, 'tech-badge', 'tech-news');
-  } catch(e){
-    document.getElementById('tech-badge').textContent = 'error';
-    document.getElementById('tech-news').innerHTML = `<div class="error-msg">⚠️ Could not load tech news</div>`;
-  }
-}
-
-// ─── REFRESH ─────────────────────────────────────────────────────────────────
+// ── REFRESH ─────────────────────────────────────────────────────────────────
 async function refreshAll(){
-  document.getElementById('lastUpdated').textContent = 'Refreshing...';
-  await Promise.all([fetchWeather(), fetchWorldNews(), fetchAINews(), fetchTechNews()]);
-  const now = new Date();
-  document.getElementById('lastUpdated').textContent =
-    `Last updated ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  document.getElementById('lastUpdated').textContent='Refreshing…';
+  await Promise.all([
+    fetchWeather(),fetchGmail(),fetchCalendar(),fetchSpotify(),
+    fetchNews('world','world-badge','world-news','BBC'),
+    fetchNews('ai','ai-badge','ai-news','TechCrunch AI'),
+    fetchNews('tech','tech-badge','tech-news','The Verge'),
+  ]);
+  const now=new Date();
+  document.getElementById('lastUpdated').textContent=`Updated ${p(now.getHours())}:${p(now.getMinutes())}`;
 }
 
-// Auto-refresh every 30 minutes
-setInterval(refreshAll, 30 * 60 * 1000);
-
-// Initial load
+setInterval(refreshAll,5*60*1000);
+setInterval(fetchSpotify,30*1000);
 refreshAll();
 </script>
 </body>
