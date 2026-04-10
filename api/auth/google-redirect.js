@@ -1,8 +1,8 @@
 export default function handler(req, res) {
-  const { GOOGLE_CLIENT_ID } = process.env;
-  const proto       = req.headers['x-forwarded-proto'] || 'https';
-  const host        = req.headers.host;
-  const redirectUri = `${proto}://${host}/api/auth/google`;
+  const { GOOGLE_CLIENT_ID, BASE_URL } = process.env;
+
+  // Use explicit BASE_URL env var — avoids redirect_uri mismatch errors
+  const redirectUri = `${BASE_URL}/api/auth/google`;
 
   const scope = [
     'https://www.googleapis.com/auth/gmail.readonly',

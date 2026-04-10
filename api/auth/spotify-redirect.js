@@ -1,8 +1,7 @@
 export default function handler(req, res) {
-  const { SPOTIFY_CLIENT_ID } = process.env;
-  const proto       = req.headers['x-forwarded-proto'] || 'https';
-  const host        = req.headers.host;
-  const redirectUri = `${proto}://${host}/api/auth/spotify`;
+  const { SPOTIFY_CLIENT_ID, BASE_URL } = process.env;
+
+  const redirectUri = `${BASE_URL}/api/auth/spotify`;
 
   const scope = [
     'user-read-currently-playing',
