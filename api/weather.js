@@ -1,11 +1,12 @@
+// Rajec, Slovakia — lat 49.0943, lon 18.6297
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   try {
     const url =
       'https://api.open-meteo.com/v1/forecast' +
-      '?latitude=48.1486&longitude=17.1077' +
+      '?latitude=49.0943&longitude=18.6297' +
       '&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,relative_humidity_2m,precipitation' +
-      '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum' +
+      '&daily=weather_code,temperature_2m_max,temperature_2m_min' +
       '&timezone=Europe%2FBratislava&forecast_days=4';
     const r = await fetch(url);
     const data = await r.json();

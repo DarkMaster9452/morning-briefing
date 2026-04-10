@@ -6,181 +6,277 @@
   <title>Morning Briefing · Martin</title>
   <style>
     :root {
-      --bg:#0f1117; --surface:#1a1d27; --surface2:#22263a; --border:#2e3250;
+      --bg:#0d1117; --surface:#161b25; --surface2:#1e2436; --border:#252d45;
       --accent:#6c63ff; --accent2:#ff6584; --green:#43d9ad; --yellow:#ffd166;
-      --spotify:#1db954; --text:#e2e8f0; --muted:#8892b0;
+      --spotify:#1db954; --text:#dde4f0; --muted:#7a85a0; --red:#ff5555;
     }
     *{box-sizing:border-box;margin:0;padding:0}
-    body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;padding:28px 20px 60px}
+    html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:12px}
 
-    /* ── HEADER ── */
-    .header{text-align:center;margin-bottom:32px}
-    .greeting{font-size:11px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px}
-    .header h1{font-size:24px;font-weight:700;margin-bottom:4px}
-    .live-clock{font-size:46px;font-weight:200;color:var(--accent);font-variant-numeric:tabular-nums;letter-spacing:.03em;line-height:1;margin:6px 0}
-    .dateline{font-size:13px;color:var(--muted);margin-bottom:12px}
-    .status-bar{display:flex;align-items:center;justify-content:center;gap:16px;font-size:11px;color:var(--muted)}
-    .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:4px;animation:pulse 2s infinite}
-    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
-    .refresh-btn{background:var(--surface2);border:1px solid var(--border);color:var(--muted);padding:5px 14px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;transition:.15s}
-    .refresh-btn:hover{border-color:var(--accent);color:var(--accent)}
+    /* ── TOP BAR ── */
+    #topbar{
+      display:flex;align-items:center;gap:12px;
+      padding:0 14px;height:48px;
+      background:var(--surface);border-bottom:1px solid var(--border);
+      flex-shrink:0;
+    }
+    #topbar .greeting{font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+    #topbar .clock{font-size:22px;font-weight:200;color:var(--accent);font-variant-numeric:tabular-nums;letter-spacing:.02em}
+    #topbar .date{font-size:11px;color:var(--muted)}
+    #topbar .spacer{flex:1}
+    .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:4px;animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
+    .live-label{font-size:10px;color:var(--muted);display:flex;align-items:center}
+    #lastUp{font-size:10px;color:var(--muted)}
+    .rbtn{background:var(--surface2);border:1px solid var(--border);color:var(--muted);padding:3px 10px;border-radius:12px;font-size:10px;font-weight:600;cursor:pointer;transition:.15s}
+    .rbtn:hover{border-color:var(--accent);color:var(--accent)}
 
-    /* ── GRID ── */
-    .grid{max-width:980px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    /* ── MAIN 3-COL GRID ── */
+    #main{
+      display:grid;
+      grid-template-columns:1fr 1fr 1.1fr;
+      grid-template-rows:1fr;
+      gap:8px;
+      padding:8px;
+      height:calc(100vh - 48px);
+      overflow:hidden;
+    }
+
+    /* ── COLUMNS ── */
+    .col{display:flex;flex-direction:column;gap:8px;overflow:hidden;min-height:0}
 
     /* ── CARDS ── */
-    .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;transition:border-color .2s}
-    .card:hover{border-color:rgba(108,99,255,.35)}
-    .card.full{grid-column:1/-1}
-    .card-header{display:flex;align-items:center;gap:9px;margin-bottom:16px}
-    .card-icon{font-size:18px}
-    .card-title{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
-    .badge{margin-left:auto;background:var(--surface2);border:1px solid var(--border);border-radius:20px;font-size:11px;font-weight:600;color:var(--muted);padding:2px 10px}
+    .card{
+      background:var(--surface);border:1px solid var(--border);border-radius:10px;
+      padding:10px 12px;display:flex;flex-direction:column;overflow:hidden;
+      transition:border-color .2s;min-height:0;flex-shrink:0;
+    }
+    .card:hover{border-color:rgba(108,99,255,.3)}
+    .card.grow{flex:1;min-height:0}  /* fills remaining space in column */
+    .card-header{display:flex;align-items:center;gap:7px;margin-bottom:8px;flex-shrink:0}
+    .card-icon{font-size:14px;line-height:1}
+    .card-title{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+    .badge{margin-left:auto;background:var(--surface2);border:1px solid var(--border);border-radius:12px;font-size:9px;font-weight:700;color:var(--muted);padding:1px 7px}
     .badge.green{background:rgba(67,217,173,.1);border-color:var(--green);color:var(--green)}
+    .badge.red{background:rgba(255,101,132,.1);border-color:var(--accent2);color:var(--accent2)}
+    .card-body{flex:1;overflow-y:auto;min-height:0}
+    .card-body::-webkit-scrollbar{width:3px}
+    .card-body::-webkit-scrollbar-track{background:transparent}
+    .card-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 
     /* ── LOADING / ERROR ── */
-    .loading{color:var(--muted);font-size:13px;text-align:center;padding:22px 0;opacity:.55}
-    .error-box{font-size:12px;color:var(--accent2);background:rgba(255,101,132,.07);border:1px solid rgba(255,101,132,.25);border-radius:8px;padding:14px;text-align:center}
-    .connect-btn{display:inline-block;margin-top:10px;padding:7px 18px;border-radius:20px;font-size:12px;font-weight:600;text-decoration:none;color:#fff;cursor:pointer}
-    .connect-btn.google{background:#4285f4}
-    .connect-btn.spotify{background:var(--spotify)}
+    .loading{color:var(--muted);text-align:center;padding:14px 0;opacity:.5;font-size:11px}
+    .err{font-size:11px;color:var(--accent2);background:rgba(255,101,132,.06);border:1px solid rgba(255,101,132,.2);border-radius:6px;padding:8px 10px;text-align:center}
+    .cbtn{display:inline-block;margin-top:6px;padding:4px 12px;border-radius:10px;font-size:10px;font-weight:600;text-decoration:none;color:#fff}
+    .cbtn.google{background:#4285f4}
+    .cbtn.spotify{background:var(--spotify)}
+    .cbtn.notion{background:#fff;color:#000}
 
     /* ── WEATHER ── */
-    .weather-main{display:flex;align-items:flex-start;gap:28px;margin-bottom:18px;flex-wrap:wrap}
-    .w-now{display:flex;align-items:center;gap:14px}
-    .w-icon{font-size:52px;line-height:1}
-    .w-temp{font-size:48px;font-weight:200;line-height:1}
-    .w-temp sup{font-size:20px;font-weight:400;vertical-align:super}
-    .w-desc{font-size:13px;color:var(--muted);margin-top:3px}
-    .w-details{display:flex;flex-direction:column;gap:5px;padding-top:4px}
-    .w-detail{font-size:12px;color:var(--muted);display:flex;gap:6px;align-items:center}
-    .forecast{display:flex;gap:10px;flex-wrap:wrap}
-    .fc-day{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;text-align:center;flex:1;min-width:72px}
-    .fc-day .fc-name{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px}
-    .fc-day .fc-ico{font-size:22px;margin:3px 0}
-    .fc-day .fc-tmp .hi{font-weight:600}
-    .fc-day .fc-tmp .lo{color:var(--muted)}
+    .w-row{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+    .w-icon{font-size:36px;line-height:1}
+    .w-temp{font-size:36px;font-weight:200;line-height:1}
+    .w-temp sup{font-size:14px;vertical-align:super}
+    .w-info{display:flex;flex-direction:column;gap:2px}
+    .w-desc{font-size:11px;color:var(--text);font-weight:500}
+    .w-detail{font-size:10px;color:var(--muted)}
+    .forecast{display:flex;gap:6px;margin-top:6px}
+    .fc{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:5px 8px;text-align:center;flex:1}
+    .fc-name{font-size:9px;font-weight:700;text-transform:uppercase;color:var(--muted);letter-spacing:.05em}
+    .fc-ico{font-size:16px;margin:2px 0}
+    .fc-t .hi{font-weight:600;font-size:11px}
+    .fc-t .lo{color:var(--muted);font-size:10px}
 
     /* ── WORLD CLOCKS ── */
-    .clocks{display:flex;gap:10px;flex-wrap:wrap}
-    .tz{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;flex:1;min-width:100px}
-    .tz-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:5px}
-    .tz-time{font-size:19px;font-weight:300;font-variant-numeric:tabular-nums}
-    .tz-date{font-size:10px;color:var(--muted);margin-top:2px}
+    .clocks{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+    .tz{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:6px 8px}
+    .tz-l{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:2px}
+    .tz-t{font-size:14px;font-weight:300;font-variant-numeric:tabular-nums}
+    .tz-d{font-size:9px;color:var(--muted)}
 
     /* ── GMAIL ── */
-    .email-item{padding:10px 0;border-bottom:1px solid var(--border)}
-    .email-item:last-child{border-bottom:none}
-    .email-from{font-size:13px;font-weight:600;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .email-subject{font-size:12px;color:var(--muted);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .email-snippet{font-size:11px;color:var(--muted);opacity:.8;line-height:1.5}
+    .email{padding:5px 0;border-bottom:1px solid var(--border)}
+    .email:last-child{border-bottom:none}
+    .email-from{font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .email-sub{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .email-snip{font-size:10px;color:var(--muted);opacity:.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
     /* ── CALENDAR ── */
-    .event-item{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border)}
-    .event-item:last-child{border-bottom:none}
-    .event-time{font-size:11px;font-weight:700;color:var(--accent);min-width:48px;padding-top:2px}
-    .event-title{font-size:13px;font-weight:500}
-    .event-meta{font-size:11px;color:var(--muted);margin-top:2px}
-    .all-day-badge{font-size:10px;color:var(--yellow);background:rgba(255,209,102,.1);border:1px solid rgba(255,209,102,.3);border-radius:4px;padding:1px 6px}
+    .event{display:flex;gap:8px;align-items:flex-start;padding:5px 0;border-bottom:1px solid var(--border)}
+    .event:last-child{border-bottom:none}
+    .evt-time{font-size:10px;font-weight:700;color:var(--accent);min-width:36px;padding-top:1px;flex-shrink:0}
+    .evt-title{font-size:11px;font-weight:500;line-height:1.3}
+    .evt-meta{font-size:9px;color:var(--muted)}
+    .allday{font-size:9px;color:var(--yellow);background:rgba(255,209,102,.1);border:1px solid rgba(255,209,102,.25);border-radius:3px;padding:0 4px}
 
     /* ── SPOTIFY ── */
-    .spotify-now{display:flex;align-items:center;gap:16px}
-    .spotify-art{width:64px;height:64px;border-radius:8px;object-fit:cover;flex-shrink:0}
-    .spotify-placeholder{width:64px;height:64px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
-    .spotify-track{font-size:14px;font-weight:600;margin-bottom:3px}
-    .spotify-artist{font-size:12px;color:var(--muted);margin-bottom:3px}
-    .spotify-album{font-size:11px;color:var(--muted);opacity:.7}
-    .progress-bar{height:3px;background:var(--border);border-radius:2px;margin-top:10px;overflow:hidden}
-    .progress-fill{height:100%;background:var(--spotify);border-radius:2px;transition:width 1s linear}
-    .sp-status{font-size:11px;font-weight:600;color:var(--spotify);margin-bottom:10px}
-    .recent-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:14px 0 8px}
-    .recent-item{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border)}
-    .recent-item:last-child{border-bottom:none}
-    .recent-art{width:36px;height:36px;border-radius:5px;object-fit:cover;flex-shrink:0}
-    .recent-name{font-size:12px;font-weight:500}
-    .recent-artist{font-size:11px;color:var(--muted)}
+    .sp-row{display:flex;gap:10px;align-items:center}
+    .sp-art{width:48px;height:48px;border-radius:6px;object-fit:cover;flex-shrink:0}
+    .sp-ph{width:48px;height:48px;border-radius:6px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+    .sp-track{font-size:12px;font-weight:600;line-height:1.3}
+    .sp-track a{color:var(--text);text-decoration:none}
+    .sp-track a:hover{color:var(--spotify)}
+    .sp-artist{font-size:10px;color:var(--muted)}
+    .sp-album{font-size:9px;color:var(--muted);opacity:.7}
+    .prog{height:2px;background:var(--border);border-radius:1px;margin-top:7px}
+    .prog-fill{height:100%;background:var(--spotify);border-radius:1px;transition:width 1s linear}
+    .sp-status{font-size:9px;font-weight:700;color:var(--spotify);margin-bottom:5px;letter-spacing:.04em}
+    .sp-recent-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:8px 0 4px}
+    .sp-rec{display:flex;gap:8px;align-items:center;padding:3px 0;border-bottom:1px solid var(--border)}
+    .sp-rec:last-child{border-bottom:none}
+    .sp-rec-art{width:28px;height:28px;border-radius:4px;object-fit:cover;flex-shrink:0}
+    .sp-rec-name{font-size:10px;font-weight:500}
+    .sp-rec-art-name{font-size:9px;color:var(--muted)}
 
-    /* ── NEWS ── */
-    .news-item{padding:10px 0;border-bottom:1px solid var(--border)}
-    .news-item:last-child{border-bottom:none}
-    .news-headline{font-size:13px;font-weight:500;line-height:1.4;margin-bottom:3px}
-    .news-headline a{color:var(--text);text-decoration:none}
-    .news-headline a:hover{color:var(--accent)}
-    .news-desc{font-size:11px;color:var(--muted);line-height:1.5}
-    .news-meta{font-size:10px;color:var(--accent);margin-top:3px}
+    /* ── NOTION ── */
+    .notion-item{display:flex;gap:7px;align-items:center;padding:4px 0;border-bottom:1px solid var(--border)}
+    .notion-item:last-child{border-bottom:none}
+    .notion-icon{font-size:12px;flex-shrink:0;width:16px;text-align:center}
+    .notion-title{font-size:11px;font-weight:500;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .notion-title a{color:var(--text);text-decoration:none}
+    .notion-title a:hover{color:var(--accent)}
+    .notion-age{font-size:9px;color:var(--muted);flex-shrink:0}
 
-    .footer{text-align:center;margin-top:36px;font-size:11px;color:var(--muted)}
-    .footer a{color:var(--accent);text-decoration:none}
+    /* ── VERCEL ── */
+    .vp{display:flex;align-items:center;gap:7px;padding:4px 0;border-bottom:1px solid var(--border)}
+    .vp:last-child{border-bottom:none}
+    .vp-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+    .vp-dot.ready{background:var(--green)}
+    .vp-dot.building{background:var(--yellow);animation:pulse 1s infinite}
+    .vp-dot.error{background:var(--red)}
+    .vp-dot.unknown{background:var(--muted)}
+    .vp-name{font-size:11px;font-weight:500;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .vp-name a{color:var(--text);text-decoration:none}
+    .vp-name a:hover{color:var(--accent)}
+    .vp-state{font-size:9px;color:var(--muted);flex-shrink:0}
 
-    @media(max-width:640px){
-      .grid{grid-template-columns:1fr}
-      .card.full{grid-column:1}
-      .live-clock{font-size:36px}
-    }
+    /* ── NEWS TABS ── */
+    .tabs{display:flex;gap:1px;margin-bottom:8px;background:var(--surface2);border-radius:7px;padding:2px;flex-shrink:0}
+    .tab{flex:1;text-align:center;padding:4px 6px;border-radius:5px;font-size:10px;font-weight:600;cursor:pointer;color:var(--muted);transition:.15s;border:none;background:none}
+    .tab.active{background:var(--accent);color:#fff}
+    .news-panel{display:none}
+    .news-panel.active{display:block}
+    .ni{padding:6px 0;border-bottom:1px solid var(--border)}
+    .ni:last-child{border-bottom:none}
+    .ni-head{font-size:11px;font-weight:500;line-height:1.35;margin-bottom:2px}
+    .ni-head a{color:var(--text);text-decoration:none}
+    .ni-head a:hover{color:var(--accent)}
+    .ni-desc{font-size:10px;color:var(--muted);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .ni-meta{font-size:9px;color:var(--accent);margin-top:2px}
+
+    /* ── OK STATES ── */
+    .ok{color:var(--green);font-size:11px;padding:6px 0}
   </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="greeting">Good morning, Martin</div>
-  <h1 id="dateHeading">🌅 Loading...</h1>
-  <div class="live-clock" id="liveClock">--:--:--</div>
-  <div class="dateline">Bratislava, Slovakia 🇸🇰</div>
-  <div class="status-bar">
-    <span><span class="dot"></span>Live</span>
-    <button class="refresh-btn" onclick="refreshAll()">↻ Refresh all</button>
-    <span id="lastUpdated">Loading...</span>
-  </div>
+<!-- TOP BAR -->
+<div id="topbar">
+  <div class="greeting">Good morning, Martin 👋</div>
+  <div class="clock" id="clock">--:--:--</div>
+  <div class="date" id="dateStr">Loading...</div>
+  <div class="spacer"></div>
+  <span id="lastUp">–</span>
+  <div class="live-label"><span class="dot"></span>Live</div>
+  <button class="rbtn" onclick="refreshAll()">↻</button>
 </div>
 
-<div class="grid">
+<!-- MAIN 3-COLUMN LAYOUT -->
+<div id="main">
 
-  <div class="card full">
-    <div class="card-header"><span class="card-icon">🌤️</span><span class="card-title">Live Weather — Bratislava</span><span class="badge" id="weather-badge">–</span></div>
-    <div id="weather-content"><div class="loading">⏳ Fetching weather...</div></div>
+  <!-- COL 1: Weather + Clocks + Gmail -->
+  <div class="col">
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🌤️</span>
+        <span class="card-title">Weather — Rajec</span>
+        <span class="badge" id="w-badge">–</span>
+      </div>
+      <div id="w-body"><div class="loading">Loading...</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🕐</span>
+        <span class="card-title">World Clocks</span>
+      </div>
+      <div class="clocks" id="clocks"></div>
+    </div>
+
+    <div class="card grow">
+      <div class="card-header">
+        <span class="card-icon">📧</span>
+        <span class="card-title">Gmail</span>
+        <span class="badge" id="gmail-badge">–</span>
+      </div>
+      <div class="card-body" id="gmail-body"><div class="loading">Loading...</div></div>
+    </div>
+
   </div>
 
-  <div class="card full">
-    <div class="card-header"><span class="card-icon">🕐</span><span class="card-title">World Clocks</span></div>
-    <div class="clocks" id="worldClocks"></div>
+  <!-- COL 2: Calendar + Spotify + Vercel + Notion -->
+  <div class="col">
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">📅</span>
+        <span class="card-title">Today's Schedule</span>
+        <span class="badge" id="cal-badge">–</span>
+      </div>
+      <div class="card-body" id="cal-body" style="max-height:140px"><div class="loading">Loading...</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🎵</span>
+        <span class="card-title">Spotify</span>
+        <span class="badge" id="sp-badge">–</span>
+      </div>
+      <div id="sp-body"><div class="loading">Loading...</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">▲</span>
+        <span class="card-title">Vercel Projects</span>
+        <span class="badge" id="vp-badge">–</span>
+      </div>
+      <div class="card-body" id="vp-body" style="max-height:110px"><div class="loading">Loading...</div></div>
+    </div>
+
+    <div class="card grow">
+      <div class="card-header">
+        <span class="card-icon">◻</span>
+        <span class="card-title">Notion — Recent</span>
+        <span class="badge" id="notion-badge">–</span>
+      </div>
+      <div class="card-body" id="notion-body"><div class="loading">Loading...</div></div>
+    </div>
+
   </div>
 
-  <div class="card">
-    <div class="card-header"><span class="card-icon">📧</span><span class="card-title">Gmail — Unread</span><span class="badge" id="gmail-badge">–</span></div>
-    <div id="gmail-content"><div class="loading">⏳ Loading emails...</div></div>
+  <!-- COL 3: Tabbed News (World | AI | Tech) -->
+  <div class="col">
+    <div class="card grow">
+      <div class="card-header">
+        <span class="card-icon">📰</span>
+        <span class="card-title">News</span>
+        <span class="badge" id="news-badge">–</span>
+      </div>
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('world',this)">🌍 World</button>
+        <button class="tab" onclick="switchTab('ai',this)">🤖 AI</button>
+        <button class="tab" onclick="switchTab('tech',this)">📱 Tech</button>
+      </div>
+      <div class="card-body">
+        <div class="news-panel active" id="panel-world"><div class="loading">Loading...</div></div>
+        <div class="news-panel" id="panel-ai"><div class="loading">Loading...</div></div>
+        <div class="news-panel" id="panel-tech"><div class="loading">Loading...</div></div>
+      </div>
+    </div>
   </div>
 
-  <div class="card">
-    <div class="card-header"><span class="card-icon">📅</span><span class="card-title">Today's Schedule</span><span class="badge" id="cal-badge">–</span></div>
-    <div id="cal-content"><div class="loading">⏳ Loading calendar...</div></div>
-  </div>
-
-  <div class="card full">
-    <div class="card-header"><span class="card-icon">🎵</span><span class="card-title">Spotify</span><span class="badge" id="spotify-badge">–</span></div>
-    <div id="spotify-content"><div class="loading">⏳ Loading Spotify...</div></div>
-  </div>
-
-  <div class="card full">
-    <div class="card-header"><span class="card-icon">🌍</span><span class="card-title">World News</span><span class="badge" id="world-badge">–</span></div>
-    <div id="world-news"><div class="loading">⏳ Fetching headlines...</div></div>
-  </div>
-
-  <div class="card">
-    <div class="card-header"><span class="card-icon">🤖</span><span class="card-title">AI News</span><span class="badge" id="ai-badge">–</span></div>
-    <div id="ai-news"><div class="loading">⏳ Loading...</div></div>
-  </div>
-
-  <div class="card">
-    <div class="card-header"><span class="card-icon">📱</span><span class="card-title">Tech &amp; Electronics</span><span class="badge" id="tech-badge">–</span></div>
-    <div id="tech-news"><div class="loading">⏳ Loading...</div></div>
-  </div>
-
-</div>
-
-<div class="footer">
-  🤖 Live Morning Briefing by Claude &nbsp;·&nbsp;
-  <a href="https://github.com/DarkMaster9452/morning-briefing" target="_blank">GitHub ↗</a>
-  &nbsp;·&nbsp; Auto-refreshes every 5 min
 </div>
 
 <script>
@@ -188,170 +284,186 @@ const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturda
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const p=n=>String(n).padStart(2,'0');
 
-// ── CLOCK ───────────────────────────────────────────────────────────────────
-function updateClock(){
-  const now=new Date();
-  document.getElementById('liveClock').textContent=`${p(now.getHours())}:${p(now.getMinutes())}:${p(now.getSeconds())}`;
-  document.getElementById('dateHeading').textContent=`🌅 ${DAYS[now.getDay()]}, ${MONTHS[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
-  renderClocks(now);
+// ── CLOCK ────────────────────────────────────────────────────────────────────
+function tick(){
+  const n=new Date();
+  document.getElementById('clock').textContent=`${p(n.getHours())}:${p(n.getMinutes())}:${p(n.getSeconds())}`;
+  document.getElementById('dateStr').textContent=`${DAYS[n.getDay()]}, ${MONTHS[n.getMonth()]} ${n.getDate()}, ${n.getFullYear()}`;
+  renderClocks(n);
 }
-setInterval(updateClock,1000); updateClock();
+setInterval(tick,1000); tick();
 
-// ── WORLD CLOCKS ────────────────────────────────────────────────────────────
-const TZS=[
-  {label:'Bratislava',tz:'Europe/Bratislava'},
-  {label:'London',tz:'Europe/London'},
-  {label:'New York',tz:'America/New_York'},
-  {label:'Dubai',tz:'Asia/Dubai'},
-  {label:'Tokyo',tz:'Asia/Tokyo'},
-  {label:'San Francisco',tz:'America/Los_Angeles'},
-];
-function renderClocks(now){
-  document.getElementById('worldClocks').innerHTML=TZS.map(z=>{
-    const t=now.toLocaleTimeString('en-GB',{timeZone:z.tz,hour:'2-digit',minute:'2-digit'});
-    const d=now.toLocaleDateString('en-GB',{timeZone:z.tz,weekday:'short',day:'numeric',month:'short'});
-    return `<div class="tz"><div class="tz-label">${z.label}</div><div class="tz-time">${t}</div><div class="tz-date">${d}</div></div>`;
+// ── WORLD CLOCKS ─────────────────────────────────────────────────────────────
+const TZS=[{l:'Bratislava',z:'Europe/Bratislava'},{l:'London',z:'Europe/London'},{l:'New York',z:'America/New_York'},{l:'Dubai',z:'Asia/Dubai'},{l:'Tokyo',z:'Asia/Tokyo'},{l:'SF',z:'America/Los_Angeles'}];
+function renderClocks(n){
+  document.getElementById('clocks').innerHTML=TZS.map(({l,z})=>{
+    const t=n.toLocaleTimeString('en-GB',{timeZone:z,hour:'2-digit',minute:'2-digit'});
+    const d=n.toLocaleDateString('en-GB',{timeZone:z,weekday:'short',day:'numeric',month:'short'});
+    return `<div class="tz"><div class="tz-l">${l}</div><div class="tz-t">${t}</div><div class="tz-d">${d}</div></div>`;
   }).join('');
 }
 
-// ── WEATHER ─────────────────────────────────────────────────────────────────
-const WC={0:['☀️','Clear'],1:['🌤️','Mainly Clear'],2:['⛅','Partly Cloudy'],3:['☁️','Overcast'],45:['🌫️','Fog'],48:['🌫️','Icy Fog'],51:['🌦️','Light Drizzle'],53:['🌦️','Drizzle'],55:['🌦️','Heavy Drizzle'],61:['🌧️','Light Rain'],63:['🌧️','Rain'],65:['🌧️','Heavy Rain'],71:['❄️','Light Snow'],73:['❄️','Snow'],75:['❄️','Heavy Snow'],77:['🌨️','Snow Grains'],80:['🌦️','Light Showers'],81:['🌦️','Showers'],82:['⛈️','Heavy Showers'],95:['⛈️','Thunderstorm'],96:['⛈️','Thunderstorm+Hail'],99:['⛈️','Severe Storm']};
-function wc(c){return WC[c]||['🌡️','Unknown']}
+// ── WEATHER ──────────────────────────────────────────────────────────────────
+const WC={0:['☀️','Clear'],1:['🌤️','Mainly Clear'],2:['⛅','Partly Cloudy'],3:['☁️','Overcast'],45:['🌫️','Fog'],48:['🌫️','Icy Fog'],51:['🌦️','Lt Drizzle'],53:['🌦️','Drizzle'],55:['🌦️','Hv Drizzle'],61:['🌧️','Lt Rain'],63:['🌧️','Rain'],65:['🌧️','Hv Rain'],71:['❄️','Lt Snow'],73:['❄️','Snow'],75:['❄️','Hv Snow'],80:['🌦️','Showers'],81:['🌦️','Showers'],82:['⛈️','Hv Showers'],95:['⛈️','Storm'],96:['⛈️','Storm+Hail'],99:['⛈️','Severe Storm']};
+const wc=c=>WC[c]||['🌡️','Unknown'];
 
 async function fetchWeather(){
   try{
     const d=await fetch('/api/weather').then(r=>r.json());
-    const c=d.current;
-    const[icon,desc]=wc(c.weather_code);
-    document.getElementById('weather-badge').textContent=`${Math.round(c.temperature_2m)}°C ${icon}`;
+    const c=d.current;const[ico,desc]=wc(c.weather_code);
+    document.getElementById('w-badge').textContent=`${Math.round(c.temperature_2m)}°C`;
     const fc=d.daily.time.slice(1,4).map((t,i)=>{
       const dt=new Date(t+'T12:00:00');
-      const name=i===0?'Tomorrow':DAYS[dt.getDay()].slice(0,3);
+      const nm=i===0?'Tomorrow':DAYS[dt.getDay()].slice(0,3);
       const[di]=wc(d.daily.weather_code[i+1]);
-      return `<div class="fc-day"><div class="fc-name">${name}</div><div class="fc-ico">${di}</div><div class="fc-tmp"><span class="hi">${Math.round(d.daily.temperature_2m_max[i+1])}°</span> <span class="lo">${Math.round(d.daily.temperature_2m_min[i+1])}°</span></div></div>`;
+      return `<div class="fc"><div class="fc-name">${nm}</div><div class="fc-ico">${di}</div><div class="fc-t"><span class="hi">${Math.round(d.daily.temperature_2m_max[i+1])}°</span> <span class="lo">${Math.round(d.daily.temperature_2m_min[i+1])}°</span></div></div>`;
     }).join('');
-    document.getElementById('weather-content').innerHTML=`
-      <div class="weather-main">
-        <div class="w-now"><div class="w-icon">${icon}</div>
-          <div><div class="w-temp">${Math.round(c.temperature_2m)}<sup>°C</sup></div><div class="w-desc">${desc}</div></div>
-        </div>
-        <div class="w-details">
-          <div class="w-detail">🌡️ Feels like <strong>${Math.round(c.apparent_temperature)}°C</strong></div>
-          <div class="w-detail">💧 Humidity <strong>${c.relative_humidity_2m}%</strong></div>
-          <div class="w-detail">💨 Wind <strong>${Math.round(c.wind_speed_10m)} km/h</strong></div>
-          <div class="w-detail">🌧️ Precipitation <strong>${c.precipitation} mm</strong></div>
+    document.getElementById('w-body').innerHTML=`
+      <div class="w-row">
+        <div class="w-icon">${ico}</div>
+        <div class="w-temp">${Math.round(c.temperature_2m)}<sup>°C</sup></div>
+        <div class="w-info">
+          <div class="w-desc">${desc}</div>
+          <div class="w-detail">Feels ${Math.round(c.apparent_temperature)}° · 💧${c.relative_humidity_2m}% · 💨${Math.round(c.wind_speed_10m)}km/h</div>
         </div>
       </div>
       <div class="forecast">${fc}</div>`;
-  }catch(e){document.getElementById('weather-content').innerHTML=`<div class="error-box">⚠️ Weather unavailable</div>`}
+  }catch(e){document.getElementById('w-body').innerHTML=`<div class="err">⚠️ Weather unavailable</div>`}
 }
 
-// ── GMAIL ───────────────────────────────────────────────────────────────────
+// ── GMAIL ────────────────────────────────────────────────────────────────────
 async function fetchGmail(){
   try{
     const d=await fetch('/api/gmail').then(r=>r.json());
-    if(d.needsAuth){
-      document.getElementById('gmail-badge').textContent='not connected';
-      document.getElementById('gmail-content').innerHTML=`<div class="error-box">Gmail not connected<br><a href="/api/auth/google-redirect" class="connect-btn google">Connect Google Account</a></div>`;
-      return;
-    }
+    if(d.needsAuth){document.getElementById('gmail-badge').textContent='–';document.getElementById('gmail-body').innerHTML=`<div class="err">Not connected<br><a href="/api/auth/google-redirect" class="cbtn google">Connect Google</a></div>`;return}
     const{emails=[],total=0}=d;
     document.getElementById('gmail-badge').textContent=`${total} unread`;
-    if(!emails.length){document.getElementById('gmail-content').innerHTML=`<div style="color:var(--green);font-size:13px;padding:8px 0">✅ Inbox zero!</div>`;return}
-    document.getElementById('gmail-content').innerHTML=emails.map(e=>{
-      const from=e.from.replace(/<[^>]+>/,'').replace(/"/g,'').trim();
-      return `<div class="email-item"><div class="email-from">${from}</div><div class="email-subject">${e.subject}</div><div class="email-snippet">${e.snippet}</div></div>`;
+    if(!emails.length){document.getElementById('gmail-body').innerHTML=`<div class="ok">✅ Inbox zero</div>`;return}
+    document.getElementById('gmail-body').innerHTML=emails.map(e=>{
+      const from=e.from.replace(/"([^"]+)"\s*<[^>]+>/,'$1').replace(/<[^>]+>/,'').trim();
+      return `<div class="email"><div class="email-from">${from}</div><div class="email-sub">${e.subject}</div><div class="email-snip">${e.snippet}</div></div>`;
     }).join('');
-  }catch(e){document.getElementById('gmail-content').innerHTML=`<div class="error-box">⚠️ ${e.message}</div>`}
+  }catch(e){document.getElementById('gmail-body').innerHTML=`<div class="err">⚠️ ${e.message}</div>`}
 }
 
-// ── CALENDAR ────────────────────────────────────────────────────────────────
+// ── CALENDAR ─────────────────────────────────────────────────────────────────
 async function fetchCalendar(){
   try{
     const d=await fetch('/api/calendar').then(r=>r.json());
-    if(d.needsAuth){
-      document.getElementById('cal-badge').textContent='not connected';
-      document.getElementById('cal-content').innerHTML=`<div class="error-box">Calendar not connected<br><a href="/api/auth/google-redirect" class="connect-btn google">Connect Google Account</a></div>`;
-      return;
-    }
+    if(d.needsAuth){document.getElementById('cal-badge').textContent='–';document.getElementById('cal-body').innerHTML=`<div class="err">Not connected<br><a href="/api/auth/google-redirect" class="cbtn google">Connect Google</a></div>`;return}
     const{events=[]}=d;
     document.getElementById('cal-badge').textContent=`${events.length} events`;
-    if(!events.length){document.getElementById('cal-content').innerHTML=`<div style="color:var(--green);font-size:13px;padding:8px 0">✅ Nothing scheduled today</div>`;return}
-    document.getElementById('cal-content').innerHTML=events.map(ev=>{
-      const time=ev.allDay?`<span class="all-day-badge">All day</span>`:(()=>{const s=new Date(ev.start);return `${p(s.getHours())}:${p(s.getMinutes())}`})();
-      const meta=[ev.location?`📍 ${ev.location}`:'',ev.attendees>1?`👥 ${ev.attendees}`:''].filter(Boolean).join(' · ');
-      return `<div class="event-item"><div class="event-time">${time}</div><div><div class="event-title">${ev.title}</div>${meta?`<div class="event-meta">${meta}</div>`:''}</div></div>`;
+    if(!events.length){document.getElementById('cal-body').innerHTML=`<div class="ok">✅ Free today</div>`;return}
+    document.getElementById('cal-body').innerHTML=events.map(ev=>{
+      const time=ev.allDay?`<span class="allday">all day</span>`:(()=>{const s=new Date(ev.start);return`${p(s.getHours())}:${p(s.getMinutes())}`})();
+      const meta=[ev.location?`📍 ${ev.location.slice(0,24)}`:'',ev.attendees>1?`👥${ev.attendees}`:''].filter(Boolean).join(' ');
+      return `<div class="event"><div class="evt-time">${time}</div><div><div class="evt-title">${ev.title}</div>${meta?`<div class="evt-meta">${meta}</div>`:''}</div></div>`;
     }).join('');
-  }catch(e){document.getElementById('cal-content').innerHTML=`<div class="error-box">⚠️ ${e.message}</div>`}
+  }catch(e){document.getElementById('cal-body').innerHTML=`<div class="err">⚠️ ${e.message}</div>`}
 }
 
-// ── SPOTIFY ─────────────────────────────────────────────────────────────────
-let spInterval=null;
+// ── SPOTIFY ──────────────────────────────────────────────────────────────────
+let spInt=null;
 async function fetchSpotify(){
   try{
     const d=await fetch('/api/spotify').then(r=>r.json());
     if(d.needsAuth){
-      document.getElementById('spotify-badge').textContent='not connected';
-      document.getElementById('spotify-content').innerHTML=`<div class="error-box">Spotify not connected<br><a href="/api/auth/spotify-redirect" class="connect-btn spotify">Connect Spotify</a></div>`;
+      document.getElementById('sp-badge').textContent='–';
+      document.getElementById('sp-body').innerHTML=`<div class="err">Not connected<br><a href="/api/auth/spotify-redirect" class="cbtn spotify">Connect Spotify</a></div>`;
       return;
     }
-    if(spInterval)clearInterval(spInterval);
+    if(spInt)clearInterval(spInt);
     if(d.playing&&d.track){
-      const t=d.track;
-      const pct=d.duration?Math.round((d.progress/d.duration)*100):0;
-      document.getElementById('spotify-badge').className='badge green';
-      document.getElementById('spotify-badge').textContent='▶ Playing';
-      document.getElementById('spotify-content').innerHTML=`
-        <div class="sp-status">▶ Now Playing</div>
-        <div class="spotify-now">
-          ${t.image?`<img class="spotify-art" src="${t.image}" alt="">`:`<div class="spotify-placeholder">🎵</div>`}
-          <div>
-            <div class="spotify-track"><a href="${t.url}" target="_blank" style="color:var(--text);text-decoration:none">${t.name}</a></div>
-            <div class="spotify-artist">${t.artist}</div>
-            <div class="spotify-album">${t.album}</div>
-          </div>
+      const t=d.track,pct=d.duration?Math.round(d.progress/d.duration*100):0;
+      document.getElementById('sp-badge').className='badge green';document.getElementById('sp-badge').textContent='▶ Live';
+      document.getElementById('sp-body').innerHTML=`
+        <div class="sp-status">▶ NOW PLAYING</div>
+        <div class="sp-row">
+          ${t.image?`<img class="sp-art" src="${t.image}" alt="">`:`<div class="sp-ph">🎵</div>`}
+          <div><div class="sp-track"><a href="${t.url}" target="_blank">${t.name}</a></div><div class="sp-artist">${t.artist}</div><div class="sp-album">${t.album}</div></div>
         </div>
-        <div class="progress-bar"><div class="progress-fill" id="spProg" style="width:${pct}%"></div></div>`;
-      let prog=d.progress,dur=d.duration;
-      spInterval=setInterval(()=>{prog+=1000;const el=document.getElementById('spProg');if(el)el.style.width=Math.min(100,Math.round((prog/dur)*100))+'%';else clearInterval(spInterval)},1000);
+        <div class="prog"><div class="prog-fill" id="spf" style="width:${pct}%"></div></div>`;
+      let pr=d.progress,dur=d.duration;
+      spInt=setInterval(()=>{pr+=1000;const el=document.getElementById('spf');if(el)el.style.width=Math.min(100,Math.round(pr/dur*100))+'%';else clearInterval(spInt)},1000);
     }else{
-      document.getElementById('spotify-badge').textContent='⏸ Paused';
+      document.getElementById('sp-badge').textContent='⏸';
       const rec=d.recent||[];
-      document.getElementById('spotify-content').innerHTML=`
-        <div class="sp-status" style="color:var(--muted)">⏸ Nothing playing right now</div>
-        ${rec.length?`<div class="recent-label">Recently played</div>${rec.map(t=>`<div class="recent-item">${t.image?`<img class="recent-art" src="${t.image}" alt="">`:'<div style="width:36px;height:36px;background:var(--surface2);border-radius:5px"></div>'}<div><div class="recent-name">${t.name}</div><div class="recent-artist">${t.artist}</div></div></div>`).join('')}`:''}`;
+      document.getElementById('sp-body').innerHTML=`<div class="sp-status" style="color:var(--muted)">⏸ Nothing playing</div>${rec.length?`<div class="sp-recent-label">Recently</div>${rec.map(t=>`<div class="sp-rec">${t.image?`<img class="sp-rec-art" src="${t.image}">`:'<div style="width:28px;height:28px;background:var(--surface2);border-radius:4px"></div>'}<div><div class="sp-rec-name">${t.name}</div><div class="sp-rec-art-name">${t.artist}</div></div></div>`).join('')}`:''}`;
     }
-  }catch(e){document.getElementById('spotify-content').innerHTML=`<div class="error-box">⚠️ ${e.message}</div>`}
+  }catch(e){document.getElementById('sp-body').innerHTML=`<div class="err">⚠️ ${e.message}</div>`}
 }
 
-// ── NEWS ────────────────────────────────────────────────────────────────────
-function ago(str){
-  try{const diff=Math.floor((Date.now()-new Date(str))/60000);return diff<60?`${diff}m ago`:diff<1440?`${Math.floor(diff/60)}h ago`:new Date(str).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}catch{return''}
+// ── VERCEL PROJECTS ───────────────────────────────────────────────────────────
+function stateColor(s){return{READY:'ready',BUILDING:'building',ERROR:'error'}[s]||'unknown'}
+function ago(ms){if(!ms)return'';const d=Math.floor((Date.now()-ms)/60000);return d<60?`${d}m`:d<1440?`${Math.floor(d/60)}h`:`${Math.floor(d/1440)}d`}
+
+async function fetchVercel(){
+  try{
+    const d=await fetch('/api/vercel-projects').then(r=>r.json());
+    if(d.needsAuth){document.getElementById('vp-badge').textContent='–';document.getElementById('vp-body').innerHTML=`<div class="err">Add VERCEL_TOKEN + VERCEL_TEAM_ID to env vars</div>`;return}
+    const{projects=[]}=d;
+    document.getElementById('vp-badge').textContent=`${projects.length}`;
+    document.getElementById('vp-body').innerHTML=projects.map(p=>`
+      <div class="vp">
+        <div class="vp-dot ${stateColor(p.state)}"></div>
+        <div class="vp-name">${p.url?`<a href="${p.url}" target="_blank">${p.name}</a>`:p.name}</div>
+        <div class="vp-state">${p.state==='READY'?'✓':p.state} ${ago(p.age)}</div>
+      </div>`).join('');
+  }catch(e){document.getElementById('vp-body').innerHTML=`<div class="err">⚠️ ${e.message}</div>`}
 }
-async function fetchNews(type,badgeId,contentId,src){
+
+// ── NOTION ───────────────────────────────────────────────────────────────────
+function notionAgo(iso){if(!iso)return'';const d=Math.floor((Date.now()-new Date(iso))/60000);return d<60?`${d}m`:d<1440?`${Math.floor(d/60)}h`:`${Math.floor(d/1440)}d ago`}
+
+async function fetchNotion(){
+  try{
+    const d=await fetch('/api/notion').then(r=>r.json());
+    if(d.needsAuth){document.getElementById('notion-badge').textContent='–';document.getElementById('notion-body').innerHTML=`<div class="err">Add NOTION_TOKEN to env vars<br><a href="https://notion.so/my-integrations" target="_blank" class="cbtn notion">Get token</a></div>`;return}
+    const{pages=[]}=d;
+    document.getElementById('notion-badge').textContent=`${pages.length}`;
+    if(!pages.length){document.getElementById('notion-body').innerHTML=`<div class="ok">No recent pages</div>`;return}
+    document.getElementById('notion-body').innerHTML=pages.map(p=>`
+      <div class="notion-item">
+        <div class="notion-icon">${p.icon||'◻'}</div>
+        <div class="notion-title"><a href="${p.url}" target="_blank">${p.title}</a></div>
+        <div class="notion-age">${notionAgo(p.edited)}</div>
+      </div>`).join('');
+  }catch(e){document.getElementById('notion-body').innerHTML=`<div class="err">⚠️ ${e.message}</div>`}
+}
+
+// ── NEWS TABS ────────────────────────────────────────────────────────────────
+function timeSince(str){try{const d=Math.floor((Date.now()-new Date(str))/60000);return d<60?`${d}m ago`:d<1440?`${Math.floor(d/60)}h ago`:new Date(str).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}catch{return''}}
+
+async function fetchNews(type,src){
   try{
     const{items=[]}=await fetch(`/api/news?type=${type}`).then(r=>r.json());
-    document.getElementById(badgeId).textContent=`${items.length} stories`;
-    document.getElementById(contentId).innerHTML=items.map(it=>`
-      <div class="news-item">
-        <div class="news-headline"><a href="${it.link}" target="_blank" rel="noopener">${it.title}</a></div>
-        ${it.desc?`<div class="news-desc">${it.desc}…</div>`:''}
-        <div class="news-meta">${src} · ${ago(it.pub)}</div>
+    document.getElementById(`panel-${type}`).innerHTML=items.map(it=>`
+      <div class="ni">
+        <div class="ni-head"><a href="${it.link}" target="_blank" rel="noopener">${it.title}</a></div>
+        ${it.desc?`<div class="ni-desc">${it.desc}</div>`:''}
+        <div class="ni-meta">${src} · ${timeSince(it.pub)}</div>
       </div>`).join('');
-  }catch(e){document.getElementById(contentId).innerHTML=`<div class="error-box">⚠️ Could not load news</div>`}
+    return items.length;
+  }catch{document.getElementById(`panel-${type}`).innerHTML=`<div class="err">⚠️ Could not load</div>`;return 0}
 }
 
-// ── REFRESH ─────────────────────────────────────────────────────────────────
+function switchTab(type,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.news-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(`panel-${type}`).classList.add('active');
+}
+
+// ── REFRESH ALL ──────────────────────────────────────────────────────────────
 async function refreshAll(){
-  document.getElementById('lastUpdated').textContent='Refreshing…';
-  await Promise.all([
-    fetchWeather(),fetchGmail(),fetchCalendar(),fetchSpotify(),
-    fetchNews('world','world-badge','world-news','BBC'),
-    fetchNews('ai','ai-badge','ai-news','TechCrunch AI'),
-    fetchNews('tech','tech-badge','tech-news','The Verge'),
+  document.getElementById('lastUp').textContent='Refreshing…';
+  const counts=await Promise.all([
+    fetchWeather(),fetchGmail(),fetchCalendar(),fetchSpotify(),fetchVercel(),fetchNotion(),
+    fetchNews('world','BBC'),fetchNews('ai','TechCrunch'),fetchNews('tech','Ars Technica'),
   ]);
-  const now=new Date();
-  document.getElementById('lastUpdated').textContent=`Updated ${p(now.getHours())}:${p(now.getMinutes())}`;
+  const n=new Date();
+  document.getElementById('lastUp').textContent=`${p(n.getHours())}:${p(n.getMinutes())}`;
+  document.getElementById('news-badge').textContent='Live';
 }
 
 setInterval(refreshAll,5*60*1000);
