@@ -1,1078 +1,2448 @@
 <!DOCTYPE html>
 <html lang="sk">
+
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Morning Briefing — Martin</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌅</text></svg>"/>
-<!-- Google Identity Services -->
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-<!-- SortableJS for drag-and-drop layout -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
-<style>
-  /* ══════════════════════════════════════════
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Morning Briefing — Martin</title>
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌅</text></svg>" />
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <!-- SortableJS for drag-and-drop layout -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+  <style>
+    /* ══════════════════════════════════════════
      TOKENS
   ══════════════════════════════════════════ */
-  :root{
-    --bg:#0f1117;--surface:#1a1d27;--surface2:#22263a;--border:#2e3250;
-    --text:#e2e8f0;--muted:#8892b0;--muted2:#4a5280;
-    --c-urgent:#ff6584;--c-cal:#6c63ff;--c-email:#ff9f43;--c-world:#54a0ff;
-    --c-ai:#43d9ad;--c-tech:#ffd166;--c-weather:#00d2ff;
-    --c-bday:#ff6b9d;--c-notion:#ffa502;--c-tasks:#ff7675;--c-clients:#7bed9f;
-    --sidebar-w:220px;
-  }
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif}
-  a{color:inherit;text-decoration:none}
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22263a;
+      --border: #2e3250;
+      --text: #e2e8f0;
+      --muted: #8892b0;
+      --muted2: #4a5280;
+      --c-urgent: #ff6584;
+      --c-cal: #6c63ff;
+      --c-email: #ff9f43;
+      --c-world: #54a0ff;
+      --c-ai: #43d9ad;
+      --c-tech: #ffd166;
+      --c-weather: #00d2ff;
+      --c-bday: #ff6b9d;
+      --c-notion: #ffa502;
+      --c-tasks: #ff7675;
+      --c-clients: #7bed9f;
+      --sidebar-w: 220px;
+    }
 
-  /* ══════════════════════════════════════════
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none
+    }
+
+    /* ══════════════════════════════════════════
      LOGIN SCREEN
   ══════════════════════════════════════════ */
-  #login-screen{
-    display:flex;flex-direction:column;align-items:center;justify-content:center;
-    height:100vh;gap:24px;
-  }
-  #login-screen .login-logo{font-size:52px}
-  #login-screen h1{font-size:22px;font-weight:700;color:var(--text)}
-  #login-screen p{font-size:13px;color:var(--muted);text-align:center;max-width:280px;line-height:1.5}
-  #login-screen .google-btn{
-    display:flex;align-items:center;gap:10px;
-    background:#fff;color:#3c4043;
-    border:none;border-radius:8px;padding:10px 20px;
-    font-size:14px;font-weight:600;cursor:pointer;
-    box-shadow:0 2px 8px rgba(0,0,0,.35);
-    transition:box-shadow .2s;
-  }
-  #login-screen .google-btn:hover{box-shadow:0 4px 16px rgba(0,0,0,.5)}
-  #login-screen .google-btn svg{width:20px;height:20px}
-  #login-screen .access-denied{color:#ff4757;font-size:13px;display:none}
-  #login-screen .setup-notice{
-    background:rgba(255,165,2,.12);border:1px solid rgba(255,165,2,.3);
-    border-radius:10px;padding:14px 18px;max-width:360px;font-size:12px;
-    color:#ffa502;line-height:1.6;display:none;
-  }
-  #login-screen .setup-notice code{
-    background:rgba(255,165,2,.2);padding:1px 5px;border-radius:4px;
-    font-family:monospace;font-size:11px;
-  }
-  #g-signin-btn{min-height:44px}
+    #login-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      gap: 24px;
+    }
 
-  /* ══════════════════════════════════════════
+    #login-screen .login-logo {
+      font-size: 52px
+    }
+
+    #login-screen h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text)
+    }
+
+    #login-screen p {
+      font-size: 13px;
+      color: var(--muted);
+      text-align: center;
+      max-width: 280px;
+      line-height: 1.5
+    }
+
+    #login-screen .google-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #fff;
+      color: #3c4043;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .35);
+      transition: box-shadow .2s;
+    }
+
+    #login-screen .google-btn:hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, .5)
+    }
+
+    #login-screen .google-btn svg {
+      width: 20px;
+      height: 20px
+    }
+
+    #login-screen .access-denied {
+      color: #ff4757;
+      font-size: 13px;
+      display: none
+    }
+
+    #login-screen .setup-notice {
+      background: rgba(255, 165, 2, .12);
+      border: 1px solid rgba(255, 165, 2, .3);
+      border-radius: 10px;
+      padding: 14px 18px;
+      max-width: 360px;
+      font-size: 12px;
+      color: #ffa502;
+      line-height: 1.6;
+      display: none;
+    }
+
+    #login-screen .setup-notice code {
+      background: rgba(255, 165, 2, .2);
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 11px;
+    }
+
+    #g-signin-btn {
+      min-height: 44px
+    }
+
+    /* ══════════════════════════════════════════
      APP (hidden until logged in)
   ══════════════════════════════════════════ */
-  #app{display:none;height:100vh;flex-direction:column}
+    #app {
+      display: none;
+      height: 100vh;
+      flex-direction: column
+    }
 
-  /* ══════════════════════════════════════════
+    /* ══════════════════════════════════════════
      HEADER
   ══════════════════════════════════════════ */
-  .header{
-    flex-shrink:0;display:flex;align-items:center;
-    justify-content:space-between;padding:7px 14px 7px;
-    border-bottom:1px solid var(--border);gap:14px;
-  }
-  .header-left .greeting{font-size:9px;color:var(--muted);letter-spacing:.13em;text-transform:uppercase}
-  .header-left h1{font-size:17px;font-weight:700;margin-top:1px}
-  .header-center{display:flex;gap:7px;flex:1;justify-content:center;flex-wrap:wrap}
-  .chip{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;
-    background:var(--surface);border:1px solid var(--border);font-size:11px;font-weight:600}
-  .chip .chip-label{color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-right:2px}
-  .chip-bd{border-color:var(--c-bday);color:var(--c-bday);background:rgba(255,107,157,.08)}
-  .chip-bd .chip-label{color:var(--c-bday)}
-  .header-right{display:flex;align-items:center;gap:10px;font-size:10px;color:var(--muted)}
-  .avatar{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);cursor:pointer}
-  .logout-btn{font-size:9px;color:var(--muted);border:1px solid var(--border);
-    background:transparent;border-radius:6px;padding:3px 8px;cursor:pointer;transition:border-color .15s}
-  .logout-btn:hover{border-color:var(--c-urgent);color:var(--c-urgent)}
+    .header {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 14px 7px;
+      border-bottom: 1px solid var(--border);
+      gap: 14px;
+    }
 
-  /* ══════════════════════════════════════════
+    .header-left .greeting {
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: .13em;
+      text-transform: uppercase
+    }
+
+    .header-left h1 {
+      font-size: 17px;
+      font-weight: 700;
+      margin-top: 1px
+    }
+
+    .header-center {
+      display: flex;
+      gap: 7px;
+      flex: 1;
+      justify-content: center;
+      flex-wrap: wrap
+    }
+
+    .chip {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      font-size: 11px;
+      font-weight: 600
+    }
+
+    .chip .chip-label {
+      color: var(--muted);
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      font-weight: 700;
+      margin-right: 2px
+    }
+
+    .chip-bd {
+      border-color: var(--c-bday);
+      color: var(--c-bday);
+      background: rgba(255, 107, 157, .08)
+    }
+
+    .chip-bd .chip-label {
+      color: var(--c-bday)
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 10px;
+      color: var(--muted)
+    }
+
+    .avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      cursor: pointer
+    }
+
+    .logout-btn {
+      font-size: 9px;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      background: transparent;
+      border-radius: 6px;
+      padding: 3px 8px;
+      cursor: pointer;
+      transition: border-color .15s
+    }
+
+    .logout-btn:hover {
+      border-color: var(--c-urgent);
+      color: var(--c-urgent)
+    }
+
+    /* ══════════════════════════════════════════
      BODY ROW = sidebar + main
   ══════════════════════════════════════════ */
-  .body-row{
-    flex:1;min-height:0;display:flex;overflow:hidden;
-  }
+    .body-row {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      overflow: hidden;
+    }
 
-  /* ══════════════════════════════════════════
+    /* ══════════════════════════════════════════
      SIDEBAR
   ══════════════════════════════════════════ */
-  .sidebar{
-    width:var(--sidebar-w);flex-shrink:0;
-    border-right:1px solid var(--border);
-    display:flex;flex-direction:column;
-    overflow-y:auto;padding:10px 10px;
-    gap:10px;
-    scrollbar-width:thin;scrollbar-color:var(--border) transparent;
-  }
-  .sidebar::-webkit-scrollbar{width:3px}
-  .sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+    .sidebar {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      padding: 10px 10px;
+      gap: 10px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
 
-  .sb-section{background:var(--surface);border-radius:10px;padding:10px;border:1px solid var(--border)}
-  .sb-title{font-size:9px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:5px}
-  .sb-title span{font-size:12px}
+    .sidebar::-webkit-scrollbar {
+      width: 3px
+    }
 
-  /* Quick Links */
-  .ql-list{display:flex;flex-direction:column;gap:4px}
-  .ql-item{
-    display:flex;align-items:center;gap:8px;
-    padding:5px 8px;border-radius:7px;font-size:11px;font-weight:500;
-    background:var(--surface2);border:1px solid transparent;
-    transition:border-color .15s, background .15s;cursor:pointer;
-  }
-  .ql-item:hover{border-color:var(--border);background:#2a2f47}
-  .ql-icon{font-size:14px;width:18px;text-align:center;flex-shrink:0}
-  .ql-label{color:var(--text);font-size:11px}
+    .sidebar::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px
+    }
 
-  /* Daily Focus */
-  .focus-input{
-    width:100%;background:var(--surface2);border:1px solid var(--border);
-    border-radius:7px;color:var(--text);font-size:12px;font-weight:600;
-    padding:7px 9px;outline:none;resize:none;line-height:1.4;
-    font-family:inherit;
-  }
-  .focus-input:focus{border-color:var(--c-cal)}
-  .focus-input::placeholder{color:var(--muted2);font-weight:400}
+    .sb-section {
+      background: var(--surface);
+      border-radius: 10px;
+      padding: 10px;
+      border: 1px solid var(--border)
+    }
 
-  /* Scratchpad */
-  .scratch-input{
-    width:100%;background:var(--surface2);border:1px solid var(--border);
-    border-radius:7px;color:var(--text);font-size:11px;
-    padding:7px 9px;outline:none;resize:none;line-height:1.5;
-    font-family:inherit;min-height:80px;
-  }
-  .scratch-input:focus{border-color:var(--c-ai)}
-  .scratch-input::placeholder{color:var(--muted2)}
+    .sb-title {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 5px
+    }
 
-  /* Habits */
-  .habit-list{display:flex;flex-direction:column;gap:5px}
-  .habit-item{display:flex;align-items:center;gap:8px;padding:3px 0}
-  .habit-cb{
-    width:15px;height:15px;border-radius:4px;border:1.5px solid var(--muted2);
-    background:transparent;appearance:none;cursor:pointer;flex-shrink:0;
-    transition:background .15s, border-color .15s;
-  }
-  .habit-cb:checked{background:var(--c-ai);border-color:var(--c-ai)}
-  .habit-label{font-size:11px;color:var(--text);flex:1;cursor:pointer}
-  .habit-label.done{color:var(--muted);text-decoration:line-through}
+    .sb-title span {
+      font-size: 12px
+    }
 
-  /* Pomodoro */
-  .pomo-display{
-    text-align:center;font-size:28px;font-weight:700;
-    color:var(--c-urgent);letter-spacing:.05em;margin:6px 0;
-  }
-  .pomo-mode{font-size:9px;text-align:center;color:var(--muted);margin-bottom:8px;letter-spacing:.06em;text-transform:uppercase}
-  .pomo-btns{display:flex;gap:6px}
-  .pomo-btn{
-    flex:1;padding:5px;border-radius:7px;border:1px solid var(--border);
-    background:var(--surface2);color:var(--text);font-size:10px;font-weight:700;
-    cursor:pointer;transition:border-color .15s,background .15s;
-  }
-  .pomo-btn:hover{border-color:var(--c-urgent);background:rgba(255,101,132,.1)}
-  .pomo-btn.active{border-color:var(--c-urgent);background:rgba(255,101,132,.15);color:var(--c-urgent)}
+    /* Quick Links */
+    .ql-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px
+    }
 
-  /* Meniny */
-  .meniny-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:11px}
-  .meniny-day{color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.06em}
-  .meniny-name{font-weight:600;color:var(--text)}
-  .meniny-today .meniny-name{color:var(--c-bday)}
-  .meniny-today .meniny-day{color:var(--c-bday)}
+    .ql-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 8px;
+      border-radius: 7px;
+      font-size: 11px;
+      font-weight: 500;
+      background: var(--surface2);
+      border: 1px solid transparent;
+      transition: border-color .15s, background .15s;
+      cursor: pointer;
+    }
 
-  /* Currency */
-  .cur-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:11px;border-bottom:1px solid var(--border)}
-  .cur-row:last-child{border-bottom:none}
-  .cur-sym{font-weight:700;color:var(--text)}
-  .cur-val{color:var(--c-ai);font-weight:600}
-  .cur-chg{font-size:9px;font-weight:700}
-  .cur-up{color:#2ed573}.cur-dn{color:#ff4757}
-  .cur-loading{font-size:10px;color:var(--muted);font-style:italic;padding:4px 0}
+    .ql-item:hover {
+      border-color: var(--border);
+      background: #2a2f47
+    }
 
-  /* ══════════════════════════════════════════
+    .ql-icon {
+      font-size: 14px;
+      width: 18px;
+      text-align: center;
+      flex-shrink: 0
+    }
+
+    .ql-label {
+      color: var(--text);
+      font-size: 11px
+    }
+
+    /* Daily Focus */
+    .focus-input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 7px 9px;
+      outline: none;
+      resize: none;
+      line-height: 1.4;
+      font-family: inherit;
+    }
+
+    .focus-input:focus {
+      border-color: var(--c-cal)
+    }
+
+    .focus-input::placeholder {
+      color: var(--muted2);
+      font-weight: 400
+    }
+
+    /* Scratchpad */
+    .scratch-input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      color: var(--text);
+      font-size: 11px;
+      padding: 7px 9px;
+      outline: none;
+      resize: none;
+      line-height: 1.5;
+      font-family: inherit;
+      min-height: 80px;
+    }
+
+    .scratch-input:focus {
+      border-color: var(--c-ai)
+    }
+
+    .scratch-input::placeholder {
+      color: var(--muted2)
+    }
+
+    /* Habits */
+    .habit-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px
+    }
+
+    .habit-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 3px 0
+    }
+
+    .habit-cb {
+      width: 15px;
+      height: 15px;
+      border-radius: 4px;
+      border: 1.5px solid var(--muted2);
+      background: transparent;
+      appearance: none;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background .15s, border-color .15s;
+    }
+
+    .habit-cb:checked {
+      background: var(--c-ai);
+      border-color: var(--c-ai)
+    }
+
+    .habit-label {
+      font-size: 11px;
+      color: var(--text);
+      flex: 1;
+      cursor: pointer
+    }
+
+    .habit-label.done {
+      color: var(--muted);
+      text-decoration: line-through
+    }
+
+    /* Pomodoro */
+    .pomo-display {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--c-urgent);
+      letter-spacing: .05em;
+      margin: 6px 0;
+    }
+
+    .pomo-mode {
+      font-size: 9px;
+      text-align: center;
+      color: var(--muted);
+      margin-bottom: 8px;
+      letter-spacing: .06em;
+      text-transform: uppercase
+    }
+
+    .pomo-btns {
+      display: flex;
+      gap: 6px
+    }
+
+    .pomo-btn {
+      flex: 1;
+      padding: 5px;
+      border-radius: 7px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: border-color .15s, background .15s;
+    }
+
+    .pomo-btn:hover {
+      border-color: var(--c-urgent);
+      background: rgba(255, 101, 132, .1)
+    }
+
+    .pomo-btn.active {
+      border-color: var(--c-urgent);
+      background: rgba(255, 101, 132, .15);
+      color: var(--c-urgent)
+    }
+
+    /* Meniny */
+    .meniny-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 3px 0;
+      font-size: 11px
+    }
+
+    .meniny-day {
+      color: var(--muted);
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: .06em
+    }
+
+    .meniny-name {
+      font-weight: 600;
+      color: var(--text)
+    }
+
+    .meniny-today .meniny-name {
+      color: var(--c-bday)
+    }
+
+    .meniny-today .meniny-day {
+      color: var(--c-bday)
+    }
+
+    /* Currency */
+    .cur-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 3px 0;
+      font-size: 11px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .cur-row:last-child {
+      border-bottom: none
+    }
+
+    .cur-sym {
+      font-weight: 700;
+      color: var(--text)
+    }
+
+    .cur-val {
+      color: var(--c-ai);
+      font-weight: 600
+    }
+
+    .cur-chg {
+      font-size: 9px;
+      font-weight: 700
+    }
+
+    .cur-up {
+      color: #2ed573
+    }
+
+    .cur-dn {
+      color: #ff4757
+    }
+
+    .cur-loading {
+      font-size: 10px;
+      color: var(--muted);
+      font-style: italic;
+      padding: 4px 0
+    }
+
+    /* ══════════════════════════════════════════
      MAIN CONTENT (grid area)
   ══════════════════════════════════════════ */
-  .main{
-    flex:1;min-width:0;display:flex;flex-direction:column;
-    padding:8px 10px 6px;gap:6px;overflow:hidden;
-  }
-  .grid{
-    flex:1;min-height:0;display:grid;
-    grid-template-columns:repeat(6,1fr);
-    grid-auto-rows:minmax(90px,auto);
-    grid-auto-flow:row dense;
-    gap:7px;
-  }
-  .card{border-radius:11px;padding:9px 12px;display:flex;flex-direction:column;overflow:hidden;
-    border-left:3px solid transparent;border-top:1px solid rgba(255,255,255,.055);
-    border-right:1px solid rgba(255,255,255,.055);border-bottom:1px solid rgba(255,255,255,.055);
-    transition:filter .15s,box-shadow .15s,outline .1s;
-    position:relative;}
-  .card:hover{filter:brightness(1.08)}
-  /* colours only — no grid placement (handled by JS) */
-  .card-weather{background:rgba(0,210,255,.10);border-left-color:var(--c-weather)}
-  .card-urgent{background:rgba(255,101,132,.10);border-left-color:var(--c-urgent)}
-  .card-cal{background:rgba(108,99,255,.10);border-left-color:var(--c-cal)}
-  .card-world{background:rgba(84,160,255,.10);border-left-color:var(--c-world)}
-  .card-ai{background:rgba(67,217,173,.10);border-left-color:var(--c-ai)}
-  .card-tech{background:rgba(255,209,102,.10);border-left-color:var(--c-tech)}
-  .card-notion{background:rgba(255,165,2,.09);border-left-color:var(--c-notion)}
-  .card-tasks{background:rgba(255,118,117,.10);border-left-color:var(--c-tasks)}
-  .card-email{background:rgba(255,159,67,.10);border-left-color:var(--c-email)}
-  .card-clients{background:rgba(123,237,159,.08);border-left-color:var(--c-clients)}
-  .card-bday{background:rgba(255,107,157,.09);border-left-color:var(--c-bday)}
+    .main {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 8px 10px 6px;
+      gap: 6px;
+      overflow: hidden;
+    }
 
-  /* ── DRAG / EDIT MODE ── */
-  .drag-handle{
-    display:none;cursor:grab;font-size:14px;color:var(--muted2);
-    padding:0 4px 0 0;line-height:1;flex-shrink:0;user-select:none;
-    transition:color .15s;
-  }
-  .drag-handle:hover{color:var(--text)}
-  .drag-handle:active{cursor:grabbing}
+    .grid {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      grid-auto-rows: minmax(90px, auto);
+      grid-auto-flow: row dense;
+      gap: 7px;
+    }
 
-  body.edit-mode .drag-handle{display:block}
-  body.edit-mode .card{
-    outline:1.5px dashed var(--muted2);
-    cursor:default;
-  }
-  body.edit-mode .card:hover{
-    outline-color:var(--text);box-shadow:0 0 0 2px rgba(108,99,255,.3);
-    filter:brightness(1.05);
-  }
-  .sortable-ghost{opacity:.35;outline:2px dashed var(--c-cal) !important}
-  .sortable-chosen{box-shadow:0 8px 32px rgba(0,0,0,.5) !important;z-index:10;transform:scale(1.02)}
+    .card {
+      border-radius: 11px;
+      padding: 9px 12px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border-left: 3px solid transparent;
+      border-top: 1px solid rgba(255, 255, 255, .055);
+      border-right: 1px solid rgba(255, 255, 255, .055);
+      border-bottom: 1px solid rgba(255, 255, 255, .055);
+      transition: filter .15s, box-shadow .15s, outline .1s;
+      position: relative;
+    }
 
-  /* resize controls (shown in edit mode) */
-  .resize-btns{
-    display:none;gap:3px;margin-left:auto;
-  }
-  body.edit-mode .resize-btns{display:flex}
-  .resize-btn{
-    font-size:9px;padding:1px 5px;border-radius:5px;
-    border:1px solid var(--border);background:var(--surface2);
-    color:var(--muted);cursor:pointer;font-weight:700;
-    transition:border-color .1s,color .1s;
-  }
-  .resize-btn:hover{border-color:var(--c-cal);color:var(--c-cal)}
+    .card:hover {
+      filter: brightness(1.08)
+    }
 
-  /* ── EDGE / CORNER RESIZE HANDLES ── */
-  .rh{display:none;position:absolute;z-index:20;transition:background .15s,border-color .15s}
-  body.edit-mode .rh{display:block}
+    /* colours only — no grid placement (handled by JS) */
+    .card-weather {
+      background: rgba(0, 210, 255, .10);
+      border-left-color: var(--c-weather)
+    }
 
-  /* right edge — col resize */
-  .rh-r{
-    right:0;top:20%;bottom:20%;width:10px;cursor:col-resize;
-    border-right:3px solid var(--border);border-radius:0 6px 6px 0;
-    background:transparent;
-  }
-  .rh-r:hover,.rh-r.rh-on{border-right-color:var(--c-cal);background:rgba(108,99,255,.12)}
+    .card-urgent {
+      background: rgba(255, 101, 132, .10);
+      border-left-color: var(--c-urgent)
+    }
 
-  /* bottom edge — row resize */
-  .rh-b{
-    bottom:0;left:20%;right:20%;height:10px;cursor:row-resize;
-    border-bottom:3px solid var(--border);border-radius:0 0 6px 6px;
-    background:transparent;
-  }
-  .rh-b:hover,.rh-b.rh-on{border-bottom-color:var(--c-cal);background:rgba(108,99,255,.12)}
+    .card-cal {
+      background: rgba(108, 99, 255, .10);
+      border-left-color: var(--c-cal)
+    }
 
-  /* corner — both */
-  .rh-c{
-    right:0;bottom:0;width:16px;height:16px;cursor:nwse-resize;
-    border-right:3px solid var(--border);border-bottom:3px solid var(--border);
-    border-radius:0 0 8px 0;background:transparent;
-  }
-  .rh-c:hover,.rh-c.rh-on{border-right-color:var(--c-cal);border-bottom-color:var(--c-cal);background:rgba(108,99,255,.15)}
+    .card-world {
+      background: rgba(84, 160, 255, .10);
+      border-left-color: var(--c-world)
+    }
 
-  /* edit-mode toggle btn */
-  .edit-layout-btn{
-    font-size:10px;font-weight:700;padding:4px 10px;border-radius:8px;
-    border:1px solid var(--border);background:var(--surface);
-    color:var(--muted);cursor:pointer;transition:all .15s;white-space:nowrap;
-  }
-  .edit-layout-btn:hover{border-color:var(--c-cal);color:var(--c-cal)}
-  body.edit-mode .edit-layout-btn{
-    border-color:var(--c-ai);color:var(--c-ai);
-    background:rgba(67,217,173,.1);
-  }
+    .card-ai {
+      background: rgba(67, 217, 173, .10);
+      border-left-color: var(--c-ai)
+    }
 
-  .card-header{display:flex;align-items:center;gap:6px;flex-shrink:0;margin-bottom:6px}
-  .card-icon{font-size:14px;line-height:1}
-  .card-title{font-size:9px;font-weight:700;letter-spacing:.09em;text-transform:uppercase}
-  .badge{margin-left:auto;border-radius:20px;font-size:9px;font-weight:700;padding:1px 7px;border:1px solid}
-  .card-weather .card-title,.card-weather .badge{color:var(--c-weather);border-color:var(--c-weather);background:rgba(0,210,255,.12)}
-  .card-urgent .card-title,.card-urgent .badge{color:var(--c-urgent);border-color:var(--c-urgent);background:rgba(255,101,132,.12)}
-  .card-cal .card-title,.card-cal .badge{color:var(--c-cal);border-color:var(--c-cal);background:rgba(108,99,255,.12)}
-  .card-world .card-title,.card-world .badge{color:var(--c-world);border-color:var(--c-world);background:rgba(84,160,255,.12)}
-  .card-ai .card-title,.card-ai .badge{color:var(--c-ai);border-color:var(--c-ai);background:rgba(67,217,173,.12)}
-  .card-tech .card-title,.card-tech .badge{color:var(--c-tech);border-color:var(--c-tech);background:rgba(255,209,102,.12)}
-  .card-email .card-title,.card-email .badge{color:var(--c-email);border-color:var(--c-email);background:rgba(255,159,67,.12)}
-  .card-notion .card-title,.card-notion .badge{color:var(--c-notion);border-color:var(--c-notion);background:rgba(255,165,2,.12)}
-  .card-tasks .card-title,.card-tasks .badge{color:var(--c-tasks);border-color:var(--c-tasks);background:rgba(255,118,117,.12)}
-  .card-clients .card-title,.card-clients .badge{color:var(--c-clients);border-color:var(--c-clients);background:rgba(123,237,159,.12)}
-  .card-bday .card-title,.card-bday .badge{color:var(--c-bday);border-color:var(--c-bday);background:rgba(255,107,157,.12)}
-  .card-body{flex:1;overflow-y:auto;min-height:0;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
-  .card-body::-webkit-scrollbar{width:3px}
-  .card-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+    .card-tech {
+      background: rgba(255, 209, 102, .10);
+      border-left-color: var(--c-tech)
+    }
 
-  .footer{flex-shrink:0;text-align:center;font-size:9px;color:var(--muted);padding-top:4px;border-top:1px solid var(--border)}
-  .footer a{color:var(--c-cal)}
+    .card-notion {
+      background: rgba(255, 165, 2, .09);
+      border-left-color: var(--c-notion)
+    }
 
-  /* ══════════════════════════════════════════
+    .card-tasks {
+      background: rgba(255, 118, 117, .10);
+      border-left-color: var(--c-tasks)
+    }
+
+    .card-email {
+      background: rgba(255, 159, 67, .10);
+      border-left-color: var(--c-email)
+    }
+
+    .card-clients {
+      background: rgba(123, 237, 159, .08);
+      border-left-color: var(--c-clients)
+    }
+
+    .card-bday {
+      background: rgba(255, 107, 157, .09);
+      border-left-color: var(--c-bday)
+    }
+
+    /* ── DRAG / EDIT MODE ── */
+    .drag-handle {
+      display: none;
+      cursor: grab;
+      font-size: 14px;
+      color: var(--muted2);
+      padding: 0 4px 0 0;
+      line-height: 1;
+      flex-shrink: 0;
+      user-select: none;
+      transition: color .15s;
+    }
+
+    .drag-handle:hover {
+      color: var(--text)
+    }
+
+    .drag-handle:active {
+      cursor: grabbing
+    }
+
+    body.edit-mode .drag-handle {
+      display: block
+    }
+
+    body.edit-mode .card {
+      outline: 1.5px dashed var(--muted2);
+      cursor: default;
+    }
+
+    body.edit-mode .card:hover {
+      outline-color: var(--text);
+      box-shadow: 0 0 0 2px rgba(108, 99, 255, .3);
+      filter: brightness(1.05);
+    }
+
+    .sortable-ghost {
+      opacity: .35;
+      outline: 2px dashed var(--c-cal) !important
+    }
+
+    .sortable-chosen {
+      box-shadow: 0 8px 32px rgba(0, 0, 0, .5) !important;
+      z-index: 10;
+      transform: scale(1.02)
+    }
+
+    /* resize controls (shown in edit mode) */
+    .resize-btns {
+      display: none;
+      gap: 3px;
+      margin-left: auto;
+    }
+
+    body.edit-mode .resize-btns {
+      display: flex
+    }
+
+    .resize-btn {
+      font-size: 9px;
+      padding: 1px 5px;
+      border-radius: 5px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--muted);
+      cursor: pointer;
+      font-weight: 700;
+      transition: border-color .1s, color .1s;
+    }
+
+    .resize-btn:hover {
+      border-color: var(--c-cal);
+      color: var(--c-cal)
+    }
+
+    /* ── EDGE / CORNER RESIZE HANDLES ── */
+    .rh {
+      display: none;
+      position: absolute;
+      z-index: 20;
+      transition: background .15s, border-color .15s
+    }
+
+    body.edit-mode .rh {
+      display: block
+    }
+
+    /* right edge — col resize */
+    .rh-r {
+      right: 0;
+      top: 20%;
+      bottom: 20%;
+      width: 10px;
+      cursor: col-resize;
+      border-right: 3px solid var(--border);
+      border-radius: 0 6px 6px 0;
+      background: transparent;
+    }
+
+    .rh-r:hover,
+    .rh-r.rh-on {
+      border-right-color: var(--c-cal);
+      background: rgba(108, 99, 255, .12)
+    }
+
+    /* bottom edge — row resize */
+    .rh-b {
+      bottom: 0;
+      left: 20%;
+      right: 20%;
+      height: 10px;
+      cursor: row-resize;
+      border-bottom: 3px solid var(--border);
+      border-radius: 0 0 6px 6px;
+      background: transparent;
+    }
+
+    .rh-b:hover,
+    .rh-b.rh-on {
+      border-bottom-color: var(--c-cal);
+      background: rgba(108, 99, 255, .12)
+    }
+
+    /* corner — both */
+    .rh-c {
+      right: 0;
+      bottom: 0;
+      width: 16px;
+      height: 16px;
+      cursor: nwse-resize;
+      border-right: 3px solid var(--border);
+      border-bottom: 3px solid var(--border);
+      border-radius: 0 0 8px 0;
+      background: transparent;
+    }
+
+    .rh-c:hover,
+    .rh-c.rh-on {
+      border-right-color: var(--c-cal);
+      border-bottom-color: var(--c-cal);
+      background: rgba(108, 99, 255, .15)
+    }
+
+    /* edit-mode toggle btn */
+    .edit-layout-btn {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      cursor: pointer;
+      transition: all .15s;
+      white-space: nowrap;
+    }
+
+    .edit-layout-btn:hover {
+      border-color: var(--c-cal);
+      color: var(--c-cal)
+    }
+
+    body.edit-mode .edit-layout-btn {
+      border-color: var(--c-ai);
+      color: var(--c-ai);
+      background: rgba(67, 217, 173, .1);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+      margin-bottom: 6px
+    }
+
+    .card-icon {
+      font-size: 14px;
+      line-height: 1
+    }
+
+    .card-title {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .09em;
+      text-transform: uppercase
+    }
+
+    .badge {
+      margin-left: auto;
+      border-radius: 20px;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 1px 7px;
+      border: 1px solid
+    }
+
+    .card-weather .card-title,
+    .card-weather .badge {
+      color: var(--c-weather);
+      border-color: var(--c-weather);
+      background: rgba(0, 210, 255, .12)
+    }
+
+    .card-urgent .card-title,
+    .card-urgent .badge {
+      color: var(--c-urgent);
+      border-color: var(--c-urgent);
+      background: rgba(255, 101, 132, .12)
+    }
+
+    .card-cal .card-title,
+    .card-cal .badge {
+      color: var(--c-cal);
+      border-color: var(--c-cal);
+      background: rgba(108, 99, 255, .12)
+    }
+
+    .card-world .card-title,
+    .card-world .badge {
+      color: var(--c-world);
+      border-color: var(--c-world);
+      background: rgba(84, 160, 255, .12)
+    }
+
+    .card-ai .card-title,
+    .card-ai .badge {
+      color: var(--c-ai);
+      border-color: var(--c-ai);
+      background: rgba(67, 217, 173, .12)
+    }
+
+    .card-tech .card-title,
+    .card-tech .badge {
+      color: var(--c-tech);
+      border-color: var(--c-tech);
+      background: rgba(255, 209, 102, .12)
+    }
+
+    .card-email .card-title,
+    .card-email .badge {
+      color: var(--c-email);
+      border-color: var(--c-email);
+      background: rgba(255, 159, 67, .12)
+    }
+
+    .card-notion .card-title,
+    .card-notion .badge {
+      color: var(--c-notion);
+      border-color: var(--c-notion);
+      background: rgba(255, 165, 2, .12)
+    }
+
+    .card-tasks .card-title,
+    .card-tasks .badge {
+      color: var(--c-tasks);
+      border-color: var(--c-tasks);
+      background: rgba(255, 118, 117, .12)
+    }
+
+    .card-clients .card-title,
+    .card-clients .badge {
+      color: var(--c-clients);
+      border-color: var(--c-clients);
+      background: rgba(123, 237, 159, .12)
+    }
+
+    .card-bday .card-title,
+    .card-bday .badge {
+      color: var(--c-bday);
+      border-color: var(--c-bday);
+      background: rgba(255, 107, 157, .12)
+    }
+
+    .card-body {
+      flex: 1;
+      overflow-y: auto;
+      min-height: 0;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent
+    }
+
+    .card-body::-webkit-scrollbar {
+      width: 3px
+    }
+
+    .card-body::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px
+    }
+
+    .footer {
+      flex-shrink: 0;
+      text-align: center;
+      font-size: 9px;
+      color: var(--muted);
+      padding-top: 4px;
+      border-top: 1px solid var(--border)
+    }
+
+    .footer a {
+      color: var(--c-cal)
+    }
+
+    /* ══════════════════════════════════════════
      SHARED card item styles
   ══════════════════════════════════════════ */
-  .weather-main{display:flex;align-items:center;gap:10px;margin-bottom:4px}
-  .w-emoji{font-size:30px;line-height:1}
-  .w-temp{font-size:26px;font-weight:700;color:var(--c-weather);line-height:1}
-  .w-sub{font-size:10px;color:var(--muted);margin-top:2px}
-  .w-details{display:flex;gap:8px;font-size:10px;color:var(--muted);flex-wrap:wrap;margin-top:5px}
-  .w-details span strong{color:var(--text);font-weight:600}
-  .u-row{display:flex;align-items:flex-start;gap:9px;padding:5px 0;border-bottom:1px solid rgba(255,101,132,.14)}
-  .u-row:last-child{border-bottom:none}
-  .u-dot{width:7px;height:7px;border-radius:50%;background:var(--c-urgent);flex-shrink:0;margin-top:5px}
-  .u-label{font-size:12px;font-weight:600;margin-bottom:1px}
-  .u-sub{font-size:10px;color:var(--muted);line-height:1.4}
-  .ev-row{display:flex;align-items:flex-start;gap:9px;padding:5px 0;border-bottom:1px solid rgba(108,99,255,.13)}
-  .ev-row:last-child{border-bottom:none}
-  .ev-time{font-size:10px;font-weight:700;color:var(--c-cal);min-width:42px;flex-shrink:0;padding-top:2px}
-  .ev-title{font-size:12px;font-weight:500}
-  .ev-sub{font-size:10px;color:var(--muted);margin-top:1px}
-  .ev-empty{font-size:11px;color:var(--muted);font-style:italic;padding:6px 0}
-  .news-row{padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05)}
-  .news-row:last-child{border-bottom:none}
-  .news-title{font-size:11px;font-weight:600;line-height:1.35}
-  .news-sub{font-size:9px;color:var(--muted);margin-top:2px}
-  .htag{display:inline-block;font-size:9px;font-weight:700;padding:1px 5px;border-radius:5px;margin-right:4px;background:rgba(255,71,87,.18);color:#ff4757}
-  .proj-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,165,2,.14)}
-  .proj-row:last-child{border-bottom:none}
-  .proj-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-  .proj-name{font-size:11px;font-weight:600;flex:1;line-height:1.3}
-  .proj-meta{font-size:9px;color:var(--muted)}
-  .proj-phase{font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;border:1px solid;white-space:nowrap}
-  .ph-c{color:#2ed573;border-color:#2ed573;background:rgba(46,213,115,.1)}
-  .ph-d{color:#54a0ff;border-color:#54a0ff;background:rgba(84,160,255,.1)}
-  .ph-co{color:#a29bfe;border-color:#a29bfe;background:rgba(162,155,254,.1)}
-  .ph-p{color:#636e72;border-color:#636e72;background:rgba(99,110,114,.1)}
-  .ph-n{color:#8892b0;border-color:#8892b0;background:rgba(136,146,176,.1)}
-  .task-row{display:flex;align-items:flex-start;gap:7px;padding:5px 0;border-bottom:1px solid rgba(255,118,117,.14)}
-  .task-row:last-child{border-bottom:none}
-  .task-name{font-size:11px;font-weight:500;flex:1;line-height:1.3}
-  .task-meta{font-size:9px;color:var(--muted);margin-top:1px}
-  .task-pri{font-size:9px;font-weight:700;padding:2px 6px;border-radius:8px;border:1px solid;white-space:nowrap;flex-shrink:0;margin-top:1px}
-  .pri-now{color:#ff4757;border-color:#ff4757;background:rgba(255,71,87,.12)}
-  .pri-ok{color:#ffd166;border-color:#ffd166;background:rgba(255,209,102,.12)}
-  .task-empty{font-size:10px;color:var(--muted);font-style:italic;padding:6px 0}
-  .email-row{padding:5px 0;border-bottom:1px solid rgba(255,159,67,.13)}
-  .email-row:last-child{border-bottom:none}
-  .email-from{font-size:10px;color:var(--c-email);font-weight:700;display:flex;align-items:center;gap:5px;margin-bottom:1px}
-  .unread-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--c-urgent);flex-shrink:0}
-  .email-subj{font-size:11px;font-weight:500;line-height:1.3}
-  .email-time{font-size:9px;color:var(--muted);margin-top:1px}
-  .bday-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,107,157,.13)}
-  .bday-row:last-child{border-bottom:none}
-  .bday-name{font-size:11px;font-weight:600;flex:1}
-  .bday-today-tag{color:#fff;background:var(--c-bday);border-radius:8px;padding:1px 7px;font-size:9px;font-weight:700}
-  .client-row{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid rgba(123,237,159,.14)}
-  .client-row:last-child{border-bottom:none}
-  .client-num{font-size:10px;font-weight:700;color:var(--c-clients);min-width:16px;flex-shrink:0;padding-top:1px}
-  .client-text{font-size:11px;line-height:1.35}
-  .client-sub{font-size:9px;color:var(--muted);margin-top:1px}
+    .weather-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px
+    }
 
-  /* ══════════════════════════════════════════
+    .w-emoji {
+      font-size: 30px;
+      line-height: 1
+    }
+
+    .w-temp {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--c-weather);
+      line-height: 1
+    }
+
+    .w-sub {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 2px
+    }
+
+    .w-details {
+      display: flex;
+      gap: 8px;
+      font-size: 10px;
+      color: var(--muted);
+      flex-wrap: wrap;
+      margin-top: 5px
+    }
+
+    .w-details span strong {
+      color: var(--text);
+      font-weight: 600
+    }
+
+    .u-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(255, 101, 132, .14)
+    }
+
+    .u-row:last-child {
+      border-bottom: none
+    }
+
+    .u-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--c-urgent);
+      flex-shrink: 0;
+      margin-top: 5px
+    }
+
+    .u-label {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 1px
+    }
+
+    .u-sub {
+      font-size: 10px;
+      color: var(--muted);
+      line-height: 1.4
+    }
+
+    .ev-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(108, 99, 255, .13)
+    }
+
+    .ev-row:last-child {
+      border-bottom: none
+    }
+
+    .ev-time {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--c-cal);
+      min-width: 42px;
+      flex-shrink: 0;
+      padding-top: 2px
+    }
+
+    .ev-title {
+      font-size: 12px;
+      font-weight: 500
+    }
+
+    .ev-sub {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 1px
+    }
+
+    .ev-empty {
+      font-size: 11px;
+      color: var(--muted);
+      font-style: italic;
+      padding: 6px 0
+    }
+
+    .news-row {
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, .05)
+    }
+
+    .news-row:last-child {
+      border-bottom: none
+    }
+
+    .news-title {
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.35
+    }
+
+    .news-sub {
+      font-size: 9px;
+      color: var(--muted);
+      margin-top: 2px
+    }
+
+    .htag {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 5px;
+      margin-right: 4px;
+      background: rgba(255, 71, 87, .18);
+      color: #ff4757
+    }
+
+    .proj-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(255, 165, 2, .14)
+    }
+
+    .proj-row:last-child {
+      border-bottom: none
+    }
+
+    .proj-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0
+    }
+
+    .proj-name {
+      font-size: 11px;
+      font-weight: 600;
+      flex: 1;
+      line-height: 1.3
+    }
+
+    .proj-meta {
+      font-size: 9px;
+      color: var(--muted)
+    }
+
+    .proj-phase {
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 10px;
+      border: 1px solid;
+      white-space: nowrap
+    }
+
+    .ph-c {
+      color: #2ed573;
+      border-color: #2ed573;
+      background: rgba(46, 213, 115, .1)
+    }
+
+    .ph-d {
+      color: #54a0ff;
+      border-color: #54a0ff;
+      background: rgba(84, 160, 255, .1)
+    }
+
+    .ph-co {
+      color: #a29bfe;
+      border-color: #a29bfe;
+      background: rgba(162, 155, 254, .1)
+    }
+
+    .ph-p {
+      color: #636e72;
+      border-color: #636e72;
+      background: rgba(99, 110, 114, .1)
+    }
+
+    .ph-n {
+      color: #8892b0;
+      border-color: #8892b0;
+      background: rgba(136, 146, 176, .1)
+    }
+
+    .task-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 7px;
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(255, 118, 117, .14)
+    }
+
+    .task-row:last-child {
+      border-bottom: none
+    }
+
+    .task-name {
+      font-size: 11px;
+      font-weight: 500;
+      flex: 1;
+      line-height: 1.3
+    }
+
+    .task-meta {
+      font-size: 9px;
+      color: var(--muted);
+      margin-top: 1px
+    }
+
+    .task-pri {
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 8px;
+      border: 1px solid;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 1px
+    }
+
+    .pri-now {
+      color: #ff4757;
+      border-color: #ff4757;
+      background: rgba(255, 71, 87, .12)
+    }
+
+    .pri-ok {
+      color: #ffd166;
+      border-color: #ffd166;
+      background: rgba(255, 209, 102, .12)
+    }
+
+    .task-empty {
+      font-size: 10px;
+      color: var(--muted);
+      font-style: italic;
+      padding: 6px 0
+    }
+
+    .email-row {
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(255, 159, 67, .13)
+    }
+
+    .email-row:last-child {
+      border-bottom: none
+    }
+
+    .email-from {
+      font-size: 10px;
+      color: var(--c-email);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 1px
+    }
+
+    .unread-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--c-urgent);
+      flex-shrink: 0
+    }
+
+    .email-subj {
+      font-size: 11px;
+      font-weight: 500;
+      line-height: 1.3
+    }
+
+    .email-time {
+      font-size: 9px;
+      color: var(--muted);
+      margin-top: 1px
+    }
+
+    .bday-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(255, 107, 157, .13)
+    }
+
+    .bday-row:last-child {
+      border-bottom: none
+    }
+
+    .bday-name {
+      font-size: 11px;
+      font-weight: 600;
+      flex: 1
+    }
+
+    .bday-today-tag {
+      color: #fff;
+      background: var(--c-bday);
+      border-radius: 8px;
+      padding: 1px 7px;
+      font-size: 9px;
+      font-weight: 700
+    }
+
+    .client-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(123, 237, 159, .14)
+    }
+
+    .client-row:last-child {
+      border-bottom: none
+    }
+
+    .client-num {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--c-clients);
+      min-width: 16px;
+      flex-shrink: 0;
+      padding-top: 1px
+    }
+
+    .client-text {
+      font-size: 11px;
+      line-height: 1.35
+    }
+
+    .client-sub {
+      font-size: 9px;
+      color: var(--muted);
+      margin-top: 1px
+    }
+
+    /* ══════════════════════════════════════════
      MOBILE
   ══════════════════════════════════════════ */
-  @media (max-width:1023px){
-    #app{height:auto}
-    .body-row{flex-direction:column}
-    .sidebar{width:100%;border-right:none;border-bottom:1px solid var(--border);flex-direction:row;flex-wrap:wrap;gap:8px;padding:10px}
-    .sb-section{min-width:200px;flex:1}
-    .main{padding:10px 14px 50px}
-    .grid{display:flex;flex-direction:column;gap:14px}
-    .card{background:var(--surface);border:1px solid var(--border);border-left:4px solid transparent;border-radius:12px;padding:16px}
-    .card-weather{border-left-color:var(--c-weather)}.card-urgent{border-left-color:var(--c-urgent)}
-    .card-cal{border-left-color:var(--c-cal)}.card-world{border-left-color:var(--c-world)}
-    .card-ai{border-left-color:var(--c-ai)}.card-tech{border-left-color:var(--c-tech)}
-    .card-email{border-left-color:var(--c-email)}.card-bday{border-left-color:var(--c-bday)}
-    .card-notion{border-left-color:var(--c-notion)}.card-tasks{border-left-color:var(--c-tasks)}
-    .card-clients{border-left-color:var(--c-clients)}
-    .card-body{display:block}
-    .card-title{font-size:11px}.card-icon{font-size:18px}.badge{font-size:11px;padding:2px 9px}
-  }
-</style>
+    @media (max-width:1023px) {
+      #app {
+        height: auto
+      }
+
+      .body-row {
+        flex-direction: column
+      }
+
+      .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 10px
+      }
+
+      .sb-section {
+        min-width: 200px;
+        flex: 1
+      }
+
+      .main {
+        padding: 10px 14px 50px
+      }
+
+      .grid {
+        display: flex;
+        flex-direction: column;
+        gap: 14px
+      }
+
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-left: 4px solid transparent;
+        border-radius: 12px;
+        padding: 16px
+      }
+
+      .card-weather {
+        border-left-color: var(--c-weather)
+      }
+
+      .card-urgent {
+        border-left-color: var(--c-urgent)
+      }
+
+      .card-cal {
+        border-left-color: var(--c-cal)
+      }
+
+      .card-world {
+        border-left-color: var(--c-world)
+      }
+
+      .card-ai {
+        border-left-color: var(--c-ai)
+      }
+
+      .card-tech {
+        border-left-color: var(--c-tech)
+      }
+
+      .card-email {
+        border-left-color: var(--c-email)
+      }
+
+      .card-bday {
+        border-left-color: var(--c-bday)
+      }
+
+      .card-notion {
+        border-left-color: var(--c-notion)
+      }
+
+      .card-tasks {
+        border-left-color: var(--c-tasks)
+      }
+
+      .card-clients {
+        border-left-color: var(--c-clients)
+      }
+
+      .card-body {
+        display: block
+      }
+
+      .card-title {
+        font-size: 11px
+      }
+
+      .card-icon {
+        font-size: 18px
+      }
+
+      .badge {
+        font-size: 11px;
+        padding: 2px 9px
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<!-- ═══════════════════════════════════════════
+  <!-- ═══════════════════════════════════════════
   LOGIN SCREEN
 ═══════════════════════════════════════════ -->
-<div id="login-screen">
-  <div class="login-logo">🌅</div>
-  <h1>Morning Briefing</h1>
-  <p>Prihlás sa cez Google účet na pokračovanie. Prístup je obmedzený na <strong>strananekm@gmail.com</strong>.</p>
-  <!-- Google renders its own button here -->
-  <div id="g-signin-btn"></div>
-  <div id="access-denied" class="access-denied">⛔ Prístup zamietnutý. Tento dashboard je súkromný.</div>
-  <div id="setup-notice" class="setup-notice">
-    ⚙️ <strong>Google Client ID nie je nastavené.</strong><br/>
-    Choď na <strong>console.cloud.google.com → APIs &amp; Services → Credentials</strong><br/>
-    Vytvor <strong>OAuth 2.0 Client ID</strong> (Web application)<br/>
-    Authorized origin: <code>https://darkmaster9452.github.io</code><br/>
-    Potom nahraď <code>YOUR_GOOGLE_CLIENT_ID</code> v kóde.
+  <div id="login-screen">
+    <div class="login-logo">🌅</div>
+    <h1>Morning Briefing</h1>
+    <p>Prihlás sa cez Google účet na pokračovanie. <strong>Prístup je obmedzený.</strong></p>
+    <!-- Google renders its own button here -->
+    <div id="g-signin-btn"></div>
+    <div id="access-denied" class="access-denied">⛔ Prístup zamietnutý. Tento dashboard je súkromný.</div>
+    <div id="setup-notice" class="setup-notice">
+      ⚙️ <strong>Google Client ID nie je nastavené.</strong><br />
+      Choď na <strong>console.cloud.google.com → APIs &amp; Services → Credentials</strong><br />
+      Vytvor <strong>OAuth 2.0 Client ID</strong> (Web application)<br />
+      Authorized origin: <code>https://darkmaster9452.github.io</code><br />
+      Potom nahraď <code>YOUR_GOOGLE_CLIENT_ID</code> v kóde.
+    </div>
   </div>
-</div>
 
-<!-- ═══════════════════════════════════════════
+  <!-- ═══════════════════════════════════════════
   MAIN APP
 ═══════════════════════════════════════════ -->
-<div id="app">
+  <div id="app">
 
-  <!-- HEADER -->
-  <header class="header">
-    <div class="header-left">
-      <div class="greeting">Good morning, Martin ☀️</div>
-      <h1>Štvrtok, 9. apríla 2026</h1>
-    </div>
-    <div class="header-center">
-      <div class="chip"><span>📅</span><span class="chip-label">Týždeň</span>15</div>
-      <div class="chip"><span>📍</span><span class="chip-label">Miesto</span>Rajec, SK</div>
-      <div class="chip chip-bd"><span>🎂</span><span class="chip-label">B-day za</span>320 dní</div>
-    </div>
-    <div class="header-right">
-      <button class="edit-layout-btn" id="edit-layout-btn" onclick="toggleEditMode()">✏️ Edit Layout</button>
-      <img id="user-avatar" class="avatar" src="" alt="avatar" style="display:none"/>
-      <button class="logout-btn" onclick="signOut()">Odhlásiť</button>
-    </div>
-  </header>
+    <!-- HEADER -->
+    <header class="header">
+      <div class="header-left">
+        <div class="greeting">Good morning, Martin ☀️</div>
+        <h1>Štvrtok, 9. apríla 2026</h1>
+      </div>
+      <div class="header-center">
+        <div class="chip"><span>📅</span><span class="chip-label">Týždeň</span>15</div>
+        <div class="chip"><span>📍</span><span class="chip-label">Miesto</span>Rajec, SK</div>
+        <div class="chip chip-bd"><span>🎂</span><span class="chip-label">B-day za</span>320 dní</div>
+      </div>
+      <div class="header-right">
+        <button class="edit-layout-btn" id="edit-layout-btn" onclick="toggleEditMode()">✏️ Edit Layout</button>
+        <img id="user-avatar" class="avatar" src="" alt="avatar" style="display:none" />
+        <button class="logout-btn" onclick="signOut()">Odhlásiť</button>
+      </div>
+    </header>
 
-  <!-- BODY ROW -->
-  <div class="body-row">
+    <!-- BODY ROW -->
+    <div class="body-row">
 
-    <!-- ═══════ SIDEBAR ═══════ -->
-    <aside class="sidebar">
+      <!-- ═══════ SIDEBAR ═══════ -->
+      <aside class="sidebar">
 
-      <!-- Quick Links -->
-      <div class="sb-section">
-        <div class="sb-title"><span>⚡</span>Quick Links</div>
-        <div class="ql-list">
-          <a class="ql-item" href="https://notion.so" target="_blank"><span class="ql-icon">📝</span><span class="ql-label">Notion</span></a>
-          <a class="ql-item" href="https://github.com/DarkMaster9452" target="_blank"><span class="ql-icon">🐙</span><span class="ql-label">GitHub</span></a>
-          <a class="ql-item" href="https://vercel.com/dashboard" target="_blank"><span class="ql-icon">▲</span><span class="ql-label">Vercel</span></a>
-          <a class="ql-item" href="https://mail.google.com" target="_blank"><span class="ql-icon">📬</span><span class="ql-label">Gmail</span></a>
-          <a class="ql-item" href="https://calendar.google.com" target="_blank"><span class="ql-icon">📆</span><span class="ql-label">Google Calendar</span></a>
-          <a class="ql-item" href="https://figma.com" target="_blank"><span class="ql-icon">🎨</span><span class="ql-label">Figma</span></a>
-          <a class="ql-item" href="https://chatgpt.com" target="_blank"><span class="ql-icon">🤖</span><span class="ql-label">ChatGPT</span></a>
-          <a class="ql-item" href="https://oskkp.sk" target="_blank"><span class="ql-icon">⚽</span><span class="ql-label">oskkp.sk</span></a>
+        <!-- Quick Links -->
+        <div class="sb-section">
+          <div class="sb-title"><span>⚡</span>Quick Links</div>
+          <div class="ql-list">
+            <a class="ql-item" href="https://notion.so" target="_blank"><span class="ql-icon">📝</span><span
+                class="ql-label">Notion</span></a>
+            <a class="ql-item" href="https://github.com/DarkMaster9452" target="_blank"><span
+                class="ql-icon">🐙</span><span class="ql-label">GitHub</span></a>
+            <a class="ql-item" href="https://vercel.com/dashboard" target="_blank"><span class="ql-icon">▲</span><span
+                class="ql-label">Vercel</span></a>
+            <a class="ql-item" href="https://mail.google.com" target="_blank"><span class="ql-icon">📬</span><span
+                class="ql-label">Gmail</span></a>
+            <a class="ql-item" href="https://calendar.google.com" target="_blank"><span class="ql-icon">📆</span><span
+                class="ql-label">Google Calendar</span></a>
+            <a class="ql-item" href="https://figma.com" target="_blank"><span class="ql-icon">🎨</span><span
+                class="ql-label">Figma</span></a>
+            <a class="ql-item" href="https://chatgpt.com" target="_blank"><span class="ql-icon">🤖</span><span
+                class="ql-label">ChatGPT</span></a>
+            <a class="ql-item" href="https://oskkp.sk" target="_blank"><span class="ql-icon">⚽</span><span
+                class="ql-label">oskkp.sk</span></a>
+          </div>
         </div>
-      </div>
 
-      <!-- Daily Focus -->
-      <div class="sb-section">
-        <div class="sb-title"><span>🎯</span>Úloha dňa</div>
-        <textarea id="daily-focus" class="focus-input" rows="2" placeholder="Čo musíš dnes URČITE spraviť?"></textarea>
-      </div>
-
-      <!-- Scratchpad -->
-      <div class="sb-section">
-        <div class="sb-title"><span>📋</span>Scratchpad</div>
-        <textarea id="scratchpad" class="scratch-input" rows="4" placeholder="Rýchle poznámky, čísla, nápady…"></textarea>
-      </div>
-
-      <!-- Habit Tracker -->
-      <div class="sb-section">
-        <div class="sb-title"><span>✅</span>Návyky dnes</div>
-        <div class="habit-list" id="habit-list">
-          <div class="habit-item"><input type="checkbox" class="habit-cb" data-habit="0" id="h0"><label class="habit-label" for="h0">💧 Vypiť 2l vody</label></div>
-          <div class="habit-item"><input type="checkbox" class="habit-cb" data-habit="1" id="h1"><label class="habit-label" for="h1">🏃 30 min. pohyb</label></div>
-          <div class="habit-item"><input type="checkbox" class="habit-cb" data-habit="2" id="h2"><label class="habit-label" for="h2">📖 Čítanie</label></div>
-          <div class="habit-item"><input type="checkbox" class="habit-cb" data-habit="3" id="h3"><label class="habit-label" for="h3">🧘 Žiadny late-night scroll</label></div>
-          <div class="habit-item"><input type="checkbox" class="habit-cb" data-habit="4" id="h4"><label class="habit-label" for="h4">💻 1 commit alebo task</label></div>
+        <!-- Daily Focus -->
+        <div class="sb-section">
+          <div class="sb-title"><span>🎯</span>Úloha dňa</div>
+          <textarea id="daily-focus" class="focus-input" rows="2"
+            placeholder="Čo musíš dnes URČITE spraviť?"></textarea>
         </div>
-      </div>
 
-      <!-- Pomodoro -->
-      <div class="sb-section">
-        <div class="sb-title"><span>🍅</span>Pomodoro</div>
-        <div class="pomo-mode" id="pomo-mode">PRÁCA</div>
-        <div class="pomo-display" id="pomo-display">25:00</div>
-        <div class="pomo-btns">
-          <button class="pomo-btn active" id="pomo-start" onclick="pomodoroToggle()">▶ Štart</button>
-          <button class="pomo-btn" onclick="pomodoroReset()">↺ Reset</button>
+        <!-- Scratchpad -->
+        <div class="sb-section">
+          <div class="sb-title"><span>📋</span>Scratchpad</div>
+          <textarea id="scratchpad" class="scratch-input" rows="4"
+            placeholder="Rýchle poznámky, čísla, nápady…"></textarea>
         </div>
-      </div>
 
-      <!-- Meniny -->
-      <div class="sb-section">
-        <div class="sb-title"><span>🌸</span>Meniny</div>
-        <div id="meniny-container">
-          <div class="meniny-row meniny-today"><span class="meniny-day">Dnes (9.4.)</span><span class="meniny-name">Miloslava</span></div>
-          <div class="meniny-row"><span class="meniny-day">Zajtra (10.4.)</span><span class="meniny-name">Igor</span></div>
-          <div class="meniny-row"><span class="meniny-day">Pozajtra (11.4.)</span><span class="meniny-name">Július</span></div>
+        <!-- Habit Tracker -->
+        <div class="sb-section">
+          <div class="sb-title"><span>✅</span>Návyky dnes</div>
+          <div class="habit-list" id="habit-list">
+            <div class="habit-item"><input type="checkbox" class="habit-cb" data-habit="0" id="h0"><label
+                class="habit-label" for="h0">💧 Vypiť 2l vody</label></div>
+            <div class="habit-item"><input type="checkbox" class="habit-cb" data-habit="1" id="h1"><label
+                class="habit-label" for="h1">🏃 30 min. pohyb</label></div>
+            <div class="habit-item"><input type="checkbox" class="habit-cb" data-habit="2" id="h2"><label
+                class="habit-label" for="h2">📖 Čítanie</label></div>
+            <div class="habit-item"><input type="checkbox" class="habit-cb" data-habit="3" id="h3"><label
+                class="habit-label" for="h3">🧘 Žiadny late-night scroll</label></div>
+            <div class="habit-item"><input type="checkbox" class="habit-cb" data-habit="4" id="h4"><label
+                class="habit-label" for="h4">💻 1 commit alebo task</label></div>
+          </div>
         </div>
-      </div>
 
-      <!-- Currency / Crypto -->
-      <div class="sb-section">
-        <div class="sb-title"><span>💱</span>Kurzy</div>
-        <div id="currency-list">
-          <div class="cur-loading">Načítavam…</div>
+        <!-- Pomodoro -->
+        <div class="sb-section">
+          <div class="sb-title"><span>🍅</span>Pomodoro</div>
+          <div class="pomo-mode" id="pomo-mode">PRÁCA</div>
+          <div class="pomo-display" id="pomo-display">25:00</div>
+          <div class="pomo-btns">
+            <button class="pomo-btn active" id="pomo-start" onclick="pomodoroToggle()">▶ Štart</button>
+            <button class="pomo-btn" onclick="pomodoroReset()">↺ Reset</button>
+          </div>
         </div>
-      </div>
 
-    </aside>
-
-    <!-- ═══════ MAIN GRID ═══════ -->
-    <div class="main">
-      <div class="grid">
-
-        <!-- WEATHER -->
-        <div class="card card-weather" data-card="card-weather">
-          <div class="card-header"><span class="drag-handle">⠿</span><span class="card-icon">☀️</span><span class="card-title">Počasie · Rajec, SK</span><span class="badge">Open-Meteo</span><div class="resize-btns"><button class="resize-btn" onclick="resizeCard(this,'-')">−</button><button class="resize-btn" onclick="resizeCard(this,'+')">+</button></div></div>
-          <div class="card-body">
-            <div class="weather-main"><div class="w-emoji">☀️</div><div><div class="w-temp">3.8°C</div><div class="w-sub">Jasno · pocitová <strong>−1.5°C</strong></div></div></div>
-            <div class="w-details">
-              <span>↑ <strong>6.8°</strong></span><span>↓ <strong>−1.3°</strong></span>
-              <span>💨 <strong>17.3 km/h</strong></span><span>💧 <strong>51%</strong></span>
-              <span>🌧 <strong>0%</strong></span><span>🌅 <strong>06:05</strong></span><span>🌇 <strong>19:27</strong></span>
+        <!-- Meniny -->
+        <div class="sb-section">
+          <div class="sb-title"><span>🌸</span>Meniny</div>
+          <div id="meniny-container">
+            <div class="meniny-row meniny-today"><span class="meniny-day">Dnes (9.4.)</span><span
+                class="meniny-name">Miloslava</span></div>
+            <div class="meniny-row"><span class="meniny-day">Zajtra (10.4.)</span><span class="meniny-name">Igor</span>
             </div>
+            <div class="meniny-row"><span class="meniny-day">Pozajtra (11.4.)</span><span
+                class="meniny-name">Július</span></div>
           </div>
-          <div class="rh rh-r"></div><div class="rh rh-b"></div><div class="rh rh-c"></div>
         </div>
 
-        <!-- URGENT -->
-        <div class="card card-urgent" data-card="card-urgent">
-          <div class="card-header"><span class="drag-handle">⠿</span><span class="card-icon">🔔</span><span class="card-title">Potrebuje pozornosť</span><span class="badge">4 položky</span><div class="resize-btns"><button class="resize-btn" onclick="resizeCard(this,'-')">−</button><button class="resize-btn" onclick="resizeCard(this,'+')">+</button></div></div>
-          <div class="card-body">
-            <div class="u-row"><div class="u-dot"></div><div><div class="u-label">🎂 Majo Strba má dnes narodeniny!</div><div class="u-sub">Google Calendar · celodenná udalosť</div></div></div>
-            <div class="u-row"><div class="u-dot"></div><div><div class="u-label">📦 HBADA EU balík je na ceste</div><div class="u-sub">DPD: 01425110649234 · objednávka HBDEU1845185</div></div></div>
-            <div class="u-row"><div class="u-dot"></div><div><div class="u-label">⚠️ Microsoft konto — heslo zmenené dnes ráno</div><div class="u-sub">Heslá aplikácií treba aktualizovať · Gmail 10:06</div></div></div>
-            <div class="u-row"><div class="u-dot"></div><div><div class="u-label">🔑 GitHub PAT "claude-cowork" bol regenerovaný</div><div class="u-sub">GitHub security email · Gmail 10:59</div></div></div>
+        <!-- Currency / Crypto -->
+        <div class="sb-section">
+          <div class="sb-title"><span>💱</span>Kurzy</div>
+          <div id="currency-list">
+            <div class="cur-loading">Načítavam…</div>
           </div>
-          <div class="rh rh-r"></div><div class="rh rh-b"></div><div class="rh rh-c"></div>
         </div>
 
-        <!-- CALENDAR -->
-        <div class="card card-cal" data-card="card-cal">
-          <div class="card-header"><span class="drag-handle">⠿</span><span class="card-icon">📆</span><span class="card-title">Dnešný kalendár</span><span class="badge">GCal</span><div class="resize-btns"><button class="resize-btn" onclick="resizeCard(this,'-')">−</button><button class="resize-btn" onclick="resizeCard(this,'+')">+</button></div></div>
-          <div class="card-body">
-            <div class="ev-row"><div class="ev-time">Celý deň</div><div><div class="ev-title">🎂 Majo Strba — narodeniny</div><div class="ev-sub">Opakujúca sa udalosť</div></div></div>
-            <div class="ev-empty">Žiadne ďalšie udalosti dnes.</div>
+      </aside>
+
+      <!-- ═══════ MAIN GRID ═══════ -->
+      <div class="main">
+        <div class="grid">
+
+          <!-- WEATHER -->
+          <div class="card card-weather" data-card="card-weather">
+            <div class="card-header"><span class="drag-handle">⠿</span><span class="card-icon">☀️</span><span
+                class="card-title">Počasie · Rajec, SK</span><span class="badge">Open-Meteo</span>
+              <div class="resize-btns"><button class="resize-btn" onclick="resizeCard(this,'-')">−</button><button
+                  class="resize-btn" onclick="resizeCard(this,'+')">+</button></div>
+            </div>
+            <div class="card-body">
+              <div class="weather-main">
+                <div class="w-emoji">☀️</div>
+                <div>
+                  <div class="w-temp">3.8°C</div>
+                  <div class="w-sub">Jasno · pocitová <strong>−1.5°C</strong></div>
+                </div>
+              </div>
+              <div class="w-details">
+                <span>↑ <strong>6.8°</strong></span><span>↓ <strong>−1.3°</strong></span>
+                <span>💨 <strong>17.3 km/h</strong></span><span>💧 <strong>51%</strong></span>
+                <span>🌧 <strong>0%</strong></span><span>🌅 <strong>06:05</strong></span><span>🌇
+                  <strong>19:27</strong></span>
+              </div>
+            </div>
+            <div class="rh rh-r"></div>
+            <div class="rh rh-b"></div>
+            <div class="rh rh-c"></div>
           </div>
-          <div class="rh rh-r"></div><div class="rh rh-b"></div><div class="rh rh-c"></div>
-        </div>
 
-        <!-- WORLD NEWS -->
-        <div class="card card-world" data-card="card-world">
-          <div class="card-header"><span class="drag-handle">⠿</span><span class="card-icon">🌍</span><span class="card-title">Svet</span><span class="badge">9. apr 2026</span><div class="resize-btns"><button class="resize-btn" onclick="resizeCard(this,'-')">−</button><button class="resize-btn" onclick="resizeCard(this,'+')">+</button></div></div>
-          <div class="card-body">
-            <div class="news-row"><div class="news-title"><span class="htag">URGENT</span>Izrael zaútočil na Libanon — 254+ mŕtvych, deň národného smútku</div><div class="news-sub">Al Jazeera · CBS News · 9.4.2026</div></div>
-            <div class="news-row"><div class="news-title">Irán hrozí zastavením tankerov v Hormuzskom prielive</div><div class="news-sub">Reuters · 9.4.2026</div></div>
-            <div class="news-row"><div class="news-title">USA: Vojenské ciele proti Iránu splnené — dvojtýždňové prímerie platí</div><div class="news-sub">Xinhua · 8.4.2026</div></div>
-            <div class="news-row"><div class="news-title">Vietnam zvolil nového premiéra Le Minh Hung (2026–2031)</div><div class="news-sub">Xinhua · 7.4.2026</div></div>
-            <div class="news-row"><div class="news-title">Zemetrasenie 4.9 vo vých. Indonézii — 100+ poškodených domov</div><div class="news-sub">VolcanoDiscovery · 9.4.2026</div></div>
+          <!-- URGENT -->
+          <div class="card card-urgent" data-card="card-urgent">
+            <div class="card-header"><span class="drag-handle">⠿</span><span class="card-icon">🔔</span><span
+                class="card-title">Potrebuje pozornosť</span><span class="badge">4 položky</span>
+              <div class="resize-btns"><button class="resize-btn" onclick="resizeCard(this,'-')">−</button><button
+                  class="resize-btn" onclick="resizeCard(this,'+')">+</button></div>
+            </div>
+            <div class="card-body">
+              <div class="u-row">
+                <div class="u-dot"></div>
+                <div>
+                  <div class="u-label">🎂 Majo Strba má dnes narodeniny!</div>
+                  <div class="u-sub">Google Calendar · celodenná udalosť</div>
+                </div>
+              </div>
+              <div class="u-row">
+                <div class="u-dot"></div>
+                <div>
+                  <div class="u-label">📦 HBADA EU balík je na ceste</div>
+                  <div class="u-sub">DPD: 01425110649234 · objednávka HBDEU1845185</div>
+                </div>
+              </div>
+              <div class="u-row">
+                <div class="u-dot"></div>
+                <div>
+                  <div class="u-label">⚠️ Microsoft konto — heslo zmenené dnes ráno</div>
+                  <div class="u-sub">Heslá aplikácií treba aktualizovať · Gmail 10:06</div>
+                </div>
+              </div>
+              <div class="u-row">
+                <div class="u-dot"></div>
+                <div>
+                  <div class="u-label">🔑 GitHub PAT "claude-cowork" bol regenerovaný</div>
+                  <div class="u-sub">GitHub security email · Gmail 10:59</div>
+                </div>
+              </div>
+            </div>
+            <div class="rh rh-r"></div>
+            <div class="rh rh-b"></div>
+            <div class="rh rh-c"></div>
           </div>
-          <div class="rh rh-r"></div><div class="rh rh-b"></div><div class="rh rh-c"></div>
-        </div>
 
-        <!-- AI NEWS -->
-        <div class="card card-ai" data-card="card-ai">
-          <div class="card-header"><span class="drag-handle">⠿</span><span class="card-icon">🤖</span><span class="card-title">AI novinky</span><span class="badge">apr 2026</span><div class="resize-btns"><button class="resize-btn" onclick="resizeCard(this,'-')">−</button><button class="resize-btn" onclick="resizeCard(this,'+')">+</button></div></div>
-          <div class="card-body">
-            <div class="news-row"><div class="news-title">Meta spustila Muse Spark — prvý veľký AI model po angažovaní Alexandr Wanga</div><div class="news-sub">CNBC · 8.4.2026</div></div>
-            <div class="news-row"><div class="news-title">DeepSeek V4 — 1T parametrov, Apache 2.0, vytrénovaný za $5.2M</div><div class="news-sub">Radical Data Science · apr 2026</div></div>
-            <div class="news-row"><div class="news-title">Google vydal Gemma 4 — open modely pre reasoning + agentické workflowy</div><div class="news-sub">Google DeepMind · apr 2026</div></div>
-            <div class="news-row"><div class="news-title">AI prieskum: 100× menej energie pri vyššej presnosti</div><div class="news-sub">ScienceDaily · 5.4.2026</div></div>
-            <div class="news-row"><div class="news-title">Microsoft investuje $10 mld. do AI infraštruktúry v Japonsku</div><div class="news-sub">CNBC · apr 2026</div></div>
+          <!-- CALENDAR -->
+          <div class="card card-cal" data-card="card-cal">
+            <div class="card-header"><span class="drag-handle">⠿</span><span class="card-icon">📆</span><span
+                class="card-title">Dnešný kalendár</span><span class="badge">GCal</span>
+              <div class="resize-btns"><button class="resize-btn" onclick="resizeCard(this,'-')">−</button><button
+                  class="resize-btn" onclick="resizeCard(this,'+')">+</button></div>
+            </div>
+            <div class="card-body">
+              <div class="ev-row">
+                <div class="ev-time">Celý deň</div>
+                <div>
+                  <div class="ev-title">🎂 Majo Strba — narodeniny</div>
+                  <div class="ev-sub">Opakujúca sa udalosť</div>
+                </div>
+              </div>
+              <div class="ev-empty">Žiadne ďalšie udalosti dnes.</div>
+            </div>
+            <div class="rh rh-r"></div>
+            <div class="rh rh-b"></div>
+            <div class="rh rh-c"></div>
           </div>
-          <div class="rh rh-r"></div><div class="rh rh-b"></div><div class="rh rh-c"></div>
-        </div>
 
-        <!-- TECH -->
-        <div class="card card-tech" data-card="card-tech">
-          <div class="card-header"><span class="drag-handle">⠿</span><span class="card-icon">💻</span><span class="card-title">Tech / Web Dev</span><span class="badge">apr 2026</span><div class="resize-btns"><button class="resize-btn" onclick="resizeCard(this,'-')">−</button><button class="resize-btn" onclick="resizeCard(this,'+')">+</button></div></div>
-          <div class="card-body">
-            <div class="news-row"><div class="news-title">70%+ vývojárov používa AI coding denne — agentic je nový štandard</div><div class="news-sub">LogRocket Blog · 2026</div></div>
-            <div class="news-row"><div class="news-title">Server-first architektúra dominuje — RSC + SSR je default vo Next.js / Nuxt</div><div class="news-sub">DEV.to · talent500.com</div></div>
-            <div class="news-row"><div class="news-title">TypeScript je nový štandard — plain JS sa považuje za legacy v 2026</div><div class="news-sub">Figma Resource Library · 2026</div></div>
-            <div class="news-row"><div class="news-title">npm supply-chain útoky vzrástli o 150% (2024→2026)</div><div class="news-sub">Blacksmith Agency · Security trends</div></div>
-            <div class="news-row"><div class="news-title">Headless CMS a composable architektúra — v 2026 praktický baseline</div><div class="news-sub">Agility CMS · Anchor Points</div></div>
+          <!-- WORLD NEWS -->
+          <div class="card card-world" data-card="card-world">
+            <div class="card-header"><span class="drag-handle">⠿</span><span class="card-icon">🌍</span><span
+                class="card-title">Svet</span><span class="badge">9. apr 2026</span>
+              <div class="resize-btns"><button class="resize-btn" onclick="resizeCard(this,'-')">−</button><button
+                  class="resize-btn" onclick="resizeCard(this,'+')">+</button></div>
+            </div>
+            <div class="card-body">
+              <div class="news-row">
+                <div class="news-title"><span class="htag">URGENT</span>Izrael zaútočil na Libanon — 254+ mŕtvych, deň
+                  národného smútku</div>
+                <div class="news-sub">Al Jazeera · CBS News · 9.4.2026</div>
+              </div>
+              <div class="news-row">
+                <div class="news-title">Irán hrozí zastavením tankerov v Hormuzskom prielive</div>
+                <div class="news-sub">Reuters · 9.4.2026</div>
+              </div>
+              <div class="news-row">
+                <div class="news-title">USA: Vojenské ciele proti Iránu splnené — dvojtýždňové prímerie platí</div>
+                <div class="news-sub">Xinhua · 8.4.2026</div>
+              </div>
+              <div class="news-row">
+                <div class="news-title">Vietnam zvolil nového premiéra Le Minh Hung (2026–2031)</div>
+                <div class="news-sub">Xinhua · 7.4.2026</div>
+              </div>
+              <div class="news-row">
+                <div class="news-title">Zemetrasenie 4.9 vo vých. Indonézii — 100+ poškodených domov</div>
+                <div class="news-sub">VolcanoDiscovery · 9.4.2026</div>
+              </div>
+            </div>
+            <div class="rh rh-r"></div>
+            <div class="rh rh-b"></div>
+            <div class="rh rh-c"></div>
           </div>
-          <div class="rh rh-r"></div><div class="rh rh-b"></div><div class="rh rh-c"></div>
-        </div>
 
-        <!-- NOTION PROJECTS -->
-        <div class="card card-notion" data-card="card-notion">
-          <div class="card-header"><span class="drag-handle">⠿</span><span class="card-icon">📂</span><span class="card-title">Projekty · Notion</span><span class="badge">12 projektov</span><div class="resize-btns"><button class="resize-btn" onclick="resizeCard(this,'-')">−</button><button class="resize-btn" onclick="resizeCard(this,'+')">+</button></div></div>
-          <div class="card-body">
-            <div class="proj-row"><div class="proj-dot" style="background:#2ed573"></div><div style="flex:1"><div class="proj-name">OŠK Kamenná Poruba</div><div class="proj-meta">oskkp.sk · €350 · €50/mes</div></div><div class="proj-phase ph-c">Completed</div></div>
-            <div class="proj-row"><div class="proj-dot" style="background:#a29bfe"></div><div style="flex:1"><div class="proj-name">FK Rajec</div><div class="proj-meta">github.io/FK-Rajec · €700 · €50/mes</div></div><div class="proj-phase ph-co">Concept</div></div>
-            <div class="proj-row"><div class="proj-dot" style="background:#54a0ff"></div><div style="flex:1"><div class="proj-name">Excavator — Info</div><div class="proj-meta">michal-baranek.vercel.app · €250 · €35/mes</div></div><div class="proj-phase ph-d">Design</div></div>
-            <div class="proj-row"><div class="proj-dot" style="background:#636e72"></div><div style="flex:1"><div class="proj-name">Cofbit Barber's</div><div class="proj-meta">€400 · €35/mes</div></div><div class="proj-phase ph-p">Potential</div></div>
-            <div class="proj-row"><div class="proj-dot" style="background:#636e72"></div><div style="flex:1"><div class="proj-name">TJ Partizán Kunerad</div><div class="proj-meta">€700 · €50/mes</div></div><div class="proj-phase ph-p">Potential</div></div>
-            <div class="proj-row"><div class="proj-dot" style="background:#636e72"></div><div style="flex:1"><div class="proj-name">FK Turie</div><div class="proj-meta">€700 · €50/mes</div></div><div class="proj-phase ph-p">Potential</div></div>
-            <div class="proj-row"><div class="proj-dot" style="background:#636e72"></div><div style="flex:1"><div class="proj-name">ŠK Lietava</div><div class="proj-meta">€700 · €50/mes</div></div><div class="proj-phase ph-p">Potential</div></div>
-            <div class="proj-row"><div class="proj-dot" style="background:#636e72"></div><div style="flex:1"><div class="proj-name">FK Ďurčiná</div><div class="proj-meta">€700 · €50/mes</div></div><div class="proj-phase ph-p">Potential</div></div>
-            <div class="proj-row"><div class="proj-dot" style="background:#636e72"></div><div style="flex:1"><div class="proj-name">TJ Zbyňov</div><div class="proj-meta">€700 · €50/mes</div></div><div class="proj-phase ph-p">Potential</div></div>
-            <div class="proj-row"><div class="proj-dot" style="background:#636e72"></div><div style="flex:1"><div class="proj-name">ŠK Cementáreň Lúčka</div><div class="proj-meta">€700 · €50/mes</div></div><div class="proj-phase ph-p">Potential</div></div>
-            <div class="proj-row"><div class="proj-dot" style="background:#636e72"></div><div style="flex:1"><div class="proj-name">Car Wash — Info</div><div class="proj-meta">€200 · €35/mes</div></div><div class="proj-phase ph-p">Potential</div></div>
-            <div class="proj-row"><div class="proj-dot" style="background:#8892b0"></div><div style="flex:1"><div class="proj-name">ALL (Hosting)</div><div class="proj-meta">mywebdev-delta.vercel.app</div></div><div class="proj-phase ph-n">Running</div></div>
+          <!-- AI NEWS -->
+          <div class="card card-ai" data-card="card-ai">
+            <div class="card-header"><span class="drag-handle">⠿</span><span class="card-icon">🤖</span><span
+                class="card-title">AI novinky</span><span class="badge">apr 2026</span>
+              <div class="resize-btns"><button class="resize-btn" onclick="resizeCard(this,'-')">−</button><button
+                  class="resize-btn" onclick="resizeCard(this,'+')">+</button></div>
+            </div>
+            <div class="card-body">
+              <div class="news-row">
+                <div class="news-title">Meta spustila Muse Spark — prvý veľký AI model po angažovaní Alexandr Wanga
+                </div>
+                <div class="news-sub">CNBC · 8.4.2026</div>
+              </div>
+              <div class="news-row">
+                <div class="news-title">DeepSeek V4 — 1T parametrov, Apache 2.0, vytrénovaný za $5.2M</div>
+                <div class="news-sub">Radical Data Science · apr 2026</div>
+              </div>
+              <div class="news-row">
+                <div class="news-title">Google vydal Gemma 4 — open modely pre reasoning + agentické workflowy</div>
+                <div class="news-sub">Google DeepMind · apr 2026</div>
+              </div>
+              <div class="news-row">
+                <div class="news-title">AI prieskum: 100× menej energie pri vyššej presnosti</div>
+                <div class="news-sub">ScienceDaily · 5.4.2026</div>
+              </div>
+              <div class="news-row">
+                <div class="news-title">Microsoft investuje $10 mld. do AI infraštruktúry v Japonsku</div>
+                <div class="news-sub">CNBC · apr 2026</div>
+              </div>
+            </div>
+            <div class="rh rh-r"></div>
+            <div class="rh rh-b"></div>
+            <div class="rh rh-c"></div>
           </div>
-          <div class="rh rh-r"></div><div class="rh rh-b"></div><div class="rh rh-c"></div>
-        </div>
 
-        <!-- NOTION TASKS -->
-        <div class="card card-tasks" data-card="card-tasks">
-          <div class="card-header"><span class="drag-handle">⠿</span><span class="card-icon">✅</span><span class="card-title">Otvorené úlohy · Notion</span><span class="badge">2 aktívne</span><div class="resize-btns"><button class="resize-btn" onclick="resizeCard(this,'-')">−</button><button class="resize-btn" onclick="resizeCard(this,'+')">+</button></div></div>
-          <div class="card-body">
-            <div class="task-row"><div style="flex:1"><div class="task-name">Create Pricing web</div><div class="task-meta">Status: Finishing · bez projektu</div></div><div class="task-pri pri-now">NOW!</div></div>
-            <div class="task-row"><div style="flex:1"><div class="task-name">Save Passwords</div><div class="task-meta">Status: Finishing · bez projektu</div></div><div class="task-pri pri-ok">OK</div></div>
-            <div class="task-empty" style="margin-top:8px;font-size:10px">Všetky ostatné overené úlohy sú <strong>Done</strong> ✓</div>
+          <!-- TECH -->
+          <div class="card card-tech" data-card="card-tech">
+            <div class="card-header"><span class="drag-handle">⠿</span><span class="card-icon">💻</span><span
+                class="card-title">Tech / Web Dev</span><span class="badge">apr 2026</span>
+              <div class="resize-btns"><button class="resize-btn" onclick="resizeCard(this,'-')">−</button><button
+                  class="resize-btn" onclick="resizeCard(this,'+')">+</button></div>
+            </div>
+            <div class="card-body">
+              <div class="news-row">
+                <div class="news-title">70%+ vývojárov používa AI coding denne — agentic je nový štandard</div>
+                <div class="news-sub">LogRocket Blog · 2026</div>
+              </div>
+              <div class="news-row">
+                <div class="news-title">Server-first architektúra dominuje — RSC + SSR je default vo Next.js / Nuxt
+                </div>
+                <div class="news-sub">DEV.to · talent500.com</div>
+              </div>
+              <div class="news-row">
+                <div class="news-title">TypeScript je nový štandard — plain JS sa považuje za legacy v 2026</div>
+                <div class="news-sub">Figma Resource Library · 2026</div>
+              </div>
+              <div class="news-row">
+                <div class="news-title">npm supply-chain útoky vzrástli o 150% (2024→2026)</div>
+                <div class="news-sub">Blacksmith Agency · Security trends</div>
+              </div>
+              <div class="news-row">
+                <div class="news-title">Headless CMS a composable architektúra — v 2026 praktický baseline</div>
+                <div class="news-sub">Agility CMS · Anchor Points</div>
+              </div>
+            </div>
+            <div class="rh rh-r"></div>
+            <div class="rh rh-b"></div>
+            <div class="rh rh-c"></div>
           </div>
-          <div class="rh rh-r"></div><div class="rh rh-b"></div><div class="rh rh-c"></div>
-        </div>
 
-        <!-- EMAIL -->
-        <div class="card card-email" data-card="card-email">
-          <div class="card-header"><span class="drag-handle">⠿</span><span class="card-icon">📬</span><span class="card-title">Gmail inbox</span><span class="badge">5 neprečítaných</span><div class="resize-btns"><button class="resize-btn" onclick="resizeCard(this,'-')">−</button><button class="resize-btn" onclick="resizeCard(this,'+')">+</button></div></div>
-          <div class="card-body">
-            <div class="email-row"><div class="email-from"><span class="unread-dot"></span>Tipli.sk</div><div class="email-subj">Podeľte sa s nami o skúsenosť s prvou odmenou ⭐</div><div class="email-time">dnes 14:23</div></div>
-            <div class="email-row"><div class="email-from"><span class="unread-dot"></span>GitHub</div><div class="email-subj">[GitHub] PAT "claude-cowork" regenerovaný</div><div class="email-time">dnes 10:59</div></div>
-            <div class="email-row"><div class="email-from">HBADA EU</div><div class="email-subj">Shipment from order HBDEU1845185 is on the way</div><div class="email-time">dnes 10:57</div></div>
-            <div class="email-row"><div class="email-from"><span class="unread-dot"></span>GitHub</div><div class="email-subj">[GitHub] Fine-grained PAT (Claude) pridaný</div><div class="email-time">dnes 10:26</div></div>
-            <div class="email-row"><div class="email-from"><span class="unread-dot"></span>Microsoft</div><div class="email-subj">Heslá aplikácií konta Microsoft treba aktualizovať</div><div class="email-time">dnes 10:06</div></div>
-            <div class="email-row"><div class="email-from"><span class="unread-dot"></span>Microsoft</div><div class="email-subj">Zmena hesla konta Microsoft — 9.4.2026 12:06 CET</div><div class="email-time">dnes 10:06</div></div>
-            <div class="email-row"><div class="email-from">HBADA EU</div><div class="email-subj">HBADA EU — You have earned 509 points!</div><div class="email-time">dnes 09:54</div></div>
+          <!-- NOTION PROJECTS -->
+          <div class="card card-notion" data-card="card-notion">
+            <div class="card-header"><span class="drag-handle">⠿</span><span class="card-icon">📂</span><span
+                class="card-title">Projekty · Notion</span><span class="badge">12 projektov</span>
+              <div class="resize-btns"><button class="resize-btn" onclick="resizeCard(this,'-')">−</button><button
+                  class="resize-btn" onclick="resizeCard(this,'+')">+</button></div>
+            </div>
+            <div class="card-body">
+              <div class="proj-row">
+                <div class="proj-dot" style="background:#2ed573"></div>
+                <div style="flex:1">
+                  <div class="proj-name">OŠK Kamenná Poruba</div>
+                  <div class="proj-meta">oskkp.sk · €350 · €50/mes</div>
+                </div>
+                <div class="proj-phase ph-c">Completed</div>
+              </div>
+              <div class="proj-row">
+                <div class="proj-dot" style="background:#a29bfe"></div>
+                <div style="flex:1">
+                  <div class="proj-name">FK Rajec</div>
+                  <div class="proj-meta">github.io/FK-Rajec · €700 · €50/mes</div>
+                </div>
+                <div class="proj-phase ph-co">Concept</div>
+              </div>
+              <div class="proj-row">
+                <div class="proj-dot" style="background:#54a0ff"></div>
+                <div style="flex:1">
+                  <div class="proj-name">Excavator — Info</div>
+                  <div class="proj-meta">michal-baranek.vercel.app · €250 · €35/mes</div>
+                </div>
+                <div class="proj-phase ph-d">Design</div>
+              </div>
+              <div class="proj-row">
+                <div class="proj-dot" style="background:#636e72"></div>
+                <div style="flex:1">
+                  <div class="proj-name">Cofbit Barber's</div>
+                  <div class="proj-meta">€400 · €35/mes</div>
+                </div>
+                <div class="proj-phase ph-p">Potential</div>
+              </div>
+              <div class="proj-row">
+                <div class="proj-dot" style="background:#636e72"></div>
+                <div style="flex:1">
+                  <div class="proj-name">TJ Partizán Kunerad</div>
+                  <div class="proj-meta">€700 · €50/mes</div>
+                </div>
+                <div class="proj-phase ph-p">Potential</div>
+              </div>
+              <div class="proj-row">
+                <div class="proj-dot" style="background:#636e72"></div>
+                <div style="flex:1">
+                  <div class="proj-name">FK Turie</div>
+                  <div class="proj-meta">€700 · €50/mes</div>
+                </div>
+                <div class="proj-phase ph-p">Potential</div>
+              </div>
+              <div class="proj-row">
+                <div class="proj-dot" style="background:#636e72"></div>
+                <div style="flex:1">
+                  <div class="proj-name">ŠK Lietava</div>
+                  <div class="proj-meta">€700 · €50/mes</div>
+                </div>
+                <div class="proj-phase ph-p">Potential</div>
+              </div>
+              <div class="proj-row">
+                <div class="proj-dot" style="background:#636e72"></div>
+                <div style="flex:1">
+                  <div class="proj-name">FK Ďurčiná</div>
+                  <div class="proj-meta">€700 · €50/mes</div>
+                </div>
+                <div class="proj-phase ph-p">Potential</div>
+              </div>
+              <div class="proj-row">
+                <div class="proj-dot" style="background:#636e72"></div>
+                <div style="flex:1">
+                  <div class="proj-name">TJ Zbyňov</div>
+                  <div class="proj-meta">€700 · €50/mes</div>
+                </div>
+                <div class="proj-phase ph-p">Potential</div>
+              </div>
+              <div class="proj-row">
+                <div class="proj-dot" style="background:#636e72"></div>
+                <div style="flex:1">
+                  <div class="proj-name">ŠK Cementáreň Lúčka</div>
+                  <div class="proj-meta">€700 · €50/mes</div>
+                </div>
+                <div class="proj-phase ph-p">Potential</div>
+              </div>
+              <div class="proj-row">
+                <div class="proj-dot" style="background:#636e72"></div>
+                <div style="flex:1">
+                  <div class="proj-name">Car Wash — Info</div>
+                  <div class="proj-meta">€200 · €35/mes</div>
+                </div>
+                <div class="proj-phase ph-p">Potential</div>
+              </div>
+              <div class="proj-row">
+                <div class="proj-dot" style="background:#8892b0"></div>
+                <div style="flex:1">
+                  <div class="proj-name">ALL (Hosting)</div>
+                  <div class="proj-meta">mywebdev-delta.vercel.app</div>
+                </div>
+                <div class="proj-phase ph-n">Running</div>
+              </div>
+            </div>
+            <div class="rh rh-r"></div>
+            <div class="rh rh-b"></div>
+            <div class="rh rh-c"></div>
           </div>
-          <div class="rh rh-r"></div><div class="rh rh-b"></div><div class="rh rh-c"></div>
-        </div>
 
-        <!-- SUGGESTIONS -->
-        <div class="card card-clients" data-card="card-clients">
-          <div class="card-header"><span class="drag-handle">⠿</span><span class="card-icon">💡</span><span class="card-title">Tipy na dnes</span><span class="badge">AI návrhy</span><div class="resize-btns"><button class="resize-btn" onclick="resizeCard(this,'-')">−</button><button class="resize-btn" onclick="resizeCard(this,'+')">+</button></div></div>
-          <div class="card-body">
-            <div class="client-row"><div class="client-num">1.</div><div><div class="client-text">Dokonči "Create Pricing web" — tvoja Notion priorita #1 (NOW!)</div><div class="client-sub">Status: Finishing</div></div></div>
-            <div class="client-row"><div class="client-num">2.</div><div><div class="client-text">Pošli FK Rajec concept link klientovi na schválenie</div><div class="client-sub">github.io/FK-Rajec-Web-Koncept · Phase: Concept</div></div></div>
-            <div class="client-row"><div class="client-num">3.</div><div><div class="client-text">Vyber 2–3 projekty z 9 "Potential" a naplánuj prvý hovor</div><div class="client-sub">FK Turie, Cofbit, Car Wash</div></div></div>
-            <div class="client-row"><div class="client-num">4.</div><div><div class="client-text">Pridaj OŠK KP ako case study na Excavator web</div><div class="client-sub">oskkp.sk je Completed — ideálny showcase</div></div></div>
-            <div class="client-row"><div class="client-num">5.</div><div><div class="client-text">Ukloč Microsoft account security (zmenené heslo dnes ráno)</div><div class="client-sub">Aktualizuj heslá aplikácií</div></div></div>
+          <!-- NOTION TASKS -->
+          <div class="card card-tasks" data-card="card-tasks">
+            <div class="card-header"><span class="drag-handle">⠿</span><span class="card-icon">✅</span><span
+                class="card-title">Otvorené úlohy · Notion</span><span class="badge">2 aktívne</span>
+              <div class="resize-btns"><button class="resize-btn" onclick="resizeCard(this,'-')">−</button><button
+                  class="resize-btn" onclick="resizeCard(this,'+')">+</button></div>
+            </div>
+            <div class="card-body">
+              <div class="task-row">
+                <div style="flex:1">
+                  <div class="task-name">Create Pricing web</div>
+                  <div class="task-meta">Status: Finishing · bez projektu</div>
+                </div>
+                <div class="task-pri pri-now">NOW!</div>
+              </div>
+              <div class="task-row">
+                <div style="flex:1">
+                  <div class="task-name">Save Passwords</div>
+                  <div class="task-meta">Status: Finishing · bez projektu</div>
+                </div>
+                <div class="task-pri pri-ok">OK</div>
+              </div>
+              <div class="task-empty" style="margin-top:8px;font-size:10px">Všetky ostatné overené úlohy sú
+                <strong>Done</strong> ✓</div>
+            </div>
+            <div class="rh rh-r"></div>
+            <div class="rh rh-b"></div>
+            <div class="rh rh-c"></div>
           </div>
-          <div class="rh rh-r"></div><div class="rh rh-b"></div><div class="rh rh-c"></div>
-        </div>
 
-        <!-- BIRTHDAYS -->
-        <div class="card card-bday" data-card="card-bday">
-          <div class="card-header"><span class="drag-handle">⠿</span><span class="card-icon">🎂</span><span class="card-title">Narodeniny</span><span class="badge">GCal</span><div class="resize-btns"><button class="resize-btn" onclick="resizeCard(this,'-')">−</button><button class="resize-btn" onclick="resizeCard(this,'+')">+</button></div></div>
-          <div class="card-body">
-            <div class="bday-row"><div style="font-size:18px">🎉</div><div class="bday-name">Majo Strba</div><span class="bday-today-tag">DNES</span></div>
-            <div style="margin-top:10px;font-size:9px;color:var(--muted);font-style:italic;line-height:1.5">Ďalšie narodeniny sa zobrazujú len ak sú v Google Calendar.</div>
+          <!-- EMAIL -->
+          <div class="card card-email" data-card="card-email">
+            <div class="card-header"><span class="drag-handle">⠿</span><span class="card-icon">📬</span><span
+                class="card-title">Gmail inbox</span><span class="badge">5 neprečítaných</span>
+              <div class="resize-btns"><button class="resize-btn" onclick="resizeCard(this,'-')">−</button><button
+                  class="resize-btn" onclick="resizeCard(this,'+')">+</button></div>
+            </div>
+            <div class="card-body">
+              <div class="email-row">
+                <div class="email-from"><span class="unread-dot"></span>Tipli.sk</div>
+                <div class="email-subj">Podeľte sa s nami o skúsenosť s prvou odmenou ⭐</div>
+                <div class="email-time">dnes 14:23</div>
+              </div>
+              <div class="email-row">
+                <div class="email-from"><span class="unread-dot"></span>GitHub</div>
+                <div class="email-subj">[GitHub] PAT "claude-cowork" regenerovaný</div>
+                <div class="email-time">dnes 10:59</div>
+              </div>
+              <div class="email-row">
+                <div class="email-from">HBADA EU</div>
+                <div class="email-subj">Shipment from order HBDEU1845185 is on the way</div>
+                <div class="email-time">dnes 10:57</div>
+              </div>
+              <div class="email-row">
+                <div class="email-from"><span class="unread-dot"></span>GitHub</div>
+                <div class="email-subj">[GitHub] Fine-grained PAT (Claude) pridaný</div>
+                <div class="email-time">dnes 10:26</div>
+              </div>
+              <div class="email-row">
+                <div class="email-from"><span class="unread-dot"></span>Microsoft</div>
+                <div class="email-subj">Heslá aplikácií konta Microsoft treba aktualizovať</div>
+                <div class="email-time">dnes 10:06</div>
+              </div>
+              <div class="email-row">
+                <div class="email-from"><span class="unread-dot"></span>Microsoft</div>
+                <div class="email-subj">Zmena hesla konta Microsoft — 9.4.2026 12:06 CET</div>
+                <div class="email-time">dnes 10:06</div>
+              </div>
+              <div class="email-row">
+                <div class="email-from">HBADA EU</div>
+                <div class="email-subj">HBADA EU — You have earned 509 points!</div>
+                <div class="email-time">dnes 09:54</div>
+              </div>
+            </div>
+            <div class="rh rh-r"></div>
+            <div class="rh rh-b"></div>
+            <div class="rh rh-c"></div>
           </div>
-          <div class="rh rh-r"></div><div class="rh rh-b"></div><div class="rh rh-c"></div>
-        </div>
 
-      </div><!-- /grid -->
+          <!-- SUGGESTIONS -->
+          <div class="card card-clients" data-card="card-clients">
+            <div class="card-header"><span class="drag-handle">⠿</span><span class="card-icon">💡</span><span
+                class="card-title">Tipy na dnes</span><span class="badge">AI návrhy</span>
+              <div class="resize-btns"><button class="resize-btn" onclick="resizeCard(this,'-')">−</button><button
+                  class="resize-btn" onclick="resizeCard(this,'+')">+</button></div>
+            </div>
+            <div class="card-body">
+              <div class="client-row">
+                <div class="client-num">1.</div>
+                <div>
+                  <div class="client-text">Dokonči "Create Pricing web" — tvoja Notion priorita #1 (NOW!)</div>
+                  <div class="client-sub">Status: Finishing</div>
+                </div>
+              </div>
+              <div class="client-row">
+                <div class="client-num">2.</div>
+                <div>
+                  <div class="client-text">Pošli FK Rajec concept link klientovi na schválenie</div>
+                  <div class="client-sub">github.io/FK-Rajec-Web-Koncept · Phase: Concept</div>
+                </div>
+              </div>
+              <div class="client-row">
+                <div class="client-num">3.</div>
+                <div>
+                  <div class="client-text">Vyber 2–3 projekty z 9 "Potential" a naplánuj prvý hovor</div>
+                  <div class="client-sub">FK Turie, Cofbit, Car Wash</div>
+                </div>
+              </div>
+              <div class="client-row">
+                <div class="client-num">4.</div>
+                <div>
+                  <div class="client-text">Pridaj OŠK KP ako case study na Excavator web</div>
+                  <div class="client-sub">oskkp.sk je Completed — ideálny showcase</div>
+                </div>
+              </div>
+              <div class="client-row">
+                <div class="client-num">5.</div>
+                <div>
+                  <div class="client-text">Ukloč Microsoft account security (zmenené heslo dnes ráno)</div>
+                  <div class="client-sub">Aktualizuj heslá aplikácií</div>
+                </div>
+              </div>
+            </div>
+            <div class="rh rh-r"></div>
+            <div class="rh rh-b"></div>
+            <div class="rh rh-c"></div>
+          </div>
 
-      <footer class="footer">
-        Morning Briefing · Open-Meteo · Gmail · GCal · Notion · Web Search ·
-        <a href="https://github.com/DarkMaster9452/morning-briefing">GitHub</a>
-      </footer>
-    </div><!-- /main -->
+          <!-- BIRTHDAYS -->
+          <div class="card card-bday" data-card="card-bday">
+            <div class="card-header"><span class="drag-handle">⠿</span><span class="card-icon">🎂</span><span
+                class="card-title">Narodeniny</span><span class="badge">GCal</span>
+              <div class="resize-btns"><button class="resize-btn" onclick="resizeCard(this,'-')">−</button><button
+                  class="resize-btn" onclick="resizeCard(this,'+')">+</button></div>
+            </div>
+            <div class="card-body">
+              <div class="bday-row">
+                <div style="font-size:18px">🎉</div>
+                <div class="bday-name">Majo Strba</div><span class="bday-today-tag">DNES</span>
+              </div>
+              <div style="margin-top:10px;font-size:9px;color:var(--muted);font-style:italic;line-height:1.5">Ďalšie
+                narodeniny sa zobrazujú len ak sú v Google Calendar.</div>
+            </div>
+            <div class="rh rh-r"></div>
+            <div class="rh rh-b"></div>
+            <div class="rh rh-c"></div>
+          </div>
 
-  </div><!-- /body-row -->
-</div><!-- /app -->
+        </div><!-- /grid -->
 
-<script>
-/* ══════════════════════════════════════════
-   GOOGLE OAUTH
-   !! REPLACE WITH YOUR REAL CLIENT ID !!
-   Steps:
-   1. Go to https://console.cloud.google.com/
-   2. Create project → APIs & Services → Credentials
-   3. Create OAuth 2.0 Client ID (Web application)
-   4. Add https://darkmaster9452.github.io to Authorized JavaScript origins
-   5. Copy Client ID here
-══════════════════════════════════════════ */
-const ALLOWED_EMAIL = 'strananekm@gmail.com';
-// !! REPLACE THIS with your real Client ID from console.cloud.google.com !!
-const GOOGLE_CLIENT_ID = '284055222925-4g256ti1a3iippj60n4um7lu6trbr128.apps.googleusercontent.com';
+        <footer class="footer">
+          Morning Briefing · Open-Meteo · Gmail · GCal · Notion · Web Search ·
+          <a href="https://github.com/DarkMaster9452/morning-briefing">GitHub</a>
+        </footer>
+      </div><!-- /main -->
 
-const IS_CONFIGURED = !GOOGLE_CLIENT_ID.startsWith('YOUR_');
+    </div><!-- /body-row -->
+  </div><!-- /app -->
 
-function handleCredentialResponse(response) {
-  const payload = parseJwt(response.credential);
-  if (payload.email === ALLOWED_EMAIL) {
-    sessionStorage.setItem('mb_user', JSON.stringify({
-      email: payload.email,
-      name: payload.name,
-      picture: payload.picture,
-    }));
-    showApp(payload);
-  } else {
-    document.getElementById('access-denied').style.display = 'block';
-  }
-}
+  <script>
+    /* ══════════════════════════════════════════
+       GOOGLE OAUTH
+       !! REPLACE WITH YOUR REAL CLIENT ID !!
+       Steps:
+       1. Go to https://console.cloud.google.com/
+       2. Create project → APIs & Services → Credentials
+       3. Create OAuth 2.0 Client ID (Web application)
+       4. Add https://darkmaster9452.github.io to Authorized JavaScript origins
+       5. Copy Client ID here
+    ══════════════════════════════════════════ */
+    const ALLOWED_EMAIL = 'strananekm@gmail.com';
+    // !! REPLACE THIS with your real Client ID from console.cloud.google.com !!
+    const GOOGLE_CLIENT_ID = '284055222925-4g256ti1a3iippj60n4um7lu6trbr128.apps.googleusercontent.com';
 
-function parseJwt(token) {
-  const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
-  return JSON.parse(decodeURIComponent(atob(base64).split('').map(c =>
-    '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')));
-}
+    const IS_CONFIGURED = !GOOGLE_CLIENT_ID.startsWith('YOUR_');
 
-function showApp(user) {
-  document.getElementById('login-screen').style.display = 'none';
-  const app = document.getElementById('app');
-  app.style.display = 'flex';
-  if (user && user.picture) {
-    const av = document.getElementById('user-avatar');
-    av.src = user.picture; av.style.display = 'block';
-  }
-}
-
-function signOut() {
-  sessionStorage.removeItem('mb_user');
-  if (IS_CONFIGURED && window.google) {
-    google.accounts.id.disableAutoSelect();
-  }
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('login-screen').style.display = 'flex';
-}
-
-// Init on load
-window.addEventListener('load', () => {
-  // Auto-login from session
-  const stored = sessionStorage.getItem('mb_user');
-  if (stored) { showApp(JSON.parse(stored)); return; }
-
-  if (!IS_CONFIGURED) {
-    // Show setup instructions
-    document.getElementById('setup-notice').style.display = 'block';
-    document.getElementById('g-signin-btn').innerHTML =
-      '<p style="color:#ff4757;font-size:12px;text-align:center">⛔ Client ID nie je nastavené — pozri pokyny nižšie</p>';
-    return;
-  }
-
-  // Wait for GSI library to load, then render button
-  function initGSI() {
-    google.accounts.id.initialize({
-      client_id: GOOGLE_CLIENT_ID,
-      callback: handleCredentialResponse,
-      auto_select: false,
-      cancel_on_tap_outside: false,
-    });
-    // Render official Google Sign-In button
-    google.accounts.id.renderButton(
-      document.getElementById('g-signin-btn'),
-      {
-        theme: 'outline',
-        size: 'large',
-        text: 'signin_with',
-        shape: 'rectangular',
-        logo_alignment: 'left',
-        width: 280,
+    function handleCredentialResponse(response) {
+      const payload = parseJwt(response.credential);
+      if (payload.email === ALLOWED_EMAIL) {
+        sessionStorage.setItem('mb_user', JSON.stringify({
+          email: payload.email,
+          name: payload.name,
+          picture: payload.picture,
+        }));
+        showApp(payload);
+      } else {
+        document.getElementById('access-denied').style.display = 'block';
       }
-    );
-    // Also try One Tap
-    google.accounts.id.prompt();
-  }
+    }
 
-  if (window.google && window.google.accounts) {
-    initGSI();
-  } else {
-    // Poll until GSI script loads (it's async)
-    const poll = setInterval(() => {
+    function parseJwt(token) {
+      const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+      return JSON.parse(decodeURIComponent(atob(base64).split('').map(c =>
+        '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')));
+    }
+
+    function showApp(user) {
+      document.getElementById('login-screen').style.display = 'none';
+      const app = document.getElementById('app');
+      app.style.display = 'flex';
+      if (user && user.picture) {
+        const av = document.getElementById('user-avatar');
+        av.src = user.picture; av.style.display = 'block';
+      }
+    }
+
+    function signOut() {
+      sessionStorage.removeItem('mb_user');
+      if (IS_CONFIGURED && window.google) {
+        google.accounts.id.disableAutoSelect();
+      }
+      document.getElementById('app').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+    }
+
+    // Init on load
+    window.addEventListener('load', () => {
+      // Auto-login from session
+      const stored = sessionStorage.getItem('mb_user');
+      if (stored) { showApp(JSON.parse(stored)); return; }
+
+      if (!IS_CONFIGURED) {
+        // Show setup instructions
+        document.getElementById('setup-notice').style.display = 'block';
+        document.getElementById('g-signin-btn').innerHTML =
+          '<p style="color:#ff4757;font-size:12px;text-align:center">⛔ Client ID nie je nastavené — pozri pokyny nižšie</p>';
+        return;
+      }
+
+      // Wait for GSI library to load, then render button
+      function initGSI() {
+        google.accounts.id.initialize({
+          client_id: GOOGLE_CLIENT_ID,
+          callback: handleCredentialResponse,
+          auto_select: false,
+          cancel_on_tap_outside: false,
+        });
+        // Render official Google Sign-In button
+        google.accounts.id.renderButton(
+          document.getElementById('g-signin-btn'),
+          {
+            theme: 'outline',
+            size: 'large',
+            text: 'signin_with',
+            shape: 'rectangular',
+            logo_alignment: 'left',
+            width: 280,
+          }
+        );
+        // Also try One Tap
+        google.accounts.id.prompt();
+      }
+
       if (window.google && window.google.accounts) {
-        clearInterval(poll);
         initGSI();
+      } else {
+        // Poll until GSI script loads (it's async)
+        const poll = setInterval(() => {
+          if (window.google && window.google.accounts) {
+            clearInterval(poll);
+            initGSI();
+          }
+        }, 100);
       }
-    }, 100);
-  }
-});
+    });
 
-/* ══════════════════════════════════════════
-   DAILY FOCUS — localStorage
-══════════════════════════════════════════ */
-const focusEl = document.getElementById('daily-focus');
-const focusKey = 'mb_focus_' + new Date().toDateString();
-focusEl.value = localStorage.getItem(focusKey) || '';
-focusEl.addEventListener('input', () => localStorage.setItem(focusKey, focusEl.value));
+    /* ══════════════════════════════════════════
+       DAILY FOCUS — localStorage
+    ══════════════════════════════════════════ */
+    const focusEl = document.getElementById('daily-focus');
+    const focusKey = 'mb_focus_' + new Date().toDateString();
+    focusEl.value = localStorage.getItem(focusKey) || '';
+    focusEl.addEventListener('input', () => localStorage.setItem(focusKey, focusEl.value));
 
-/* ══════════════════════════════════════════
-   SCRATCHPAD — localStorage (persists across days)
-══════════════════════════════════════════ */
-const scratchEl = document.getElementById('scratchpad');
-scratchEl.value = localStorage.getItem('mb_scratch') || '';
-scratchEl.addEventListener('input', () => localStorage.setItem('mb_scratch', scratchEl.value));
+    /* ══════════════════════════════════════════
+       SCRATCHPAD — localStorage (persists across days)
+    ══════════════════════════════════════════ */
+    const scratchEl = document.getElementById('scratchpad');
+    scratchEl.value = localStorage.getItem('mb_scratch') || '';
+    scratchEl.addEventListener('input', () => localStorage.setItem('mb_scratch', scratchEl.value));
 
-/* ══════════════════════════════════════════
-   HABIT TRACKER — localStorage, resets daily
-══════════════════════════════════════════ */
-const habitKey = 'mb_habits_' + new Date().toDateString();
-const savedHabits = JSON.parse(localStorage.getItem(habitKey) || '{}');
-document.querySelectorAll('.habit-cb').forEach(cb => {
-  const idx = cb.dataset.habit;
-  if (savedHabits[idx]) {
-    cb.checked = true;
-    cb.nextElementSibling.classList.add('done');
-  }
-  cb.addEventListener('change', () => {
-    cb.nextElementSibling.classList.toggle('done', cb.checked);
-    savedHabits[idx] = cb.checked;
-    localStorage.setItem(habitKey, JSON.stringify(savedHabits));
-  });
-});
+    /* ══════════════════════════════════════════
+       HABIT TRACKER — localStorage, resets daily
+    ══════════════════════════════════════════ */
+    const habitKey = 'mb_habits_' + new Date().toDateString();
+    const savedHabits = JSON.parse(localStorage.getItem(habitKey) || '{}');
+    document.querySelectorAll('.habit-cb').forEach(cb => {
+      const idx = cb.dataset.habit;
+      if (savedHabits[idx]) {
+        cb.checked = true;
+        cb.nextElementSibling.classList.add('done');
+      }
+      cb.addEventListener('change', () => {
+        cb.nextElementSibling.classList.toggle('done', cb.checked);
+        savedHabits[idx] = cb.checked;
+        localStorage.setItem(habitKey, JSON.stringify(savedHabits));
+      });
+    });
 
-/* ══════════════════════════════════════════
-   POMODORO TIMER
-══════════════════════════════════════════ */
-let pomoInterval = null;
-let pomoSeconds = 25 * 60;
-let pomoRunning = false;
-let pomoIsWork = true;
-const WORK_TIME = 25 * 60;
-const BREAK_TIME = 5 * 60;
+    /* ══════════════════════════════════════════
+       POMODORO TIMER
+    ══════════════════════════════════════════ */
+    let pomoInterval = null;
+    let pomoSeconds = 25 * 60;
+    let pomoRunning = false;
+    let pomoIsWork = true;
+    const WORK_TIME = 25 * 60;
+    const BREAK_TIME = 5 * 60;
 
-function updatePomoDisplay() {
-  const m = String(Math.floor(pomoSeconds / 60)).padStart(2, '0');
-  const s = String(pomoSeconds % 60).padStart(2, '0');
-  document.getElementById('pomo-display').textContent = m + ':' + s;
-  document.getElementById('pomo-mode').textContent = pomoIsWork ? 'PRÁCA' : 'PRESTÁVKA';
-  document.getElementById('pomo-display').style.color = pomoIsWork ? 'var(--c-urgent)' : 'var(--c-ai)';
-}
+    function updatePomoDisplay() {
+      const m = String(Math.floor(pomoSeconds / 60)).padStart(2, '0');
+      const s = String(pomoSeconds % 60).padStart(2, '0');
+      document.getElementById('pomo-display').textContent = m + ':' + s;
+      document.getElementById('pomo-mode').textContent = pomoIsWork ? 'PRÁCA' : 'PRESTÁVKA';
+      document.getElementById('pomo-display').style.color = pomoIsWork ? 'var(--c-urgent)' : 'var(--c-ai)';
+    }
 
-function pomodoroToggle() {
-  const btn = document.getElementById('pomo-start');
-  if (pomoRunning) {
-    clearInterval(pomoInterval); pomoRunning = false;
-    btn.textContent = '▶ Pokračovať'; btn.classList.remove('active');
-  } else {
-    pomoRunning = true; btn.textContent = '⏸ Pauza'; btn.classList.add('active');
-    pomoInterval = setInterval(() => {
-      if (pomoSeconds > 0) { pomoSeconds--; updatePomoDisplay(); }
-      else {
+    function pomodoroToggle() {
+      const btn = document.getElementById('pomo-start');
+      if (pomoRunning) {
         clearInterval(pomoInterval); pomoRunning = false;
-        pomoIsWork = !pomoIsWork;
-        pomoSeconds = pomoIsWork ? WORK_TIME : BREAK_TIME;
-        updatePomoDisplay();
-        btn.textContent = '▶ Štart'; btn.classList.remove('active');
-        // notify
-        if (Notification.permission === 'granted') {
-          new Notification(pomoIsWork ? '☕ Prestávka skončila!' : '🍅 Pomodoro hotové!');
-        }
+        btn.textContent = '▶ Pokračovať'; btn.classList.remove('active');
+      } else {
+        pomoRunning = true; btn.textContent = '⏸ Pauza'; btn.classList.add('active');
+        pomoInterval = setInterval(() => {
+          if (pomoSeconds > 0) { pomoSeconds--; updatePomoDisplay(); }
+          else {
+            clearInterval(pomoInterval); pomoRunning = false;
+            pomoIsWork = !pomoIsWork;
+            pomoSeconds = pomoIsWork ? WORK_TIME : BREAK_TIME;
+            updatePomoDisplay();
+            btn.textContent = '▶ Štart'; btn.classList.remove('active');
+            // notify
+            if (Notification.permission === 'granted') {
+              new Notification(pomoIsWork ? '☕ Prestávka skončila!' : '🍅 Pomodoro hotové!');
+            }
+          }
+        }, 1000);
       }
-    }, 1000);
-  }
-}
+    }
 
-function pomodoroReset() {
-  clearInterval(pomoInterval); pomoRunning = false; pomoIsWork = true;
-  pomoSeconds = WORK_TIME; updatePomoDisplay();
-  const btn = document.getElementById('pomo-start');
-  btn.textContent = '▶ Štart'; btn.classList.remove('active');
-}
+    function pomodoroReset() {
+      clearInterval(pomoInterval); pomoRunning = false; pomoIsWork = true;
+      pomoSeconds = WORK_TIME; updatePomoDisplay();
+      const btn = document.getElementById('pomo-start');
+      btn.textContent = '▶ Štart'; btn.classList.remove('active');
+    }
 
-// Request notification permission
-if (Notification && Notification.permission === 'default') Notification.requestPermission();
+    // Request notification permission
+    if (Notification && Notification.permission === 'default') Notification.requestPermission();
 
-/* ══════════════════════════════════════════
-   CURRENCY / CRYPTO (live from free APIs)
-══════════════════════════════════════════ */
-async function loadCurrencies() {
-  const el = document.getElementById('currency-list');
-  try {
-    const [fxRes, btcRes] = await Promise.all([
-      fetch('https://api.frankfurter.app/latest?base=EUR&symbols=USD,CZK,GBP'),
-      fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=eur')
-    ]);
-    const fx = await fxRes.json();
-    const crypto = await btcRes.json();
-    const rates = fx.rates;
-    el.innerHTML = `
+    /* ══════════════════════════════════════════
+       CURRENCY / CRYPTO (live from free APIs)
+    ══════════════════════════════════════════ */
+    async function loadCurrencies() {
+      const el = document.getElementById('currency-list');
+      try {
+        const [fxRes, btcRes] = await Promise.all([
+          fetch('https://api.frankfurter.app/latest?base=EUR&symbols=USD,CZK,GBP'),
+          fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=eur')
+        ]);
+        const fx = await fxRes.json();
+        const crypto = await btcRes.json();
+        const rates = fx.rates;
+        el.innerHTML = `
       <div class="cur-row"><span class="cur-sym">EUR/USD</span><span class="cur-val">${rates.USD.toFixed(4)}</span></div>
       <div class="cur-row"><span class="cur-sym">EUR/CZK</span><span class="cur-val">${rates.CZK.toFixed(2)}</span></div>
       <div class="cur-row"><span class="cur-sym">EUR/GBP</span><span class="cur-val">${rates.GBP.toFixed(4)}</span></div>
       <div class="cur-row"><span class="cur-sym">BTC</span><span class="cur-val">€${Math.round(crypto.bitcoin.eur).toLocaleString()}</span></div>
       <div class="cur-row"><span class="cur-sym">ETH</span><span class="cur-val">€${Math.round(crypto.ethereum.eur).toLocaleString()}</span></div>
     `;
-  } catch(e) {
-    el.innerHTML = '<div class="cur-loading">Nedostupné (offline?)</div>';
-  }
-}
+      } catch (e) {
+        el.innerHTML = '<div class="cur-loading">Nedostupné (offline?)</div>';
+      }
+    }
 
-loadCurrencies();
+    loadCurrencies();
 
-/* ══════════════════════════════════════════
-   DRAG-AND-DROP LAYOUT CUSTOMIZATION
-   - SortableJS for card reordering (drag handle)
-   - Edge/corner drag handles for col + row resize
-   - All persisted to localStorage
-══════════════════════════════════════════ */
+    /* ══════════════════════════════════════════
+       DRAG-AND-DROP LAYOUT CUSTOMIZATION
+       - SortableJS for card reordering (drag handle)
+       - Edge/corner drag handles for col + row resize
+       - All persisted to localStorage
+    ══════════════════════════════════════════ */
 
-const CARD_SIZES = {
-  'card-weather': { cols:2, rows:1 },
-  'card-urgent':  { cols:3, rows:1 },
-  'card-cal':     { cols:1, rows:1 },
-  'card-world':   { cols:2, rows:1 },
-  'card-ai':      { cols:2, rows:1 },
-  'card-tech':    { cols:2, rows:1 },
-  'card-notion':  { cols:2, rows:2 },
-  'card-tasks':   { cols:2, rows:1 },
-  'card-email':   { cols:2, rows:1 },
-  'card-clients': { cols:2, rows:1 },
-  'card-bday':    { cols:2, rows:1 },
-};
-
-const LAYOUT_KEY = 'mb_layout_v2';
-
-function getSavedLayout() {
-  try { return JSON.parse(localStorage.getItem(LAYOUT_KEY)) || {}; }
-  catch(e) { return {}; }
-}
-
-function applyCardSizes() {
-  const { sizes } = getSavedLayout();
-  document.querySelectorAll('.grid .card').forEach(card => {
-    const key = card.dataset.card;
-    if (!key) return;
-    const def = CARD_SIZES[key] || { cols:2, rows:1 };
-    const s = (sizes && sizes[key]) || def;
-    card.style.gridColumn = 'span ' + (s.cols || def.cols);
-    if ((s.rows || def.rows) > 1) card.style.gridRow = 'span ' + (s.rows || def.rows);
-    else card.style.gridRow = '';
-  });
-}
-
-function saveLayout() {
-  const order = [];
-  const sizes = {};
-  document.querySelectorAll('.grid .card').forEach(card => {
-    const key = card.dataset.card;
-    if (!key) return;
-    order.push(key);
-    const colM = (card.style.gridColumn || '').match(/span\s+(\d+)/);
-    const rowM = (card.style.gridRow    || '').match(/span\s+(\d+)/);
-    const def  = CARD_SIZES[key] || { cols:2, rows:1 };
-    sizes[key] = {
-      cols: colM ? parseInt(colM[1]) : def.cols,
-      rows: rowM ? parseInt(rowM[1]) : def.rows,
+    const CARD_SIZES = {
+      'card-weather': { cols: 2, rows: 1 },
+      'card-urgent': { cols: 3, rows: 1 },
+      'card-cal': { cols: 1, rows: 1 },
+      'card-world': { cols: 2, rows: 1 },
+      'card-ai': { cols: 2, rows: 1 },
+      'card-tech': { cols: 2, rows: 1 },
+      'card-notion': { cols: 2, rows: 2 },
+      'card-tasks': { cols: 2, rows: 1 },
+      'card-email': { cols: 2, rows: 1 },
+      'card-clients': { cols: 2, rows: 1 },
+      'card-bday': { cols: 2, rows: 1 },
     };
-  });
-  localStorage.setItem(LAYOUT_KEY, JSON.stringify({ order, sizes }));
-}
 
-function loadLayout() {
-  const { order } = getSavedLayout();
-  if (!order || !order.length) return;
-  const grid = document.querySelector('.grid');
-  if (!grid) return;
-  order.forEach(key => {
-    const card = grid.querySelector('[data-card="' + key + '"]');
-    if (card) grid.appendChild(card);
-  });
-}
+    const LAYOUT_KEY = 'mb_layout_v2';
 
-function toggleEditMode() {
-  const isEdit = document.body.classList.toggle('edit-mode');
-  const btn = document.getElementById('edit-layout-btn');
-  if (btn) btn.textContent = isEdit ? '✅ Hotovo' : '✏️ Edit Layout';
-  if (!isEdit) saveLayout();
-}
+    function getSavedLayout() {
+      try { return JSON.parse(localStorage.getItem(LAYOUT_KEY)) || {}; }
+      catch (e) { return {}; }
+    }
 
-// ── +/− button resize (still works) ──
-function resizeCard(btn, dir) {
-  const card = btn.closest('.card');
-  if (!card) return;
-  const m = (card.style.gridColumn || '').match(/span\s+(\d+)/);
-  let cols = m ? parseInt(m[1]) : (CARD_SIZES[card.dataset.card]?.cols || 2);
-  cols = dir === '+' ? Math.min(cols+1, 6) : Math.max(cols-1, 1);
-  card.style.gridColumn = 'span ' + cols;
-  saveLayout();
-}
+    function applyCardSizes() {
+      const { sizes } = getSavedLayout();
+      document.querySelectorAll('.grid .card').forEach(card => {
+        const key = card.dataset.card;
+        if (!key) return;
+        const def = CARD_SIZES[key] || { cols: 2, rows: 1 };
+        const s = (sizes && sizes[key]) || def;
+        card.style.gridColumn = 'span ' + (s.cols || def.cols);
+        if ((s.rows || def.rows) > 1) card.style.gridRow = 'span ' + (s.rows || def.rows);
+        else card.style.gridRow = '';
+      });
+    }
 
-// ── Edge / corner drag resize ──
-function getGridMetrics() {
-  const grid = document.querySelector('.grid');
-  const gap  = parseFloat(getComputedStyle(grid).columnGap) || 7;
-  const colW = (grid.offsetWidth  - gap * 5) / 6;   // 6 cols
-  // estimate row height from the grid's auto-rows base (90px) + gap
-  const rowH = 90 + gap;
-  return { colW, rowH, gap };
-}
+    function saveLayout() {
+      const order = [];
+      const sizes = {};
+      document.querySelectorAll('.grid .card').forEach(card => {
+        const key = card.dataset.card;
+        if (!key) return;
+        order.push(key);
+        const colM = (card.style.gridColumn || '').match(/span\s+(\d+)/);
+        const rowM = (card.style.gridRow || '').match(/span\s+(\d+)/);
+        const def = CARD_SIZES[key] || { cols: 2, rows: 1 };
+        sizes[key] = {
+          cols: colM ? parseInt(colM[1]) : def.cols,
+          rows: rowM ? parseInt(rowM[1]) : def.rows,
+        };
+      });
+      localStorage.setItem(LAYOUT_KEY, JSON.stringify({ order, sizes }));
+    }
 
-function initResizeHandles() {
-  document.querySelectorAll('.grid .card').forEach(card => {
-    card.querySelector('.rh-r')?.addEventListener('mousedown', e => startEdgeResize(e, card, 'col'));
-    card.querySelector('.rh-b')?.addEventListener('mousedown', e => startEdgeResize(e, card, 'row'));
-    card.querySelector('.rh-c')?.addEventListener('mousedown', e => startEdgeResize(e, card, 'both'));
-  });
-}
+    function loadLayout() {
+      const { order } = getSavedLayout();
+      if (!order || !order.length) return;
+      const grid = document.querySelector('.grid');
+      if (!grid) return;
+      order.forEach(key => {
+        const card = grid.querySelector('[data-card="' + key + '"]');
+        if (card) grid.appendChild(card);
+      });
+    }
 
-function startEdgeResize(e, card, mode) {
-  e.preventDefault();
-  e.stopPropagation();
+    function toggleEditMode() {
+      const isEdit = document.body.classList.toggle('edit-mode');
+      const btn = document.getElementById('edit-layout-btn');
+      if (btn) btn.textContent = isEdit ? '✅ Hotovo' : '✏️ Edit Layout';
+      if (!isEdit) saveLayout();
+    }
 
-  const { colW, rowH, gap } = getGridMetrics();
-  const colM = (card.style.gridColumn || '').match(/span\s+(\d+)/);
-  const rowM = (card.style.gridRow    || '').match(/span\s+(\d+)/);
-  const def  = CARD_SIZES[card.dataset.card] || { cols:2, rows:1 };
-  const startCols = colM ? parseInt(colM[1]) : def.cols;
-  const startRows = rowM ? parseInt(rowM[1]) : def.rows;
-  const startX = e.clientX;
-  const startY = e.clientY;
-
-  const handle = e.currentTarget;
-  handle.classList.add('rh-on');
-  document.body.style.userSelect = 'none';
-  document.body.style.cursor =
-    mode === 'col' ? 'col-resize' : mode === 'row' ? 'row-resize' : 'nwse-resize';
-
-  function onMove(ev) {
-    if (mode === 'col' || mode === 'both') {
-      const dx   = ev.clientX - startX;
-      const cols = Math.max(1, Math.min(6, startCols + Math.round(dx / (colW + gap))));
+    // ── +/− button resize (still works) ──
+    function resizeCard(btn, dir) {
+      const card = btn.closest('.card');
+      if (!card) return;
+      const m = (card.style.gridColumn || '').match(/span\s+(\d+)/);
+      let cols = m ? parseInt(m[1]) : (CARD_SIZES[card.dataset.card]?.cols || 2);
+      cols = dir === '+' ? Math.min(cols + 1, 6) : Math.max(cols - 1, 1);
       card.style.gridColumn = 'span ' + cols;
+      saveLayout();
     }
-    if (mode === 'row' || mode === 'both') {
-      const dy   = ev.clientY - startY;
-      const rows = Math.max(1, Math.min(4, startRows + Math.round(dy / rowH)));
-      card.style.gridRow = rows > 1 ? 'span ' + rows : '';
+
+    // ── Edge / corner drag resize ──
+    function getGridMetrics() {
+      const grid = document.querySelector('.grid');
+      const gap = parseFloat(getComputedStyle(grid).columnGap) || 7;
+      const colW = (grid.offsetWidth - gap * 5) / 6;   // 6 cols
+      // estimate row height from the grid's auto-rows base (90px) + gap
+      const rowH = 90 + gap;
+      return { colW, rowH, gap };
     }
-  }
 
-  function onUp() {
-    handle.classList.remove('rh-on');
-    document.body.style.userSelect = '';
-    document.body.style.cursor = '';
-    saveLayout();
-    document.removeEventListener('mousemove', onMove);
-    document.removeEventListener('mouseup', onUp);
-  }
+    function initResizeHandles() {
+      document.querySelectorAll('.grid .card').forEach(card => {
+        card.querySelector('.rh-r')?.addEventListener('mousedown', e => startEdgeResize(e, card, 'col'));
+        card.querySelector('.rh-b')?.addEventListener('mousedown', e => startEdgeResize(e, card, 'row'));
+        card.querySelector('.rh-c')?.addEventListener('mousedown', e => startEdgeResize(e, card, 'both'));
+      });
+    }
 
-  document.addEventListener('mousemove', onMove);
-  document.addEventListener('mouseup', onUp);
-}
+    function startEdgeResize(e, card, mode) {
+      e.preventDefault();
+      e.stopPropagation();
 
-// ── SortableJS init ──
-function initLayout() {
-  loadLayout();
-  applyCardSizes();
-  initResizeHandles();
-  const grid = document.querySelector('.grid');
-  if (!grid || typeof Sortable === 'undefined') return;
-  Sortable.create(grid, {
-    handle: '.drag-handle',
-    animation: 180,
-    ghostClass: 'sortable-ghost',
-    chosenClass: 'sortable-chosen',
-    filter: '.rh',                // don't drag when clicking resize handles
-    preventOnFilter: true,
-    onEnd() { saveLayout(); },
-  });
-}
+      const { colW, rowH, gap } = getGridMetrics();
+      const colM = (card.style.gridColumn || '').match(/span\s+(\d+)/);
+      const rowM = (card.style.gridRow || '').match(/span\s+(\d+)/);
+      const def = CARD_SIZES[card.dataset.card] || { cols: 2, rows: 1 };
+      const startCols = colM ? parseInt(colM[1]) : def.cols;
+      const startRows = rowM ? parseInt(rowM[1]) : def.rows;
+      const startX = e.clientX;
+      const startY = e.clientY;
 
-// Patch showApp to init after login
-const _origShowApp = showApp;
-window.showApp = function(user) {
-  _origShowApp(user);
-  setTimeout(initLayout, 50);
-};
+      const handle = e.currentTarget;
+      handle.classList.add('rh-on');
+      document.body.style.userSelect = 'none';
+      document.body.style.cursor =
+        mode === 'col' ? 'col-resize' : mode === 'row' ? 'row-resize' : 'nwse-resize';
 
-// Already logged in from session
-if (sessionStorage.getItem('mb_user')) {
-  document.addEventListener('DOMContentLoaded', () => setTimeout(initLayout, 50));
-}
-</script>
+      function onMove(ev) {
+        if (mode === 'col' || mode === 'both') {
+          const dx = ev.clientX - startX;
+          const cols = Math.max(1, Math.min(6, startCols + Math.round(dx / (colW + gap))));
+          card.style.gridColumn = 'span ' + cols;
+        }
+        if (mode === 'row' || mode === 'both') {
+          const dy = ev.clientY - startY;
+          const rows = Math.max(1, Math.min(4, startRows + Math.round(dy / rowH)));
+          card.style.gridRow = rows > 1 ? 'span ' + rows : '';
+        }
+      }
+
+      function onUp() {
+        handle.classList.remove('rh-on');
+        document.body.style.userSelect = '';
+        document.body.style.cursor = '';
+        saveLayout();
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+      }
+
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+    }
+
+    // ── SortableJS init ──
+    function initLayout() {
+      loadLayout();
+      applyCardSizes();
+      initResizeHandles();
+      const grid = document.querySelector('.grid');
+      if (!grid || typeof Sortable === 'undefined') return;
+      Sortable.create(grid, {
+        handle: '.drag-handle',
+        animation: 180,
+        ghostClass: 'sortable-ghost',
+        chosenClass: 'sortable-chosen',
+        filter: '.rh',                // don't drag when clicking resize handles
+        preventOnFilter: true,
+        onEnd() { saveLayout(); },
+      });
+    }
+
+    // Patch showApp to init after login
+    const _origShowApp = showApp;
+    window.showApp = function (user) {
+      _origShowApp(user);
+      setTimeout(initLayout, 50);
+    };
+
+    // Already logged in from session
+    if (sessionStorage.getItem('mb_user')) {
+      document.addEventListener('DOMContentLoaded', () => setTimeout(initLayout, 50));
+    }
+  </script>
 </body>
+
 </html>
