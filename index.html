@@ -718,8 +718,8 @@ function renderRevenue(projects){
   // only projects that actually have a monthly retainer (skip Potentional with no monthly)
   const paying=projects.filter(p=>p.monthlyNum>0);
   const totalMonthly=paying.reduce((s,p)=>s+p.monthlyNum,0);
-  // sum of one-time prices for completed + active projects
-  const activePrices=projects.filter(p=>p.phase!=='Potentional'&&p.priceNum>0);
+  // sum of one-time prices only for Completed projects
+  const activePrices=projects.filter(p=>p.phase==='Completed'&&p.priceNum>0);
   const totalPaid=activePrices.reduce((s,p)=>s+p.priceNum,0);
 
   document.getElementById('rev-badge').textContent=`€${totalMonthly}/mes`;
