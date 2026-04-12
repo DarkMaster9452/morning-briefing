@@ -4,6 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Morning Briefing · Martin</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌅</text></svg>"/>
   <style>
     :root {
       --bg:#0d1117; --surface:#161b25; --surface2:#1e2436; --border:#252d45;
@@ -16,14 +17,18 @@
     /* ── TOP BAR ── */
     #topbar{
       display:flex;align-items:center;gap:12px;
-      padding:0 14px;height:48px;
+      padding:0 14px;height:52px;
       background:var(--surface);border-bottom:1px solid var(--border);
-      flex-shrink:0;
+      flex-shrink:0;position:relative;
     }
     #topbar .greeting{font-size:10px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
-    #topbar .clock{font-size:22px;font-weight:200;color:var(--accent);font-variant-numeric:tabular-nums;letter-spacing:.02em}
-    #topbar .date{font-size:11px;color:var(--muted)}
     #topbar .spacer{flex:1}
+    #topbar .topbar-center{
+      position:absolute;left:50%;transform:translateX(-50%);
+      display:flex;flex-direction:column;align-items:center;gap:1px;
+    }
+    #topbar .clock{font-size:28px;font-weight:200;color:var(--accent);font-variant-numeric:tabular-nums;letter-spacing:.04em;line-height:1}
+    #topbar .date{font-size:10px;color:var(--muted);letter-spacing:.04em}
     .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:4px;animation:pulse 2s infinite}
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
     .live-label{font-size:10px;color:var(--muted);display:flex;align-items:center}
@@ -129,6 +134,7 @@
     .sp-rec-art-name{font-size:9px;color:var(--muted)}
 
     /* ── NOTION ── */
+    .notion-sec-label{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:3px 0 4px;border-bottom:1px solid var(--border);margin-bottom:2px}
     .notion-item{display:flex;gap:7px;align-items:center;padding:4px 0;border-bottom:1px solid var(--border)}
     .notion-item:last-child{border-bottom:none}
     .notion-icon{font-size:12px;flex-shrink:0;width:16px;text-align:center}
@@ -173,8 +179,11 @@
 <!-- TOP BAR -->
 <div id="topbar">
   <div class="greeting">Good morning, Martin 👋</div>
-  <div class="clock" id="clock">--:--:--</div>
-  <div class="date" id="dateStr">Loading...</div>
+  <div class="spacer"></div>
+  <div class="topbar-center">
+    <div class="clock" id="clock">--:--:--</div>
+    <div class="date" id="dateStr">Loading...</div>
+  </div>
   <div class="spacer"></div>
   <span id="lastUp">–</span>
   <div class="live-label"><span class="dot"></span>Live</div>
@@ -194,14 +203,6 @@
         <span class="badge" id="w-badge">–</span>
       </div>
       <div id="w-body"><div class="loading">Loading...</div></div>
-    </div>
-
-    <div class="card">
-      <div class="card-header">
-        <span class="card-icon">🕐</span>
-        <span class="card-title">World Clocks</span>
-      </div>
-      <div class="clocks" id="clocks"></div>
     </div>
 
     <div class="card grow">
@@ -236,45 +237,61 @@
       <div id="sp-body"><div class="loading">Loading...</div></div>
     </div>
 
-    <div class="card">
+    <div class="card" style="flex-shrink:0">
       <div class="card-header">
         <span class="card-icon">▲</span>
         <span class="card-title">Vercel Projects</span>
         <span class="badge" id="vp-badge">–</span>
       </div>
-      <div class="card-body" id="vp-body" style="max-height:110px"><div class="loading">Loading...</div></div>
+      <div id="vp-body"><div class="loading">Loading...</div></div>
     </div>
 
     <div class="card grow">
       <div class="card-header">
         <span class="card-icon">◻</span>
-        <span class="card-title">Notion — Recent</span>
+        <span class="card-title">Notion</span>
         <span class="badge" id="notion-badge">–</span>
       </div>
-      <div class="card-body" id="notion-body"><div class="loading">Loading...</div></div>
+      <div class="card-body">
+        <div class="notion-sec-label">✅ Tasky</div>
+        <div id="notion-tasks"><div class="loading">Loading...</div></div>
+        <div class="notion-sec-label" style="margin-top:10px">📂 Projekty</div>
+        <div id="notion-projects"><div class="loading">Loading...</div></div>
+      </div>
     </div>
 
   </div>
 
-  <!-- COL 3: Tabbed News (World | AI | Tech) -->
+  <!-- COL 3: Split News — World (top) + AI/Tech tabbed (bottom) -->
   <div class="col">
+
     <div class="card grow">
       <div class="card-header">
-        <span class="card-icon">📰</span>
-        <span class="card-title">News</span>
+        <span class="card-icon">🌍</span>
+        <span class="card-title">World</span>
+        <span class="badge" id="news-world-badge">–</span>
+      </div>
+      <div class="card-body">
+        <div id="panel-world"><div class="loading">Loading...</div></div>
+      </div>
+    </div>
+
+    <div class="card grow">
+      <div class="card-header">
+        <span class="card-icon">🤖</span>
+        <span class="card-title">AI & Tech</span>
         <span class="badge" id="news-badge">–</span>
       </div>
       <div class="tabs">
-        <button class="tab active" onclick="switchTab('world',this)">🌍 World</button>
-        <button class="tab" onclick="switchTab('ai',this)">🤖 AI</button>
-        <button class="tab" onclick="switchTab('tech',this)">📱 Tech</button>
+        <button class="tab active" onclick="switchTab('ai',this)">🤖 AI</button>
+        <button class="tab" onclick="switchTab('tech',this)">💻 Tech</button>
       </div>
       <div class="card-body">
-        <div class="news-panel active" id="panel-world"><div class="loading">Loading...</div></div>
-        <div class="news-panel" id="panel-ai"><div class="loading">Loading...</div></div>
+        <div class="news-panel active" id="panel-ai"><div class="loading">Loading...</div></div>
         <div class="news-panel" id="panel-tech"><div class="loading">Loading...</div></div>
       </div>
     </div>
+
   </div>
 
 </div>
@@ -289,46 +306,29 @@ function tick(){
   const n=new Date();
   document.getElementById('clock').textContent=`${p(n.getHours())}:${p(n.getMinutes())}:${p(n.getSeconds())}`;
   document.getElementById('dateStr').textContent=`${DAYS[n.getDay()]}, ${MONTHS[n.getMonth()]} ${n.getDate()}, ${n.getFullYear()}`;
-  renderClocks(n);
 }
 setInterval(tick,1000); tick();
 
-// ── WORLD CLOCKS ─────────────────────────────────────────────────────────────
-const TZS=[{l:'Bratislava',z:'Europe/Bratislava'},{l:'London',z:'Europe/London'},{l:'New York',z:'America/New_York'},{l:'Dubai',z:'Asia/Dubai'},{l:'Tokyo',z:'Asia/Tokyo'},{l:'SF',z:'America/Los_Angeles'}];
-function renderClocks(n){
-  document.getElementById('clocks').innerHTML=TZS.map(({l,z})=>{
-    const t=n.toLocaleTimeString('en-GB',{timeZone:z,hour:'2-digit',minute:'2-digit'});
-    const d=n.toLocaleDateString('en-GB',{timeZone:z,weekday:'short',day:'numeric',month:'short'});
-    return `<div class="tz"><div class="tz-l">${l}</div><div class="tz-t">${t}</div><div class="tz-d">${d}</div></div>`;
-  }).join('');
-}
-
 // ── WEATHER ──────────────────────────────────────────────────────────────────
-const WC={0:['☀️','Clear'],1:['🌤️','Mainly Clear'],2:['⛅','Partly Cloudy'],3:['☁️','Overcast'],45:['🌫️','Fog'],48:['🌫️','Icy Fog'],51:['🌦️','Lt Drizzle'],53:['🌦️','Drizzle'],55:['🌦️','Hv Drizzle'],61:['🌧️','Lt Rain'],63:['🌧️','Rain'],65:['🌧️','Hv Rain'],71:['❄️','Lt Snow'],73:['❄️','Snow'],75:['❄️','Hv Snow'],80:['🌦️','Showers'],81:['🌦️','Showers'],82:['⛈️','Hv Showers'],95:['⛈️','Storm'],96:['⛈️','Storm+Hail'],99:['⛈️','Severe Storm']};
-const wc=c=>WC[c]||['🌡️','Unknown'];
-
 async function fetchWeather(){
   try{
     const d=await fetch('/api/weather').then(r=>r.json());
-    const c=d.current;const[ico,desc]=wc(c.weather_code);
-    document.getElementById('w-badge').textContent=`${Math.round(c.temperature_2m)}°C`;
-    const fc=d.daily.time.slice(1,4).map((t,i)=>{
-      const dt=new Date(t+'T12:00:00');
-      const nm=i===0?'Tomorrow':DAYS[dt.getDay()].slice(0,3);
-      const[di]=wc(d.daily.weather_code[i+1]);
-      return `<div class="fc"><div class="fc-name">${nm}</div><div class="fc-ico">${di}</div><div class="fc-t"><span class="hi">${Math.round(d.daily.temperature_2m_max[i+1])}°</span> <span class="lo">${Math.round(d.daily.temperature_2m_min[i+1])}°</span></div></div>`;
-    }).join('');
+    if(d.error)throw new Error(d.error);
+    document.getElementById('w-badge').textContent=`${d.temp}°C`;
+    const fc=(d.forecast||[]).map(f=>
+      `<div class="fc"><div class="fc-name">${f.name}</div><div class="fc-ico">${f.icon}</div><div class="fc-t"><span class="hi">${f.hi}°</span> <span class="lo">${f.lo}°</span></div></div>`
+    ).join('');
     document.getElementById('w-body').innerHTML=`
       <div class="w-row">
-        <div class="w-icon">${ico}</div>
-        <div class="w-temp">${Math.round(c.temperature_2m)}<sup>°C</sup></div>
+        <div class="w-icon">${d.icon}</div>
+        <div class="w-temp">${d.temp}<sup>°C</sup></div>
         <div class="w-info">
-          <div class="w-desc">${desc}</div>
-          <div class="w-detail">Feels ${Math.round(c.apparent_temperature)}° · 💧${c.relative_humidity_2m}% · 💨${Math.round(c.wind_speed_10m)}km/h</div>
+          <div class="w-desc">${d.desc}</div>
+          <div class="w-detail">Feels ${d.feels_like}° · 💧${d.humidity}% · 💨${d.wind}km/h</div>
         </div>
       </div>
       <div class="forecast">${fc}</div>`;
-  }catch(e){document.getElementById('w-body').innerHTML=`<div class="err">⚠️ Weather unavailable</div>`}
+  }catch(e){document.getElementById('w-body').innerHTML=`<div class="err">⚠️ Weather unavailable<br><span style="font-size:9px;color:var(--muted)">${e.message}</span></div>`}
 }
 
 // ── GMAIL ────────────────────────────────────────────────────────────────────
@@ -363,34 +363,60 @@ async function fetchCalendar(){
 }
 
 // ── SPOTIFY ──────────────────────────────────────────────────────────────────
-let spInt=null;
+var spProgressInterval = null; // var avoids any TDZ issues
+
 async function fetchSpotify(){
   try{
+    // Clear any running progress ticker
+    if(spProgressInterval){clearInterval(spProgressInterval);spProgressInterval=null;}
+
     const d=await fetch('/api/spotify').then(r=>r.json());
     if(d.needsAuth){
       document.getElementById('sp-badge').textContent='–';
       document.getElementById('sp-body').innerHTML=`<div class="err">Not connected<br><a href="/api/auth/spotify-redirect" class="cbtn spotify">Connect Spotify</a></div>`;
       return;
     }
-    if(spInt)clearInterval(spInt);
     if(d.playing&&d.track){
-      const t=d.track,pct=d.duration?Math.round(d.progress/d.duration*100):0;
-      document.getElementById('sp-badge').className='badge green';document.getElementById('sp-badge').textContent='▶ Live';
+      const t=d.track;
+      const dur=t.duration||d.duration||0;
+      const prog=d.progress||0;
+      const pct=dur?Math.round(prog/dur*100):0;
+      document.getElementById('sp-badge').className='badge green';
+      document.getElementById('sp-badge').textContent='▶ Live';
       document.getElementById('sp-body').innerHTML=`
         <div class="sp-status">▶ NOW PLAYING</div>
         <div class="sp-row">
           ${t.image?`<img class="sp-art" src="${t.image}" alt="">`:`<div class="sp-ph">🎵</div>`}
-          <div><div class="sp-track"><a href="${t.url}" target="_blank">${t.name}</a></div><div class="sp-artist">${t.artist}</div><div class="sp-album">${t.album}</div></div>
+          <div>
+            <div class="sp-track"><a href="${t.url||'#'}" target="_blank">${t.name}</a></div>
+            <div class="sp-artist">${t.artist}</div>
+            <div class="sp-album">${t.album}</div>
+          </div>
         </div>
         <div class="prog"><div class="prog-fill" id="spf" style="width:${pct}%"></div></div>`;
-      let pr=d.progress,dur=d.duration;
-      spInt=setInterval(()=>{pr+=1000;const el=document.getElementById('spf');if(el)el.style.width=Math.min(100,Math.round(pr/dur*100))+'%';else clearInterval(spInt)},1000);
+      var pr=prog;
+      spProgressInterval=setInterval(function(){
+        pr+=1000;
+        var el=document.getElementById('spf');
+        if(el&&dur)el.style.width=Math.min(100,Math.round(pr/dur*100))+'%';
+        else if(!el){clearInterval(spProgressInterval);spProgressInterval=null;}
+      },1000);
     }else{
       document.getElementById('sp-badge').textContent='⏸';
-      const rec=d.recent||[];
-      document.getElementById('sp-body').innerHTML=`<div class="sp-status" style="color:var(--muted)">⏸ Nothing playing</div>${rec.length?`<div class="sp-recent-label">Recently</div>${rec.map(t=>`<div class="sp-rec">${t.image?`<img class="sp-rec-art" src="${t.image}">`:'<div style="width:28px;height:28px;background:var(--surface2);border-radius:4px"></div>'}<div><div class="sp-rec-name">${t.name}</div><div class="sp-rec-art-name">${t.artist}</div></div></div>`).join('')}`:''}`;
+      var rec=d.recent||[];
+      document.getElementById('sp-body').innerHTML=
+        `<div class="sp-status" style="color:var(--muted)">⏸ Nič nehrá</div>`+
+        (rec.length
+          ?`<div class="sp-recent-label">Naposledy</div>`+rec.map(function(t){
+              return`<div class="sp-rec">`+
+                (t.image?`<img class="sp-rec-art" src="${t.image}">`:`<div style="width:28px;height:28px;background:var(--surface2);border-radius:4px;flex-shrink:0"></div>`)+
+                `<div><div class="sp-rec-name">${t.name}</div><div class="sp-rec-art-name">${t.artist}</div></div></div>`;
+            }).join('')
+          :'');
     }
-  }catch(e){document.getElementById('sp-body').innerHTML=`<div class="err">⚠️ ${e.message}</div>`}
+  }catch(e){
+    document.getElementById('sp-body').innerHTML=`<div class="err">⚠️ Spotify nedostupný<br><span style="font-size:9px;opacity:.6">${e.message}</span></div>`;
+  }
 }
 
 // ── VERCEL PROJECTS ───────────────────────────────────────────────────────────
@@ -415,20 +441,37 @@ async function fetchVercel(){
 // ── NOTION ───────────────────────────────────────────────────────────────────
 function notionAgo(iso){if(!iso)return'';const d=Math.floor((Date.now()-new Date(iso))/60000);return d<60?`${d}m`:d<1440?`${Math.floor(d/60)}h`:`${Math.floor(d/1440)}d ago`}
 
+function renderNotionItems(items){
+  if(!items.length)return'<div style="font-size:10px;color:var(--muted);padding:3px 0;font-style:italic">–</div>';
+  return items.map(p=>`
+    <div class="notion-item">
+      <div class="notion-icon">${p.icon||'◻'}</div>
+      <div class="notion-title"><a href="${p.url}" target="_blank">${p.title}</a></div>
+      <div class="notion-age">${notionAgo(p.edited)}</div>
+    </div>`).join('');
+}
+
 async function fetchNotion(){
   try{
     const d=await fetch('/api/notion').then(r=>r.json());
-    if(d.needsAuth){document.getElementById('notion-badge').textContent='–';document.getElementById('notion-body').innerHTML=`<div class="err">Add NOTION_TOKEN to env vars<br><a href="https://notion.so/my-integrations" target="_blank" class="cbtn notion">Get token</a></div>`;return}
+    const authErr=`<div class="err">Add NOTION_TOKEN to env vars<br><a href="https://notion.so/my-integrations" target="_blank" class="cbtn notion">Get token</a></div>`;
+    if(d.needsAuth){
+      document.getElementById('notion-badge').textContent='–';
+      document.getElementById('notion-tasks').innerHTML=authErr;
+      document.getElementById('notion-projects').innerHTML='';
+      return;
+    }
     const{pages=[]}=d;
     document.getElementById('notion-badge').textContent=`${pages.length}`;
-    if(!pages.length){document.getElementById('notion-body').innerHTML=`<div class="ok">No recent pages</div>`;return}
-    document.getElementById('notion-body').innerHTML=pages.map(p=>`
-      <div class="notion-item">
-        <div class="notion-icon">${p.icon||'◻'}</div>
-        <div class="notion-title"><a href="${p.url}" target="_blank">${p.title}</a></div>
-        <div class="notion-age">${notionAgo(p.edited)}</div>
-      </div>`).join('');
-  }catch(e){document.getElementById('notion-body').innerHTML=`<div class="err">⚠️ ${e.message}</div>`}
+    // database children = tasks, top-level pages = projects
+    const tasks=pages.filter(p=>p.type==='db');
+    const projects=pages.filter(p=>p.type!=='db');
+    document.getElementById('notion-tasks').innerHTML=renderNotionItems(tasks);
+    document.getElementById('notion-projects').innerHTML=renderNotionItems(projects);
+  }catch(e){
+    document.getElementById('notion-tasks').innerHTML=`<div class="err">⚠️ ${e.message}</div>`;
+    document.getElementById('notion-projects').innerHTML='';
+  }
 }
 
 // ── NEWS TABS ────────────────────────────────────────────────────────────────
@@ -457,9 +500,11 @@ function switchTab(type,btn){
 // ── REFRESH ALL ──────────────────────────────────────────────────────────────
 async function refreshAll(){
   document.getElementById('lastUp').textContent='Refreshing…';
-  const counts=await Promise.all([
+  await Promise.all([
     fetchWeather(),fetchGmail(),fetchCalendar(),fetchSpotify(),fetchVercel(),fetchNotion(),
-    fetchNews('world','BBC'),fetchNews('ai','TechCrunch'),fetchNews('tech','Ars Technica'),
+    fetchNews('world','BBC').then(n=>{ const b=document.getElementById('news-world-badge'); if(b)b.textContent=n+' článkov'; }),
+    fetchNews('ai','TechCrunch'),
+    fetchNews('tech','Ars Technica'),
   ]);
   const n=new Date();
   document.getElementById('lastUp').textContent=`${p(n.getHours())}:${p(n.getMinutes())}`;
@@ -467,7 +512,7 @@ async function refreshAll(){
 }
 
 setInterval(refreshAll,5*60*1000);
-setInterval(fetchSpotify,30*1000);
+setInterval(fetchSpotify,30*1000); // keep Spotify fresh
 refreshAll();
 </script>
 </body>
