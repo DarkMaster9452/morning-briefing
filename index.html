@@ -7,6 +7,9 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌅</text></svg>"/>
   <!-- Google Identity Services -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <!-- Clock font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@300;400&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg:#0d1117; --surface:#161b25; --surface2:#1e2436; --border:#252d45;
@@ -29,7 +32,7 @@
       position:absolute;left:50%;transform:translateX(-50%);
       display:flex;flex-direction:column;align-items:center;gap:1px;
     }
-    #topbar .clock{font-size:28px;font-weight:200;color:var(--accent);font-variant-numeric:tabular-nums;letter-spacing:.04em;line-height:1}
+    #topbar .clock{font-size:26px;font-weight:300;color:var(--accent);font-variant-numeric:tabular-nums;letter-spacing:.06em;line-height:1;font-family:'Orbitron',monospace}
     #topbar .date{font-size:10px;color:var(--muted);letter-spacing:.04em}
     .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:4px;animation:pulse 2s infinite}
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}
@@ -196,15 +199,49 @@
     /* ── OK STATES ── */
     .ok{color:var(--green);font-size:11px;padding:6px 0}
 
+    /* ── WEATHER SECTIONS ── */
+    .w-section-lbl{
+      font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+      color:var(--muted);margin:9px 0 5px;padding-top:7px;
+      border-top:1px solid var(--border);display:flex;align-items:center;gap:5px;
+    }
+
     /* ── HOURLY WEATHER ── */
-    .hourly{display:flex;gap:4px;margin-top:7px;overflow-x:auto;padding-bottom:2px}
+    .hourly{display:flex;gap:5px;overflow-x:auto;padding-bottom:3px}
     .hourly::-webkit-scrollbar{height:3px}
     .hourly::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
-    .h-slot{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:5px 7px;text-align:center;flex-shrink:0;min-width:46px}
-    .h-time{font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.03em}
-    .h-icon{font-size:15px;margin:2px 0}
-    .h-temp{font-size:11px;font-weight:600}
-    .h-pop{font-size:9px;color:#54a0ff;margin-top:1px}
+    .h-slot{
+      background:var(--surface2);border:1px solid var(--border);border-radius:9px;
+      padding:6px 8px;text-align:center;flex-shrink:0;min-width:48px;
+      transition:border-color .15s;
+    }
+    .h-slot:hover{border-color:rgba(108,99,255,.4)}
+    .h-time{font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.02em}
+    .h-icon{font-size:16px;margin:3px 0}
+    .h-temp{font-size:12px;font-weight:600}
+    .h-pop{font-size:9px;color:#54a0ff;margin-top:2px;font-weight:600}
+
+    /* ── MENINY ── */
+    .meniny-today{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+    .meniny-today-name{font-size:16px;font-weight:600;color:var(--text)}
+    .meniny-today-badge{font-size:9px;font-weight:700;background:rgba(255,107,157,.15);
+      border:1px solid rgba(255,107,157,.4);color:#ff6b9d;padding:2px 7px;border-radius:10px}
+    .meniny-next{display:flex;flex-direction:column;gap:3px}
+    .meniny-row{display:flex;justify-content:space-between;font-size:10px}
+    .meniny-row-day{color:var(--muted)}
+    .meniny-row-name{font-weight:500;color:var(--text)}
+
+    /* ── REVENUE ── */
+    .rev-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:7px}
+    .rev-block{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 10px}
+    .rev-block-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px}
+    .rev-block-amount{font-size:18px;font-weight:300;color:var(--green);line-height:1;font-variant-numeric:tabular-nums}
+    .rev-block-amount sup{font-size:11px;vertical-align:super}
+    .rev-clients{display:flex;flex-direction:column;gap:2px}
+    .rev-client-row{display:flex;justify-content:space-between;align-items:center;font-size:10px;padding:2px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+    .rev-client-row:last-child{border-bottom:none}
+    .rev-client-name{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;margin-right:6px}
+    .rev-client-val{color:var(--green);font-weight:600;white-space:nowrap}
 
     /* ── LOGIN SCREEN ── */
     #login-screen{
@@ -250,16 +287,35 @@
 <!-- MAIN 3-COLUMN LAYOUT -->
 <div id="main">
 
-  <!-- COL 1: Weather + Clocks + Gmail -->
+  <!-- COL 1: Weather + Meniny + Revenue + Gmail -->
   <div class="col">
 
     <div class="card">
       <div class="card-header">
         <span class="card-icon">🌤️</span>
-        <span class="card-title">Weather — Rajec</span>
+        <span class="card-title">Počasie · Rajec</span>
         <span class="badge" id="w-badge">–</span>
       </div>
       <div id="w-body"><div class="loading">Loading...</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">🌸</span>
+        <span class="card-title">Meniny</span>
+      </div>
+      <div id="meniny-body">
+        <div class="loading">Loading...</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">💰</span>
+        <span class="card-title">Revenue</span>
+        <span class="badge green" id="rev-badge">–</span>
+      </div>
+      <div id="rev-body"><div class="loading">Loading...</div></div>
     </div>
 
     <div class="card grow">
@@ -373,29 +429,138 @@ async function fetchWeather(){
     const d=await fetch('/api/weather').then(r=>r.json());
     if(d.error)throw new Error(d.error);
     document.getElementById('w-badge').textContent=`${d.temp}°C`;
+
     const fc=(d.forecast||[]).map(f=>
-      `<div class="fc"><div class="fc-name">${f.name}</div><div class="fc-ico">${f.icon}</div><div class="fc-t"><span class="hi">${f.hi}°</span> <span class="lo">${f.lo}°</span></div></div>`
+      `<div class="fc">
+        <div class="fc-name">${f.name}</div>
+        <div class="fc-ico">${f.icon}</div>
+        <div class="fc-t"><span class="hi">${f.hi}°</span> <span class="lo">${f.lo}°</span></div>
+      </div>`
     ).join('');
-    const hourly=(d.hourly||[]).map(h=>
-      `<div class="h-slot">
+
+    const hourlyHTML=(d.hourly||[]).map(h=>`
+      <div class="h-slot">
         <div class="h-time">${h.time}</div>
         <div class="h-icon">${h.icon}</div>
         <div class="h-temp">${h.temp}°</div>
-        ${h.pop>0?`<div class="h-pop">${h.pop}%</div>`:'<div class="h-pop" style="opacity:0">0%</div>'}
-      </div>`
-    ).join('');
+        <div class="h-pop" style="${h.pop>0?'':'opacity:.25'}">${h.pop}%</div>
+      </div>`).join('');
+
     document.getElementById('w-body').innerHTML=`
       <div class="w-row">
         <div class="w-icon">${d.icon}</div>
         <div class="w-temp">${d.temp}<sup>°C</sup></div>
         <div class="w-info">
           <div class="w-desc">${d.desc}</div>
-          <div class="w-detail">Feels ${d.feels_like}° · 💧${d.humidity}% · 💨${d.wind}km/h</div>
+          <div class="w-detail">Feels ${d.feels_like}° · 💧${d.humidity}% · 💨${d.wind} km/h</div>
         </div>
       </div>
-      ${hourly?`<div class="hourly">${hourly}</div>`:''}
+      ${hourlyHTML?`
+        <div class="w-section-lbl">🕐 Nasledujúce hodiny</div>
+        <div class="hourly">${hourlyHTML}</div>`:''}
+      <div class="w-section-lbl">📅 3-dňová predpoveď</div>
       <div class="forecast">${fc}</div>`;
-  }catch(e){document.getElementById('w-body').innerHTML=`<div class="err">⚠️ Weather unavailable<br><span style="font-size:9px;color:var(--muted)">${e.message}</span></div>`}
+  }catch(e){
+    document.getElementById('w-body').innerHTML=`<div class="err">⚠️ Počasie nedostupné<br><span style="font-size:9px;opacity:.6">${e.message}</span></div>`;
+  }
+}
+
+// ── MENINY ───────────────────────────────────────────────────────────────────
+const MENINY={
+  '1-1':'Katarína','1-2':'Alexandra','1-3':'Daniela','1-4':'Drahoslav','1-5':'Andrea',
+  '1-6':'Antónia','1-7':'Bohuslav','1-8':'Severín','1-9':'Alexej','1-10':'Dáša',
+  '1-11':'Malvína','1-12':'Ernest','1-13':'Rastislav','1-14':'Radovan','1-15':'Dobroslav',
+  '1-16':'Vanda','1-17':'Nataša','1-18':'Bohdana','1-19':'Drahomíra','1-20':'Dalibor',
+  '1-21':'Vincent','1-22':'Zora','1-23':'Miloš','1-24':'Timotej','1-25':'Gejza',
+  '1-26':'Tamara','1-27':'Bohuš','1-28':'Alfonz','1-29':'Gašpar','1-30':'Ľubica','1-31':'Emil',
+  '2-1':'Viktor','2-2':'Erika','2-3':'Blažej','2-4':'Veronika','2-5':'Agáta',
+  '2-6':'Dorota','2-7':'Vanda','2-8':'Zoja','2-9':'Zdenko','2-10':'Gabriela',
+  '2-11':'Dezider','2-12':'Perla','2-13':'Alžbeta','2-14':'Valentín','2-15':'Pravoslav',
+  '2-16':'Ida','2-17':'Miloslava','2-18':'Jaromír','2-19':'Vlasta','2-20':'Lívia',
+  '2-21':'Eleonóra','2-22':'Etela','2-23':'Roman','2-24':'Matej','2-25':'Frederik',
+  '2-26':'Viktor','2-27':'Alexander','2-28':'Zlatica','2-29':'Radomír',
+  '3-1':'Albín','3-2':'Anežka','3-3':'Bohumil','3-4':'Kazimír','3-5':'Fridrich',
+  '3-6':'Radoslav','3-7':'Tomáš','3-8':'Alan','3-9':'Františka','3-10':'Branislav',
+  '3-11':'Anežka','3-12':'Gregor','3-13':'Renáta','3-14':'Matilda','3-15':'Svetlana',
+  '3-16':'Slavomír','3-17':'Ľuboslav','3-18':'Eduard','3-19':'Jozef','3-20':'Víťazoslav',
+  '3-21':'Blahoslav','3-22':'Beňadik','3-23':'Adrián','3-24':'Gabriel','3-25':'Marián',
+  '3-26':'Emanuel','3-27':'Alena','3-28':'Soňa','3-29':'Miroslav','3-30':'Vieroslava','3-31':'Benjamín',
+  '4-1':'Hugo','4-2':'Zita','4-3':'Richard','4-4':'Izidor','4-5':'Miroslava',
+  '4-6':'Irena','4-7':'Zoltán','4-8':'Albert','4-9':'Milena','4-10':'Igor',
+  '4-11':'Július','4-12':'Estera','4-13':'Aleš','4-14':'Justína','4-15':'Anastázia',
+  '4-16':'Dana','4-17':'Rudolf','4-18':'Valér','4-19':'Jela','4-20':'Marcel',
+  '4-21':'Ervín','4-22':'Slavomíra','4-23':'Vojtech','4-24':'Juraj','4-25':'Marek',
+  '4-26':'Jaroslava','4-27':'Jaroslav','4-28':'Jarmila','4-29':'Lea','4-30':'Marián',
+  '5-1':'Sviatok práce','5-2':'Žigmund','5-3':'Galina','5-4':'Florián','5-5':'Lesana',
+  '5-6':'Hermína','5-7':'Monika','5-8':'Stanislav','5-9':'Roland','5-10':'Viktória',
+  '5-11':'Blanka','5-12':'Pankrác','5-13':'Servác','5-14':'Bonifác','5-15':'Žofia',
+  '5-16':'Svetozár','5-17':'Gizela','5-18':'Viola','5-19':'Gertrúda','5-20':'Bernard',
+  '5-21':'Zina','5-22':'Júlia','5-23':'Želmíra','5-24':'Ela','5-25':'Urban',
+  '5-26':'Dušan','5-27':'Iveta','5-28':'Viliam','5-29':'Maximilián','5-30':'Ferdinand','5-31':'Petronela',
+  '6-1':'Žaneta','6-2':'Xénia','6-3':'Karolína','6-4':'Lenka','6-5':'Laura',
+  '6-6':'Norbert','6-7':'Róbert','6-8':'Medard','6-9':'Stanislava','6-10':'Margaréta',
+  '6-11':'Dobroslava','6-12':'Zlatko','6-13':'Anton','6-14':'Vasil','6-15':'Vít',
+  '6-16':'Blažena','6-17':'Adolf','6-18':'Vratislav','6-19':'Alfréd','6-20':'Valéria',
+  '6-21':'Alojz','6-22':'Paulína','6-23':'Sidónia','6-24':'Ján','6-25':'Tadeáš',
+  '6-26':'Adriána','6-27':'Ladislav','6-28':'Beáta','6-29':'Peter','6-30':'Melánia',
+  '7-1':'Diana','7-2':'Berta','7-3':'Miloslav','7-4':'Prokop','7-5':'Cyril a Metod',
+  '7-6':'Patrícia','7-7':'Cyril','7-8':'Ivan','7-9':'Lujza','7-10':'Amália',
+  '7-11':'Milota','7-12':'Nina','7-13':'Margita','7-14':'Kamil','7-15':'Henrich',
+  '7-16':'Drahomír','7-17':'Bohuslava','7-18':'Kamila','7-19':'Dušana','7-20':'Iľja',
+  '7-21':'Daniel','7-22':'Magdaléna','7-23':'Oľga','7-24':'Vladimír','7-25':'Jakub',
+  '7-26':'Anna','7-27':'Božena','7-28':'Krištof','7-29':'Marta','7-30':'Libuša','7-31':'Ignác',
+  '8-1':'Božidara','8-2':'Gustáv','8-3':'Jerguš','8-4':'Dominik','8-5':'Hortenzia',
+  '8-6':'Jozefína','8-7':'Štefánia','8-8':'Oskar','8-9':'Ľubomíra','8-10':'Vavrinec',
+  '8-11':'Zuzana','8-12':'Darina','8-13':'Ľubomír','8-14':'Mojmír','8-15':'Marcela',
+  '8-16':'Leonard','8-17':'Milica','8-18':'Helena','8-19':'Lýdia','8-20':'Anabela',
+  '8-21':'Jana','8-22':'Tichomír','8-23':'Filip','8-24':'Bartolomej','8-25':'Ľudovít',
+  '8-26':'Samuel','8-27':'Silvia','8-28':'Augustín','8-29':'Nikola','8-30':'Ružena','8-31':'Nora',
+  '9-1':'Darina','9-2':'Linda','9-3':'Belo','9-4':'Rozália','9-5':'Ľudmila',
+  '9-6':'Alžbeta','9-7':'Poluša','9-8':'Mária','9-9':'Martina','9-10':'Oleg',
+  '9-11':'Bystrík','9-12':'Mária','9-13':'Ctibor','9-14':'Ľuboš','9-15':'Jolana',
+  '9-16':'Ľudomila','9-17':'Olympia','9-18':'Eugénia','9-19':'Konštantín','9-20':'Ľuboslav',
+  '9-21':'Matúš','9-22':'Móric','9-23':'Zdenka','9-24':'Ľuboš','9-25':'Vladislav',
+  '9-26':'Edita','9-27':'Cyprián','9-28':'Václav','9-29':'Michal','9-30':'Jarolím',
+  '10-1':'Arnold','10-2':'Levoslav','10-3':'Stela','10-4':'František','10-5':'Viera',
+  '10-6':'Natália','10-7':'Dušan','10-8':'Brigita','10-9':'Dionýz','10-10':'Slavomíra',
+  '10-11':'Valentína','10-12':'Maximilián','10-13':'Koloman','10-14':'Boris','10-15':'Terézia',
+  '10-16':'Hedviga','10-17':'Hedviga','10-18':'Lukáš','10-19':'Kristián','10-20':'Vendelín',
+  '10-21':'Uršuľa','10-22':'Sergej','10-23':'Alojzia','10-24':'Kvetoslava','10-25':'Aurel',
+  '10-26':'Demeter','10-27':'Sabína','10-28':'Dobroslava','10-29':'Klára','10-30':'Štefan','10-31':'Aurélia',
+  '11-1':'Všetkých svätých','11-2':'Dušičky','11-3':'Hubert','11-4':'Karol','11-5':'Imrich',
+  '11-6':'Renáta','11-7':'Irena','11-8':'Bohumír','11-9':'Teodor','11-10':'Tibor',
+  '11-11':'Martin','11-12':'Svätopluk','11-13':'Stanislav','11-14':'Irma','11-15':'Leopold',
+  '11-16':'Agnesa','11-17':'Klaudia','11-18':'Eugen','11-19':'Alžbeta','11-20':'Félix',
+  '11-21':'Elvíra','11-22':'Cecília','11-23':'Klement','11-24':'Emil','11-25':'Katarína',
+  '11-26':'Kornel','11-27':'Milan','11-28':'Henrieta','11-29':'Vratko','11-30':'Andrej',
+  '12-1':'Edmund','12-2':'Bibiána','12-3':'Oldřich','12-4':'Barbora','12-5':'Oto',
+  '12-6':'Mikuláš','12-7':'Ambróz','12-8':'Marína','12-9':'Izabela','12-10':'Radúz',
+  '12-11':'Hilda','12-12':'Otília','12-13':'Lucia','12-14':'Branislava','12-15':'Ivica',
+  '12-16':'Albína','12-17':'Kornélia','12-18':'Sláva','12-19':'Judita','12-20':'Dagmar',
+  '12-21':'Bohdan','12-22':'Adela','12-23':'Nadežda','12-24':'Štedrý deň','12-25':'Štefan',
+  '12-26':'Druhý sviatok','12-27':'Filoména','12-28':'Inokent','12-29':'Dávid','12-30':'Dávid','12-31':'Silvestér',
+};
+
+function renderMeniny(){
+  const n=new Date();
+  function key(d){return`${d.getMonth()+1}-${d.getDate()}`}
+  function dayLabel(offset){
+    const d=new Date(n);d.setDate(d.getDate()+offset);
+    const SK_DAYS=['Ne','Po','Ut','St','Št','Pi','So'];
+    return offset===0?'Dnes':offset===1?'Zajtra':SK_DAYS[d.getDay()]+` ${d.getDate()}.${d.getMonth()+1}.`;
+  }
+  const todayName=MENINY[key(n)]||'–';
+  const rows=[1,2,3].map(i=>{
+    const d=new Date(n);d.setDate(d.getDate()+i);
+    const name=MENINY[`${d.getMonth()+1}-${d.getDate()}`]||'–';
+    return`<div class="meniny-row"><span class="meniny-row-day">${dayLabel(i)}</span><span class="meniny-row-name">${name}</span></div>`;
+  }).join('');
+  document.getElementById('meniny-body').innerHTML=`
+    <div class="meniny-today">
+      <div class="meniny-today-name">🌸 ${todayName}</div>
+      <div class="meniny-today-badge">Dnes</div>
+    </div>
+    <div class="meniny-next">${rows}</div>`;
 }
 
 // ── GMAIL ────────────────────────────────────────────────────────────────────
@@ -549,6 +714,37 @@ function renderProjects(projects){
   }).join('');
 }
 
+function renderRevenue(projects){
+  // only projects that actually have a monthly retainer (skip Potentional with no monthly)
+  const paying=projects.filter(p=>p.monthlyNum>0);
+  const totalMonthly=paying.reduce((s,p)=>s+p.monthlyNum,0);
+  // sum of one-time prices for completed + active projects
+  const activePrices=projects.filter(p=>p.phase!=='Potentional'&&p.priceNum>0);
+  const totalPaid=activePrices.reduce((s,p)=>s+p.priceNum,0);
+
+  document.getElementById('rev-badge').textContent=`€${totalMonthly}/mes`;
+
+  const clientRows=paying.map(p=>
+    `<div class="rev-client-row">
+      <span class="rev-client-name">${p.title}</span>
+      <span class="rev-client-val">€${p.monthlyNum}/mes</span>
+    </div>`
+  ).join('');
+
+  document.getElementById('rev-body').innerHTML=`
+    <div class="rev-grid">
+      <div class="rev-block">
+        <div class="rev-block-label">Mesačne</div>
+        <div class="rev-block-amount"><sup>€</sup>${totalMonthly}<span style="font-size:11px;color:var(--muted)">/mes</span></div>
+      </div>
+      <div class="rev-block">
+        <div class="rev-block-label">Projekty (PAID)</div>
+        <div class="rev-block-amount"><sup>€</sup>${totalPaid}</div>
+      </div>
+    </div>
+    <div class="rev-clients">${clientRows||'<div class="n-empty">Žiadni platiaci klienti</div>'}</div>`;
+}
+
 async function fetchNotion(){
   try{
     const d=await fetch('/api/notion').then(r=>r.json());
@@ -557,6 +753,7 @@ async function fetchNotion(){
       document.getElementById('notion-tasks').innerHTML=msg;
       document.getElementById('notion-projects').innerHTML='';
       document.getElementById('notion-badge').textContent='–';
+      document.getElementById('rev-body').innerHTML=msg;
       return;
     }
     const tasks=d.tasks||[];
@@ -564,9 +761,11 @@ async function fetchNotion(){
     document.getElementById('notion-badge').textContent=`${tasks.length}t · ${projects.length}p`;
     document.getElementById('notion-tasks').innerHTML=renderTasks(tasks);
     document.getElementById('notion-projects').innerHTML=renderProjects(projects);
+    renderRevenue(projects);
   }catch(e){
     document.getElementById('notion-tasks').innerHTML=`<div class="err">⚠️ ${e.message}</div>`;
     document.getElementById('notion-projects').innerHTML='';
+    document.getElementById('rev-body').innerHTML=`<div class="err">⚠️ ${e.message}</div>`;
   }
 }
 
@@ -596,6 +795,7 @@ function switchTab(type,btn){
 // ── REFRESH ALL ──────────────────────────────────────────────────────────────
 async function refreshAll(){
   document.getElementById('lastUp').textContent='Refreshing…';
+  renderMeniny(); // synchronous, no API needed
   await Promise.all([
     fetchWeather(),fetchGmail(),fetchCalendar(),fetchSpotify(),fetchVercel(),fetchNotion(),
     fetchNews('world','BBC').then(n=>{ const b=document.getElementById('news-world-badge'); if(b)b.textContent=n+' článkov'; }),

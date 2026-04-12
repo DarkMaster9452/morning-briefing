@@ -139,7 +139,9 @@ export default async function handler(req, res) {
         phaseColor: PHASE_COLOR[phase] || 'default',
         phaseIcon:  PHASE_ICON[phase]  || '•',
         price:      price   != null ? `€${price}`   : null,
+        priceNum:   price   ?? 0,
         monthly:    monthly != null ? `€${monthly}/mes` : null,
+        monthlyNum: monthly ?? 0,
         link:       getUrl(p, 'Link'),
         edited:     p.last_edited_time,
       };
