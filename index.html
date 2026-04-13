@@ -2096,15 +2096,15 @@
       svg.append('g').selectAll('path')
         .data(countries.features).join('path')
         .attr('d', path)
-        .attr('fill', d => highlightIds.includes(+d.id) ? 'var(--c-world)' : '#2e3250')
-        .attr('stroke', '#0f1117').attr('stroke-width', 0.4)
-        .attr('opacity', d => highlightIds.includes(+d.id) ? 1 : 0.7);
+        .attr('fill', d => highlightIds.includes(+d.id) ? '#54a0ff' : '#4a5280')
+        .attr('stroke', '#1a1d27').attr('stroke-width', 0.5)
+        .attr('opacity', d => highlightIds.includes(+d.id) ? 1 : 0.85);
       // glow on highlighted
       if (highlightIds.length) {
         svg.append('g').selectAll('path')
           .data(countries.features.filter(d => highlightIds.includes(+d.id))).join('path')
           .attr('d', path).attr('fill', 'none')
-          .attr('stroke', 'var(--c-world)').attr('stroke-width', 1.2).attr('opacity', 0.5);
+          .attr('stroke', '#54a0ff').attr('stroke-width', 1.2).attr('opacity', 0.5);
       }
     }
 

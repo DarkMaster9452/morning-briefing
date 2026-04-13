@@ -28,7 +28,12 @@ function getSelect(page, key) {
 }
 
 function getNumber(page, key) {
-  return page.properties?.[key]?.number ?? null;
+  const p = page.properties?.[key];
+  if (!p) return null;
+  if (p.number        != null) return p.number;
+  if (p.formula?.number  != null) return p.formula.number;
+  if (p.rollup?.number   != null) return p.rollup.number;
+  return null;
 }
 
 function getUrl(page, key = 'Link') {
