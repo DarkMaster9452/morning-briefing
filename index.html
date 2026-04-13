@@ -1343,9 +1343,8 @@
             <div class="meniny-left" id="meniny-body">
               <div class="loading">Loading...</div>
             </div>
-            <div class="meniny-right">
-              <div class="focus-label">🎯 Dnes hlavne</div>
-              <textarea class="focus-input" id="focus-input" placeholder="Čo je dnes tvoja #1 priorita?"></textarea>
+            <div class="meniny-right" style="overflow:hidden;border-radius:8px;min-height:80px;">
+              <img src="cherry.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:8px;">
             </div>
           </div>
         </div>
@@ -1445,15 +1444,18 @@
       <!-- COL 3: Split News — World (top) + AI/Tech tabbed (bottom) -->
       <div class="col">
 
-        <div class="card grow">
+        <div class="card grow" style="flex:2 1 0;">
           <div class="card-header">
             <span class="card-icon">🌍</span>
             <span class="card-title">World</span>
             <span class="badge" id="news-world-badge">–</span>
           </div>
-          <div class="card-body">
-            <div id="panel-world">
-              <div class="loading">Loading...</div>
+          <div style="display:flex;gap:10px;flex:1;min-height:0;">
+            <img src="nebula.jpg" alt="" style="width:110px;flex-shrink:0;object-fit:cover;border-radius:8px;align-self:stretch;">
+            <div class="card-body" style="flex:1;min-width:0;">
+              <div id="panel-world">
+                <div class="loading">Loading...</div>
+              </div>
             </div>
           </div>
         </div>
