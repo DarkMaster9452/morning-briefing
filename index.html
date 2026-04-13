@@ -1133,6 +1133,148 @@
       height: 100vh;
       flex-direction: column
     }
+
+    /* ── MENINY SPLIT ── */
+    .meniny-split {
+      display: flex;
+      gap: 10px;
+    }
+    .meniny-left {
+      flex: 1;
+      min-width: 0;
+      border-right: 1px solid var(--border);
+      padding-right: 10px;
+    }
+    .meniny-right {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .focus-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .focus-input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      color: var(--text);
+      font-size: 11px;
+      font-family: inherit;
+      padding: 7px 9px;
+      resize: none;
+      flex: 1;
+      min-height: 62px;
+      transition: border-color .15s;
+      box-sizing: border-box;
+    }
+    .focus-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .focus-input::placeholder {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    /* ── TODAY'S TASKS ── */
+    .tt-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .tt-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 7px;
+      padding: 6px 8px;
+      background: var(--surface2);
+      border-radius: 7px;
+      border-left: 3px solid transparent;
+    }
+    .tt-item.tt-urgent { border-left-color: #ff5555; }
+    .tt-item.tt-calendar { border-left-color: var(--accent); }
+    .tt-item.tt-email { border-left-color: var(--green); }
+    .tt-icon { font-size: 12px; flex-shrink: 0; margin-top: 1px; }
+    .tt-body { flex: 1; min-width: 0; }
+    .tt-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .tt-sub { font-size: 9px; color: var(--muted); margin-top: 1px; }
+
+    /* ── POMODORO ── */
+    .pomo-wrap {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .pomo-header {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 7px;
+    }
+    .pomo-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .pomo-display {
+      font-size: 22px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: var(--text);
+      min-width: 56px;
+    }
+    .pomo-display.break-mode { color: var(--green); }
+    .pomo-phase { font-size: 9px; color: var(--muted); margin-top: 2px; }
+    .pomo-btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 5px 12px;
+      cursor: pointer;
+      transition: opacity .15s;
+      flex-shrink: 0;
+    }
+    .pomo-btn:hover { opacity: .85; }
+    .pomo-btn.reset {
+      background: var(--surface2);
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 5px 8px;
+    }
+    .pomo-prog {
+      flex: 1;
+      height: 4px;
+      background: var(--surface2);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .pomo-prog-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      transition: width .5s linear;
+    }
+    .pomo-prog-fill.break-fill { background: var(--green); }
   </style>
 </head>
 
@@ -1183,11 +1325,28 @@
 
         <div class="card">
           <div class="card-header">
-            <span class="card-icon">🌸</span>
-            <span class="card-title">Meniny</span>
+            <span class="card-icon">✅</span>
+            <span class="card-title">Dnes treba</span>
+            <span class="badge" id="tt-badge">–</span>
           </div>
-          <div id="meniny-body">
-            <div class="loading">Loading...</div>
+          <div id="tt-body">
+            <div class="loading">Načítavam...</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-icon">🌸</span>
+            <span class="card-title">Meniny · Focus</span>
+          </div>
+          <div class="meniny-split">
+            <div class="meniny-left" id="meniny-body">
+              <div class="loading">Loading...</div>
+            </div>
+            <div class="meniny-right">
+              <div class="focus-label">🎯 Dnes hlavne</div>
+              <textarea class="focus-input" id="focus-input" placeholder="Čo je dnes tvoja #1 priorita?"></textarea>
+            </div>
           </div>
         </div>
 
@@ -1210,6 +1369,18 @@
           </div>
           <div class="card-body" id="gmail-body">
             <div class="loading">Loading...</div>
+          </div>
+          <div class="pomo-wrap">
+            <div class="pomo-header">⏱ Pomodoro</div>
+            <div class="pomo-row">
+              <div>
+                <div class="pomo-display" id="pomo-time">25:00</div>
+                <div class="pomo-phase" id="pomo-phase">💻 Práca</div>
+              </div>
+              <div class="pomo-prog"><div class="pomo-prog-fill" id="pomo-fill" style="width:0%"></div></div>
+              <button class="pomo-btn" id="pomo-btn" onclick="pomoToggle()">▶ Štart</button>
+              <button class="pomo-btn reset" onclick="pomoReset()">↺</button>
+            </div>
           </div>
         </div>
 
@@ -1357,9 +1528,6 @@
           <div class="w-detail">Feels ${d.feels_like}° · 💧${d.humidity}% · 💨${d.wind} km/h</div>
         </div>
       </div>
-      ${hourlyHTML ? `
-        <div class="w-section-lbl">🕐 Nasledujúce hodiny</div>
-        <div class="hourly">${hourlyHTML}</div>` : ''}
       <div class="w-section-lbl">📅 3-dňová predpoveď</div>
       <div class="forecast">${fc}</div>`;
       } catch (e) {
@@ -1471,6 +1639,7 @@
         const d = await fetch('/api/gmail').then(r => r.json());
         if (d.needsAuth) { document.getElementById('gmail-badge').textContent = '–'; document.getElementById('gmail-body').innerHTML = `<div class="err">Not connected<br><a href="/api/auth/google-redirect" class="cbtn google">Connect Google</a></div>`; return }
         const { emails = [], total = 0 } = d;
+        _tdGmail = emails; buildTodaysTasks();
         document.getElementById('gmail-badge').textContent = `${total} unread`;
         if (!emails.length) { document.getElementById('gmail-body').innerHTML = `<div class="ok">✅ Inbox zero</div>`; return }
         document.getElementById('gmail-body').innerHTML = emails.map(e => {
@@ -1486,6 +1655,7 @@
         const d = await fetch('/api/calendar').then(r => r.json());
         if (d.needsAuth) { document.getElementById('cal-badge').textContent = '–'; document.getElementById('cal-body').innerHTML = `<div class="err">Not connected<br><a href="/api/auth/google-redirect" class="cbtn google">Connect Google</a></div>`; return }
         const { events = [] } = d;
+        _tdCal = events; buildTodaysTasks();
         document.getElementById('cal-badge').textContent = `${events.length} events`;
         if (!events.length) { document.getElementById('cal-body').innerHTML = `<div class="ok">✅ Free today</div>`; return }
         document.getElementById('cal-body').innerHTML = events.map(ev => {
@@ -1660,6 +1830,7 @@
         }
         const tasks = d.tasks || [];
         const projects = d.projects || [];
+        _tdNotion = { tasks }; buildTodaysTasks();
         document.getElementById('notion-badge').textContent = `${tasks.length}t · ${projects.length}p`;
         document.getElementById('notion-tasks').innerHTML = renderTasks(tasks);
         document.getElementById('notion-projects').innerHTML = renderProjects(projects);
@@ -1694,6 +1865,115 @@
       document.getElementById(`panel-${type}`).classList.add('active');
     }
 
+    // ── GLOBAL DATA CACHES ───────────────────────────────────────────────────────
+    let _tdCal = [], _tdGmail = [], _tdNotion = { tasks: [] };
+
+    // ── DAILY FOCUS ──────────────────────────────────────────────────────────────
+    function renderDailyFocus() {
+      const el = document.getElementById('focus-input');
+      if (!el) return;
+      el.value = localStorage.getItem('mb_focus') || '';
+      el.addEventListener('input', () => localStorage.setItem('mb_focus', el.value));
+    }
+
+    // ── TODAY'S TASKS ─────────────────────────────────────────────────────────────
+    function buildTodaysTasks() {
+      const items = [];
+
+      // Calendar events → sorted by start time
+      const calItems = (_tdCal || []).slice(0, 3);
+      calItems.forEach(ev => {
+        const time = ev.allDay ? 'Celý deň' : (() => { const s = new Date(ev.start); return `${p(s.getHours())}:${p(s.getMinutes())}`; })();
+        items.push({ type: 'calendar', icon: '📅', title: ev.title, sub: time });
+      });
+
+      // Notion urgent / overdue tasks
+      (_tdNotion.tasks || []).filter(t => {
+        const isUrgent = t.urgency && t.urgency.color === 'red';
+        const isOverdue = t.dueDate && new Date(t.dueDate) < new Date();
+        const isToday = t.dueDate && (() => { const d = new Date(t.dueDate); const n = new Date(); return d.toDateString() === n.toDateString(); })();
+        return isUrgent || isOverdue || isToday;
+      }).slice(0, 3).forEach(t => {
+        const sub = t.dueDate ? `Due ${fmtDate(t.dueDate)}` : (t.status || 'Urgent');
+        items.push({ type: 'urgent', icon: '⚠️', title: t.title, sub });
+      });
+
+      // Unread emails
+      (_tdGmail || []).slice(0, 2).forEach(e => {
+        const from = e.from.replace(/"([^"]+)"\s*<[^>]+>/, '$1').replace(/<[^>]+>/, '').trim();
+        items.push({ type: 'email', icon: '📧', title: e.subject, sub: from });
+      });
+
+      const el = document.getElementById('tt-body');
+      if (!el) return;
+      const badge = document.getElementById('tt-badge');
+
+      if (!items.length) {
+        if (badge) badge.textContent = '0';
+        el.innerHTML = '<div class="ok" style="font-size:11px;padding:4px 0">✅ Nič naliehavé — užívaj deň!</div>';
+        return;
+      }
+
+      if (badge) badge.textContent = items.length;
+      el.innerHTML = `<div class="tt-list">${items.map(i => `
+        <div class="tt-item tt-${i.type}">
+          <div class="tt-icon">${i.icon}</div>
+          <div class="tt-body">
+            <div class="tt-title">${i.title}</div>
+            <div class="tt-sub">${i.sub}</div>
+          </div>
+        </div>`).join('')}</div>`;
+    }
+
+    // ── POMODORO ─────────────────────────────────────────────────────────────────
+    var _pomo = { running: false, mode: 'work', remaining: 25 * 60, interval: null };
+
+    function pomoRender() {
+      const total = _pomo.mode === 'work' ? 25 * 60 : 5 * 60;
+      const mins = Math.floor(_pomo.remaining / 60);
+      const secs = _pomo.remaining % 60;
+      const pct = Math.round((1 - _pomo.remaining / total) * 100);
+      const isBreak = _pomo.mode === 'break';
+      const disp = document.getElementById('pomo-time');
+      const phase = document.getElementById('pomo-phase');
+      const fill = document.getElementById('pomo-fill');
+      if (disp) { disp.textContent = `${p(mins)}:${p(secs)}`; disp.className = 'pomo-display' + (isBreak ? ' break-mode' : ''); }
+      if (phase) phase.textContent = isBreak ? '☕ Pauza' : '💻 Práca';
+      if (fill) { fill.style.width = pct + '%'; fill.className = 'pomo-prog-fill' + (isBreak ? ' break-fill' : ''); }
+    }
+
+    function pomoTick() {
+      _pomo.remaining--;
+      if (_pomo.remaining <= 0) {
+        clearInterval(_pomo.interval); _pomo.interval = null; _pomo.running = false;
+        _pomo.mode = _pomo.mode === 'work' ? 'break' : 'work';
+        _pomo.remaining = _pomo.mode === 'work' ? 25 * 60 : 5 * 60;
+        const btn = document.getElementById('pomo-btn');
+        if (btn) btn.textContent = '▶ Štart';
+        pomoRender(); return;
+      }
+      pomoRender();
+    }
+
+    function pomoToggle() {
+      const btn = document.getElementById('pomo-btn');
+      if (_pomo.running) {
+        clearInterval(_pomo.interval); _pomo.interval = null; _pomo.running = false;
+        if (btn) btn.textContent = '▶ Pokračovať';
+      } else {
+        _pomo.running = true; _pomo.interval = setInterval(pomoTick, 1000);
+        if (btn) btn.textContent = '⏸ Pauza';
+      }
+    }
+
+    function pomoReset() {
+      clearInterval(_pomo.interval);
+      _pomo = { running: false, mode: 'work', remaining: 25 * 60, interval: null };
+      const btn = document.getElementById('pomo-btn');
+      if (btn) btn.textContent = '▶ Štart';
+      pomoRender();
+    }
+
     // ── REFRESH ALL ──────────────────────────────────────────────────────────────
     async function refreshAll() {
       document.getElementById('lastUp').textContent = 'Refreshing…';
@@ -1722,6 +2002,7 @@
       document.getElementById('login-screen').style.display = 'none';
       const app = document.getElementById('app');
       app.style.display = 'flex';
+      renderDailyFocus();
       // Start data fetching only after login
       setInterval(refreshAll, 5 * 60 * 1000);
       setInterval(fetchSpotify, 30 * 1000);
