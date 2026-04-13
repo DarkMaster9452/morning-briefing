@@ -1278,6 +1278,144 @@
       transition: width .5s linear;
     }
     .pomo-prog-fill.break-fill { background: var(--green); }
+
+    /* ══════════════════════════════════════════
+       MOBILE — bottom tab nav + single column
+    ══════════════════════════════════════════ */
+    #mob-tabs { display: none; }
+
+    @media (max-width: 768px) {
+
+      /* ── Topbar ── */
+      #topbar {
+        height: 58px;
+        padding: 0 18px;
+      }
+      #topbar .greeting { display: none; }
+      #topbar .clock { font-size: 22px; letter-spacing: .04em; }
+      #topbar .date  { font-size: 10px; }
+      #topbar #lastUp, #topbar .live-label { display: none; }
+
+      /* ── Main scroll area ── */
+      #app { flex-direction: column; height: 100svh; overflow: hidden; }
+      #main {
+        display: block;
+        height: calc(100svh - 58px - 58px);
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding: 0;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* Flatten 3 columns into a single flow */
+      .col { display: contents; }
+
+      /* ── Cards ── */
+      .card, .card.grow {
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+        border-top: none;
+        border-bottom: 1px solid var(--border);
+        padding: 16px 18px;
+        flex: none;
+        min-height: auto;
+        overflow: visible;
+      }
+      .card.grow { overflow: visible; }
+      .card-body { overflow: visible; max-height: none !important; }
+      .card:hover { border-color: var(--border); }
+
+      /* ── Section show/hide ── */
+      [data-mob]           { display: none !important; }
+      [data-mob].mob-show  { display: flex !important; flex-direction: column; }
+
+      /* ── Card text & spacing ── */
+      .card-icon  { font-size: 16px; }
+      .card-title { font-size: 11px; }
+      .card-header { margin-bottom: 12px; }
+
+      /* News items — roomier & more readable */
+      .ni { padding: 12px 0; }
+      .ni-head a { font-size: 13px; line-height: 1.45; }
+      .ni-desc   { font-size: 11.5px; line-height: 1.5; -webkit-line-clamp: 3; }
+      .ni-meta   { font-size: 10px; margin-top: 4px; }
+
+      /* Calendar events */
+      .evt-time  { font-size: 11px; }
+      .evt-title { font-size: 12px; }
+
+      /* Today tasks */
+      .tt-title { font-size: 12px; }
+      .tt-meta  { font-size: 10px; }
+
+      /* Notion rows */
+      .nt-name   { font-size: 12px; }
+      .nt-meta   { font-size: 10px; }
+
+      /* Revenue */
+      .rev-block-amount { font-size: 28px; }
+      .rev-client-name  { font-size: 12px; }
+      .rev-client-val   { font-size: 12px; }
+
+      /* Weather */
+      .w-current-temp { font-size: 48px; }
+
+      /* World map on mobile — fixed height so it renders */
+      #world-map-container { height: 200px; min-height: 200px; flex: none; }
+
+      /* World card inner layout override */
+      [data-mob="news"] > div[style*="flex-direction:column"] {
+        flex: none;
+        height: auto;
+      }
+
+      /* AI/Tech card body — let it expand */
+      [data-mob="news"] .card-body { min-height: 0; }
+
+      /* Pomodoro stacked nicely */
+      .pomo-wrap { border-top: 1px solid var(--border); margin-top: 14px; padding-top: 14px; }
+      .pomo-display { font-size: 32px; }
+
+      /* Meniny sakura — slightly taller on mobile */
+      .meniny-right { flex: 0 0 80px !important; max-height: 80px !important; }
+
+      /* ── Bottom Tab Bar ── */
+      #mob-tabs {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 58px;
+        background: var(--surface);
+        border-top: 1px solid var(--border);
+        z-index: 999;
+        padding-bottom: env(safe-area-inset-bottom, 0);
+      }
+
+      .mob-tab {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        color: var(--muted2);
+        border: none;
+        background: none;
+        cursor: pointer;
+        transition: color .18s;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .mob-tab .ti   { font-size: 22px; line-height: 1; transition: filter .18s; }
+      .mob-tab.active            { color: var(--accent); }
+      .mob-tab.active .ti        { filter: drop-shadow(0 0 5px var(--accent)); }
+    }
   </style>
 </head>
 
@@ -1315,7 +1453,7 @@
       <!-- COL 1: Weather + Meniny + Revenue + Gmail -->
       <div class="col">
 
-        <div class="card">
+        <div class="card" data-mob="today">
           <div class="card-header">
             <span class="card-icon">🌤️</span>
             <span class="card-title">Počasie · Rajec</span>
@@ -1326,7 +1464,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-mob="today">
           <div class="card-header">
             <span class="card-icon">✅</span>
             <span class="card-title">Dnes treba</span>
@@ -1337,7 +1475,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-mob="today">
           <div class="card-header">
             <span class="card-icon">🌸</span>
             <span class="card-title">Meniny · Focus</span>
@@ -1352,7 +1490,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-mob="work">
           <div class="card-header">
             <span class="card-icon">💰</span>
             <span class="card-title">Revenue</span>
@@ -1363,7 +1501,7 @@
           </div>
         </div>
 
-        <div class="card grow">
+        <div class="card grow" data-mob="inbox">
           <div class="card-header">
             <span class="card-icon">📧</span>
             <span class="card-title">Gmail</span>
@@ -1391,7 +1529,7 @@
       <!-- COL 2: Calendar + Spotify + Vercel + Notion -->
       <div class="col">
 
-        <div class="card">
+        <div class="card" data-mob="today">
           <div class="card-header">
             <span class="card-icon">📅</span>
             <span class="card-title">Today's Schedule</span>
@@ -1402,7 +1540,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card" data-mob="work">
           <div class="card-header">
             <span class="card-icon">🎵</span>
             <span class="card-title">Spotify</span>
@@ -1413,7 +1551,7 @@
           </div>
         </div>
 
-        <div class="card" style="flex-shrink:0">
+        <div class="card" style="flex-shrink:0" data-mob="work">
           <div class="card-header">
             <span class="card-icon">▲</span>
             <span class="card-title">Vercel Projects</span>
@@ -1424,7 +1562,7 @@
           </div>
         </div>
 
-        <div class="card grow">
+        <div class="card grow" data-mob="work">
           <div class="card-header">
             <span class="card-icon">◻</span>
             <span class="card-title">Notion</span>
@@ -1447,7 +1585,7 @@
       <!-- COL 3: Split News — World (top) + AI/Tech tabbed (bottom) -->
       <div class="col">
 
-        <div class="card grow" style="flex:2 1 0;padding:10px 12px;">
+        <div class="card grow" style="flex:2 1 0;padding:10px 12px;" data-mob="news">
           <div style="display:flex;flex-direction:column;flex:1;min-height:0;">
             <!-- world map -->
             <div id="world-map-container" style="flex:1;min-height:0;overflow:hidden;"></div>
@@ -1464,7 +1602,7 @@
           </div>
         </div>
 
-        <div class="card grow">
+        <div class="card grow" data-mob="news">
           <div class="card-header">
             <span class="card-icon">🤖</span>
             <span class="card-title">AI & Tech</span>
@@ -1487,6 +1625,23 @@
       </div>
 
     </div>
+
+    <!-- MOBILE BOTTOM TAB BAR -->
+    <nav id="mob-tabs">
+      <button class="mob-tab active" data-for="today" onclick="switchMobTab('today',this)">
+        <span class="ti">🌅</span><span>Dnes</span>
+      </button>
+      <button class="mob-tab" data-for="work" onclick="switchMobTab('work',this)">
+        <span class="ti">💼</span><span>Práca</span>
+      </button>
+      <button class="mob-tab" data-for="news" onclick="switchMobTab('news',this)">
+        <span class="ti">🌍</span><span>Správy</span>
+      </button>
+      <button class="mob-tab" data-for="inbox" onclick="switchMobTab('inbox',this)">
+        <span class="ti">📧</span><span>Inbox</span>
+      </button>
+    </nav>
+
   </div><!-- /#app -->
 
   <script>
@@ -2171,6 +2326,7 @@
       app.style.display = 'flex';
       renderDailyFocus();
       initWorldMap();
+      initMobileTabs();
       // Start data fetching only after login
       setInterval(refreshAll, 5 * 60 * 1000);
       setInterval(fetchSpotify, 30 * 1000);
@@ -2185,6 +2341,25 @@
       } else {
         document.getElementById('access-denied').style.display = 'block';
       }
+    }
+
+    // ── MOBILE TABS ──────────────────────────────────────────────────────────────
+    function isMobile() { return window.innerWidth <= 768; }
+
+    function switchMobTab(section, btn) {
+      if (!isMobile()) return;
+      document.querySelectorAll('[data-mob]').forEach(el => el.classList.remove('mob-show'));
+      document.querySelectorAll('[data-mob="' + section + '"]').forEach(el => el.classList.add('mob-show'));
+      document.querySelectorAll('.mob-tab').forEach(t => t.classList.remove('active'));
+      (btn || document.querySelector('.mob-tab[data-for="' + section + '"]'))?.classList.add('active');
+      document.getElementById('main').scrollTop = 0;
+      // redraw world map when switching to news tab (size may have changed)
+      if (section === 'news') setTimeout(() => drawWorldMap(Object.keys(_countryLinks).map(Number)), 80);
+    }
+
+    function initMobileTabs() {
+      if (!isMobile()) return;
+      switchMobTab('today');
     }
 
     window.addEventListener('load', () => {
