@@ -9,6 +9,9 @@
     href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌅</text></svg>" />
   <!-- Google Identity Services -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <!-- D3 + TopoJSON for world map -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
   <!-- Clock font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@300;400&display=swap" rel="stylesheet">
@@ -1444,16 +1447,17 @@
       <!-- COL 3: Split News — World (top) + AI/Tech tabbed (bottom) -->
       <div class="col">
 
-        <div class="card grow" style="flex:2 1 0;">
-          <div class="card-header">
-            <span class="card-icon">🌍</span>
-            <span class="card-title">World</span>
-            <span class="badge" id="news-world-badge">–</span>
-          </div>
-          <div style="display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden;">
-            <div style="flex:1;display:flex;align-items:flex-start;min-height:0;overflow:hidden;">
-              <img src="/assets/space.jpg" alt="" style="max-width:60%;max-height:100%;object-fit:contain;display:block;">
+        <div class="card grow" style="flex:2 1 0;padding:10px 12px;">
+          <div style="display:flex;flex-direction:column;flex:1;min-height:0;">
+            <!-- world map -->
+            <div id="world-map-container" style="flex:1;min-height:0;overflow:hidden;"></div>
+            <!-- WORLD header moved here, just above articles -->
+            <div class="card-header" style="flex-shrink:0;margin-bottom:8px;border-top:1px solid var(--border);padding-top:8px;margin-top:0;">
+              <span class="card-icon">🌍</span>
+              <span class="card-title">World</span>
+              <span class="badge" id="news-world-badge">–</span>
             </div>
+            <!-- articles -->
             <div id="panel-world" style="flex-shrink:0;">
               <div class="loading">Loading...</div>
             </div>
@@ -1847,7 +1851,7 @@
     // ── NEWS TABS ────────────────────────────────────────────────────────────────
     function timeSince(str) { try { const d = Math.floor((Date.now() - new Date(str)) / 60000); return d < 60 ? `${d}m ago` : d < 1440 ? `${Math.floor(d / 60)}h ago` : new Date(str).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) } catch { return '' } }
 
-    async function fetchNews(type, src) {
+    async function fetchNews(type, src, onItems) {
       try {
         const { items = [] } = await fetch(`/api/news?type=${type}`).then(r => r.json());
         document.getElementById(`panel-${type}`).innerHTML = items.map(it => `
@@ -1856,6 +1860,7 @@
         ${it.desc ? `<div class="ni-desc">${it.desc}</div>` : ''}
         <div class="ni-meta">${src} · ${timeSince(it.pub)}</div>
       </div>`).join('');
+        if (onItems) onItems(items);
         return items.length;
       } catch { document.getElementById(`panel-${type}`).innerHTML = `<div class="err">⚠️ Could not load</div>`; return 0 }
     }
@@ -1976,13 +1981,150 @@
       pomoRender();
     }
 
+    // ── WORLD MAP ────────────────────────────────────────────────────────────────
+    let _worldGeo = null;
+
+    const COUNTRY_KEYWORDS = {
+      'hungary':348,'hungarian':348,'budapest':348,'orbán':348,'orban':348,'magyar':348,
+      'united states':840,'usa':840,' us ':840,'america':840,'american':840,'trump':840,'washington':840,'biden':840,'harris':840,
+      'united kingdom':826,'uk ':826,'britain':826,'british':826,'england':826,'london':826,
+      'russia':643,'russian':643,'moscow':643,'putin':643,'kremlin':643,
+      'china':156,'chinese':156,'beijing':156,'xi jinping':156,
+      'ukraine':804,'ukrainian':804,'kyiv':804,'zelensky':804,
+      'israel':376,'israeli':376,'tel aviv':376,'netanyahu':376,
+      'gaza':275,'palestine':275,'palestinian':275,'west bank':275,
+      'france':250,'french':250,'paris':250,'macron':250,
+      'germany':276,'german':276,'berlin':276,'scholz':276,
+      'italy':380,'italian':380,'rome':380,'meloni':380,'pope':380,'vatican':380,'leo xiv':380,
+      'nigeria':566,'nigerian':566,'lagos':566,'abuja':566,
+      'peru':604,'peruvian':604,'lima':604,
+      'iran':364,'iranian':364,'tehran':364,'khamenei':364,
+      'syria':760,'syrian':760,'damascus':760,
+      'turkey':792,'turkish':792,'ankara':792,'erdogan':792,
+      'india':356,'indian':356,'delhi':356,'modi':356,'mumbai':356,
+      'japan':392,'japanese':392,'tokyo':392,
+      'brazil':76,'brazilian':76,'brasília':76,
+      'mexico':484,'mexican':484,'mexico city':484,
+      'canada':124,'canadian':124,'ottawa':124,'trudeau':124,
+      'australia':36,'australian':36,'canberra':36,
+      'south korea':410,'korean':410,'seoul':410,
+      'north korea':408,'kim jong':408,'pyongyang':408,
+      'saudi':682,'riyadh':682,'mbs':682,
+      'egypt':818,'egyptian':818,'cairo':818,
+      'pakistan':586,'islamabad':586,'karachi':586,
+      'afghanistan':4,'afghan':4,'kabul':4,'taliban':4,
+      'iraq':368,'iraqi':368,'baghdad':368,
+      'spain':724,'spanish':724,'madrid':724,
+      'poland':616,'polish':616,'warsaw':616,
+      'venezuela':862,'venezuelan':862,'caracas':862,
+      'colombia':170,'colombian':170,'bogotá':170,
+      'argentina':32,'argentinian':32,'buenos aires':32,
+      'south africa':710,'johannesburg':710,'pretoria':710,
+      'kenya':404,'kenyan':404,'nairobi':404,
+      'ethiopia':231,'ethiopian':231,'addis':231,
+      'sudan':729,'sudanese':729,'khartoum':729,
+      'myanmar':104,'burma':104,'rangoon':104,
+      'taiwan':158,'taiwanese':158,'taipei':158,
+      'philippines':608,'philippine':608,'manila':608,
+      'indonesia':360,'indonesian':360,'jakarta':360,
+      'thailand':764,'thai':764,'bangkok':764,
+      'vietnam':704,'vietnamese':704,'hanoi':704,
+      'bangladesh':50,'dhaka':50,
+      'sweden':752,'swedish':752,'stockholm':752,
+      'norway':578,'norwegian':578,'oslo':578,
+      'finland':246,'finnish':246,'helsinki':246,
+      'denmark':208,'danish':208,'copenhagen':208,
+      'netherlands':528,'dutch':528,'amsterdam':528,'hague':528,
+      'belgium':56,'belgian':56,'brussels':56,
+      'switzerland':756,'swiss':756,'geneva':756,'bern':756,
+      'austria':40,'austrian':40,'vienna':40,
+      'portugal':620,'portuguese':620,'lisbon':620,
+      'greece':300,'greek':300,'athens':300,
+      'romania':642,'romanian':642,'bucharest':642,
+      'czech':203,'czechia':203,'prague':203,
+      'slovakia':703,'slovak':703,'bratislava':703,
+      'morocco':504,'moroccan':504,'rabat':504,
+      'algeria':12,'algerian':12,'algiers':12,
+      'tunisia':788,'tunisian':788,'tunis':788,
+      'libya':434,'libyan':434,'tripoli':434,
+      'somalia':706,'somali':706,'mogadishu':706,
+      'zimbabwe':716,'zimbabwean':716,'harare':716,
+      'congo':180,'kinshasa':180,
+      'ghana':288,'ghanaian':288,'accra':288,
+      'senegal':686,'dakar':686,
+      'chile':152,'chilean':152,'santiago':152,
+      'ecuador':218,'ecuadorian':218,'quito':218,
+      'bolivia':68,'bolivian':68,'la paz':68,
+      'cuba':192,'cuban':192,'havana':192,
+      'haiti':332,'haitian':332,'port-au-prince':332,
+      'jordan':400,'jordanian':400,'amman':400,
+      'lebanon':422,'lebanese':422,'beirut':422,
+      'qatar':634,'doha':634,
+      'uae':784,'dubai':784,'abu dhabi':784,
+      'kuwait':414,'kuwaiti':414,
+      'oman':512,'muscat':512,
+      'yemen':887,'yemeni':887,'sanaa':887,'houthi':887,
+      'libya':434,'tripoli':434,
+      'kazakhstan':398,'astana':398,
+      'uzbekistan':860,'tashkent':860,
+      'new zealand':554,'auckland':554,'wellington':554,
+    };
+
+    async function initWorldMap() {
+      try {
+        const world = await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json').then(r => r.json());
+        _worldGeo = world;
+        drawWorldMap([]);
+      } catch(e) { console.warn('World map load failed', e); }
+    }
+
+    function drawWorldMap(highlightIds) {
+      const container = document.getElementById('world-map-container');
+      if (!container || !_worldGeo || typeof d3 === 'undefined' || typeof topojson === 'undefined') return;
+      const w = container.clientWidth || 500;
+      const h = Math.max(container.clientHeight || 160, 100);
+      container.innerHTML = '';
+      const svg = d3.select(container).append('svg')
+        .attr('width', '100%').attr('height', '100%')
+        .attr('viewBox', `0 0 ${w} ${h}`)
+        .attr('preserveAspectRatio', 'xMidYMid meet')
+        .style('display','block');
+      const projection = d3.geoNaturalEarth1()
+        .scale(w / 6.3).translate([w / 2, h / 2]);
+      const path = d3.geoPath().projection(projection);
+      const countries = topojson.feature(_worldGeo, _worldGeo.objects.countries);
+      svg.append('g').selectAll('path')
+        .data(countries.features).join('path')
+        .attr('d', path)
+        .attr('fill', d => highlightIds.includes(+d.id) ? 'var(--c-world)' : '#2e3250')
+        .attr('stroke', '#0f1117').attr('stroke-width', 0.4)
+        .attr('opacity', d => highlightIds.includes(+d.id) ? 1 : 0.7);
+      // glow on highlighted
+      if (highlightIds.length) {
+        svg.append('g').selectAll('path')
+          .data(countries.features.filter(d => highlightIds.includes(+d.id))).join('path')
+          .attr('d', path).attr('fill', 'none')
+          .attr('stroke', 'var(--c-world)').attr('stroke-width', 1.2).attr('opacity', 0.5);
+      }
+    }
+
+    function highlightMapCountries(items) {
+      if (!items || !items.length) return;
+      const text = items.map(it => (it.title + ' ' + (it.desc || '')).toLowerCase()).join(' ');
+      const ids = new Set();
+      for (const [kw, id] of Object.entries(COUNTRY_KEYWORDS)) {
+        if (text.includes(kw)) ids.add(id);
+      }
+      drawWorldMap([...ids]);
+    }
+
     // ── REFRESH ALL ──────────────────────────────────────────────────────────────
     async function refreshAll() {
       document.getElementById('lastUp').textContent = 'Refreshing…';
       renderMeniny(); // synchronous, no API needed
       await Promise.all([
         fetchWeather(), fetchGmail(), fetchCalendar(), fetchSpotify(), fetchVercel(), fetchNotion(),
-        fetchNews('world', 'BBC').then(n => { const b = document.getElementById('news-world-badge'); if (b) b.textContent = n + ' článkov'; }),
+        fetchNews('world', 'BBC', highlightMapCountries).then(n => { const b = document.getElementById('news-world-badge'); if (b) b.textContent = n + ' článkov'; }),
         fetchNews('ai', 'TechCrunch'),
         fetchNews('tech', 'Ars Technica'),
       ]);
@@ -2005,6 +2147,7 @@
       const app = document.getElementById('app');
       app.style.display = 'flex';
       renderDailyFocus();
+      initWorldMap();
       // Start data fetching only after login
       setInterval(refreshAll, 5 * 60 * 1000);
       setInterval(fetchSpotify, 30 * 1000);
