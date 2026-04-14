@@ -603,6 +603,21 @@
       color: var(--muted)
     }
 
+    .sp-time {
+      font-size: 9px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      margin-top: 3px
+    }
+
+    .sp-rec-dur {
+      font-size: 9px;
+      color: var(--muted);
+      margin-left: auto;
+      flex-shrink: 0
+    }
+
     /* ── NOTION ── */
     .notion-sec-label {
       font-size: 9px;
@@ -1819,6 +1834,12 @@
     // ── SPOTIFY ──────────────────────────────────────────────────────────────────
     var spProgressInterval = null; // var avoids any TDZ issues
 
+    function msToTime(ms) {
+      if (!ms) return '0:00';
+      const s = Math.floor(ms / 1000);
+      return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+    }
+
     async function fetchSpotify() {
       try {
         // Clear any running progress ticker
@@ -1847,12 +1868,15 @@
             <div class="sp-album">${t.album}</div>
           </div>
         </div>
-        <div class="prog"><div class="prog-fill" id="spf" style="width:${pct}%"></div></div>`;
+        <div class="prog"><div class="prog-fill" id="spf" style="width:${pct}%"></div></div>
+        <div class="sp-time"><span id="sp-prog-time">${msToTime(prog)}</span><span>${msToTime(dur)}</span></div>`;
           var pr = prog;
           spProgressInterval = setInterval(function () {
             pr += 1000;
             var el = document.getElementById('spf');
+            var pt = document.getElementById('sp-prog-time');
             if (el && dur) el.style.width = Math.min(100, Math.round(pr / dur * 100)) + '%';
+            if (pt) pt.textContent = msToTime(Math.min(pr, dur));
             else if (!el) { clearInterval(spProgressInterval); spProgressInterval = null; }
           }, 1000);
         } else {
@@ -1864,7 +1888,9 @@
               ? `<div class="sp-recent-label">Naposledy</div>` + rec.map(function (t) {
                 return `<div class="sp-rec">` +
                   (t.image ? `<img class="sp-rec-art" src="${t.image}">` : `<div style="width:28px;height:28px;background:var(--surface2);border-radius:4px;flex-shrink:0"></div>`) +
-                  `<div><div class="sp-rec-name">${t.name}</div><div class="sp-rec-art-name">${t.artist}</div></div></div>`;
+                  `<div style="flex:1;min-width:0"><div class="sp-rec-name">${t.name}</div><div class="sp-rec-art-name">${t.artist}</div></div>` +
+                  (t.duration ? `<span class="sp-rec-dur">${msToTime(t.duration)}</span>` : '') +
+                  `</div>`;
               }).join('')
               : '');
         }
