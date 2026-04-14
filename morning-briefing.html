@@ -841,6 +841,16 @@
       text-transform: uppercase
     }
 
+    .card-title a {
+      color: inherit;
+      text-decoration: none
+    }
+
+    .card-title a:hover {
+      text-decoration: underline;
+      opacity: .85
+    }
+
     .badge {
       margin-left: auto;
       border-radius: 20px;
@@ -1650,7 +1660,7 @@
           <!-- CALENDAR -->
           <div class="card card-cal" data-card="card-cal">
             <div class="card-header"><span class="drag-handle">⠿</span><span class="card-icon">📆</span><span
-                class="card-title">Dnešný kalendár</span><span class="badge">GCal</span>
+                class="card-title"><a href="https://calendar.google.com" target="_blank">Dnešný kalendár</a></span><span class="badge">GCal</span>
               <div class="resize-btns"><button class="resize-btn" onclick="resizeCard(this,'-')">−</button><button
                   class="resize-btn" onclick="resizeCard(this,'+')">+</button></div>
             </div>
@@ -1777,7 +1787,7 @@
           <!-- NOTION PROJECTS -->
           <div class="card card-notion" data-card="card-notion">
             <div class="card-header"><span class="drag-handle">⠿</span><span class="card-icon">📂</span><span
-                class="card-title">Projekty · Notion</span><span class="badge">12 projektov</span>
+                class="card-title"><a href="https://notion.so" target="_blank">Projekty · Notion</a></span><span class="badge">12 projektov</span>
               <div class="resize-btns"><button class="resize-btn" onclick="resizeCard(this,'-')">−</button><button
                   class="resize-btn" onclick="resizeCard(this,'+')">+</button></div>
             </div>
@@ -1887,7 +1897,7 @@
           <!-- NOTION TASKS -->
           <div class="card card-tasks" data-card="card-tasks">
             <div class="card-header"><span class="drag-handle">⠿</span><span class="card-icon">✅</span><span
-                class="card-title">Otvorené úlohy · Notion</span><span class="badge">2 aktívne</span>
+                class="card-title"><a href="https://notion.so" target="_blank">Otvorené úlohy · Notion</a></span><span class="badge">2 aktívne</span>
               <div class="resize-btns"><button class="resize-btn" onclick="resizeCard(this,'-')">−</button><button
                   class="resize-btn" onclick="resizeCard(this,'+')">+</button></div>
             </div>
@@ -1917,7 +1927,7 @@
           <!-- EMAIL -->
           <div class="card card-email" data-card="card-email">
             <div class="card-header"><span class="drag-handle">⠿</span><span class="card-icon">📬</span><span
-                class="card-title">Gmail inbox</span><span class="badge">5 neprečítaných</span>
+                class="card-title"><a href="https://mail.google.com" target="_blank">Gmail inbox</a></span><span class="badge">5 neprečítaných</span>
               <div class="resize-btns"><button class="resize-btn" onclick="resizeCard(this,'-')">−</button><button
                   class="resize-btn" onclick="resizeCard(this,'+')">+</button></div>
             </div>
@@ -2015,7 +2025,7 @@
           <!-- BIRTHDAYS -->
           <div class="card card-bday" data-card="card-bday">
             <div class="card-header"><span class="drag-handle">⠿</span><span class="card-icon">🎂</span><span
-                class="card-title">Narodeniny</span><span class="badge">GCal</span>
+                class="card-title"><a href="https://calendar.google.com" target="_blank">Narodeniny</a></span><span class="badge">GCal</span>
               <div class="resize-btns"><button class="resize-btn" onclick="resizeCard(this,'-')">−</button><button
                   class="resize-btn" onclick="resizeCard(this,'+')">+</button></div>
             </div>
