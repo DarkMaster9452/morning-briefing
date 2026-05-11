@@ -1779,6 +1779,22 @@
       color: var(--success);
     }
 
+    .notion-proj-scroll {
+      max-height: 280px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.12) transparent;
+    }
+
+    .notion-proj-scroll::-webkit-scrollbar {
+      width: 3px;
+    }
+
+    .notion-proj-scroll::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.12);
+      border-radius: 99px;
+    }
+
     .notion-project {
       display: flex;
       align-items: center;
@@ -3407,11 +3423,11 @@
           }).join('');
         }
         // Projects
-        const projects = data.projects || [];
+        const projects = (data.projects || []).slice(0, 6);
         if (!projects.length) {
           document.getElementById('notionProjBody').innerHTML = '<div class="widget-ok">✅ Žiadne projekty</div>';
         } else {
-          document.getElementById('notionProjBody').innerHTML = projects.map(p => {
+          const items = projects.map(p => {
             const priceHtml = p.monthly ? `<div class="notion-proj-price">${p.monthly}</div>` : (p.price ? `<div class="notion-proj-price">${p.price}</div>` : '');
             const nameHtml = p.link ? `<a href="${p.link}" target="_blank" rel="noopener">${p.title}</a>` : p.title;
             return `<div class="notion-project">
@@ -3423,6 +3439,7 @@
               ${priceHtml}
             </div>`;
           }).join('');
+          document.getElementById('notionProjBody').innerHTML = `<div class="notion-proj-scroll">${items}</div>`;
         }
       } catch (e) {
         const msg = `<div class="widget-err">⚠️ ${e.message}</div>`;
