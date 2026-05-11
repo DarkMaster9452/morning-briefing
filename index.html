@@ -3317,7 +3317,7 @@
     }
 
     /* ══════════════════════════════════════════════════════════════════
-       SLEEP (manual localStorage, no API)
+       SLEEP (Google Fit API, auto-loaded after login)
     ══════════════════════════════════════════════════════════════════ */
     function sleepScore(minutes) {
       if (!minutes) return 0;
@@ -3341,76 +3341,69 @@
       return 'Zlý';
     }
 
-    function fmtTime(hhmm) {
-      // accepts "HH:MM" or ISO string
-      if (!hhmm) return '—';
-      if (hhmm.includes('T')) {
-        const d = new Date(hhmm);
+    function fmtTime(iso) {
+      if (!iso) return '—';
+      try {
+        const d = new Date(iso);
         return d.toLocaleTimeString('sk-SK', { hour: '2-digit', minute: '2-digit', hour12: false });
-      }
-      return hhmm;
+      } catch { return '—'; }
     }
 
-    function fmtShortDay(isoDate) {
-      if (!isoDate) return '?';
-      const d = new Date(isoDate + 'T12:00:00');
-      return ['Ne', 'Po', 'Ut', 'St', 'Št', 'Pi', 'So'][d.getDay()];
+    function fmtShortDay(iso) {
+      if (!iso) return '?';
+      try {
+        const d = new Date(iso);
+        return ['Ne', 'Po', 'Ut', 'St', 'Št', 'Pi', 'So'][d.getDay()];
+      } catch { return '?'; }
     }
 
-    function sleepMinutes(bedtime, waketime) {
-      // Both "HH:MM". Bedtime may be evening, waketime morning.
-      const [bh, bm] = bedtime.split(':').map(Number);
-      const [wh, wm] = waketime.split(':').map(Number);
-      let mins = (wh * 60 + wm) - (bh * 60 + bm);
-      if (mins <= 0) mins += 24 * 60; // crosses midnight
-      return mins;
+    function renderSleepSkeleton() {
+      document.getElementById('sleepBody').innerHTML = `
+        <div class="sleep-card" style="opacity:.4;pointer-events:none">
+          <div class="sleep-score-wrap">
+            <div class="sleep-score-ring">
+              <svg width="84" height="84" viewBox="0 0 84 84">
+                <circle cx="42" cy="42" r="36" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="6"/>
+              </svg>
+              <div class="sleep-score-center">
+                <div class="sleep-score-num">—</div>
+                <div class="sleep-score-label">skóre</div>
+              </div>
+            </div>
+          </div>
+          <div class="sleep-main">
+            <div class="sleep-duration">—h —m</div>
+            <div class="sleep-times">— → —</div>
+          </div>
+        </div>`;
     }
 
-    function sleepTodayKey() {
-      // key = date you woke up
-      return `sleep:${getActiveDateString()}`;
-    }
-
-    function loadSleepSessions(n = 7) {
-      // gather last n days
-      const sessions = [];
-      const today = new Date();
-      for (let i = 0; i < n; i++) {
-        const d = new Date(today);
-        d.setDate(d.getDate() - i);
-        const key = `sleep:${d.toISOString().slice(0, 10)}`;
-        const entry = storeGet(key);
-        if (entry && entry.minutes) {
-          sessions.push({ date: d.toISOString().slice(0, 10), ...entry });
-        }
-      }
-      return sessions; // newest first
-    }
-
-    function saveSleepEntry(bedtime, waketime) {
-      const mins = sleepMinutes(bedtime, waketime);
-      const key = sleepTodayKey();
-      storeSet(key, { bedtime, waketime, minutes: mins });
-      renderSleep();
-    }
-
-    function renderSleep() {
+    function renderSleep(data) {
       const el = document.getElementById('sleepBody');
-      const sessions = loadSleepSessions(7);
-      const last = sessions[0] || null;
+
+      if (!data || data.needsAuth) {
+        el.innerHTML = `<div class="sleep-locked">Prihlás sa pre automatické načítanie spánku z Google Fit / Zepp. <button onclick="openLogin()">Sign in</button></div>`;
+        return;
+      }
+      if (data.error) {
+        el.innerHTML = `<div class="sleep-locked">⚠️ ${data.error}${data.hint ? `<br><small style="font-size:10px;opacity:.6">${data.hint}</small>` : ''}</div>`;
+        return;
+      }
+
+      const last = data.lastNight;
       const mins = last?.minutes || 0;
       const score = last ? sleepScore(mins) : 0;
       const color = sleepScoreColor(score);
       const tag = last ? sleepQualityTag(score) : '—';
 
-      // ring
       const circ = 2 * Math.PI * 36;
       const dash = circ * (score / 100);
       const gap = circ - dash;
 
-      // bar chart (oldest→newest left to right)
+      const sessions = data.sessions || [];
       const chartSessions = sessions.slice().reverse();
       const maxMin = sessions.length ? Math.max(...sessions.map(s => s.minutes)) : 480;
+
       const barsHtml = chartSessions.map((s, i) => {
         const pct = maxMin ? Math.round((s.minutes / maxMin) * 100) : 0;
         const h = Math.max(4, Math.round(pct * 0.64));
@@ -3419,7 +3412,7 @@
         const h2 = Math.floor(s.minutes / 60);
         const m2 = s.minutes % 60;
         const label = h2 ? `${h2}h` : `${m2}m`;
-        const day = fmtShortDay(s.date);
+        const day = fmtShortDay(s.end);
         return `<div class="sleep-bar-col">
           <div class="sleep-bar-val">${label}</div>
           <div class="sleep-bar${isLatest ? ' is-tonight' : ''}" style="height:${h}px;background:${barColor}"></div>
@@ -3427,12 +3420,11 @@
         </div>`;
       }).join('');
 
-      const avgMin = sessions.length ? Math.round(sessions.reduce((a, s) => a + s.minutes, 0) / sessions.length) : 0;
-      const avgH = Math.floor(avgMin / 60);
-      const avgM = avgMin % 60;
+      const avgH = Math.floor((data.avgMinutes || 0) / 60);
+      const avgM = (data.avgMinutes || 0) % 60;
       const avgStr = avgH ? `${avgH}h ${avgM}m` : (avgM ? `${avgM}m` : '—');
 
-      const statsHtml = last ? `
+      el.innerHTML = last ? `
         <div class="sleep-card">
           <div class="sleep-score-wrap">
             <div class="sleep-score-ring">
@@ -3452,9 +3444,7 @@
           <div class="sleep-main">
             <div class="sleep-duration">${fmtHM(mins)}</div>
             <div class="sleep-times">
-              ${last.bedtime ? fmtTime(last.bedtime) : '—'}
-              <span class="sleep-arrow">→</span>
-              ${last.waketime ? fmtTime(last.waketime) : '—'}
+              ${fmtTime(last.start)}<span class="sleep-arrow"> → </span>${fmtTime(last.end)}
             </div>
             <div class="sleep-avg-row">
               <div class="sleep-avg-item">
@@ -3463,7 +3453,7 @@
               </div>
               <div class="sleep-avg-item">
                 <div class="sleep-avg-label">Zaznamenaných</div>
-                <div class="sleep-avg-value">${sessions.length} nocí</div>
+                <div class="sleep-avg-value">${data.nightCount || 0} nocí</div>
               </div>
             </div>
           </div>
@@ -3473,27 +3463,17 @@
           <div class="sleep-chart-eyebrow">Posledných 7 nocí</div>
           <div class="sleep-bars">${barsHtml}</div>
         </div>` : ''}
-      ` : `<div class="sleep-avg-item" style="margin-bottom:10px"><div class="sleep-avg-label">Zatiaľ žiadne záznamy — zadaj prvý spánok nižšie</div></div>`;
+      ` : `<div class="sleep-locked">😴 Google Fit nemá dáta za minulú noc.<br><small style="font-size:10px;opacity:.6">Skontroluj či máš zapnutý sync Zepp → Google Fit / Health Connect.</small></div>`;
+    }
 
-      // determine default times for the form
-      const defBed = last?.bedtime || '23:00';
-      const defWake = last?.waketime || '07:00';
-
-      el.innerHTML = `
-        ${statsHtml}
-        <div class="sleep-entry">
-          <div class="sleep-entry-field">
-            <div class="sleep-entry-label">Zaspal som</div>
-            <input type="time" id="sleepBedInput" value="${defBed}">
-          </div>
-          <div class="sleep-entry-field">
-            <div class="sleep-entry-label">Vstal som</div>
-            <input type="time" id="sleepWakeInput" value="${defWake}">
-          </div>
-          <button class="sleep-entry-save" onclick="saveSleepEntry(document.getElementById('sleepBedInput').value, document.getElementById('sleepWakeInput').value)">Uložiť</button>
-          <span class="sleep-entry-msg" id="sleepEntryMsg"></span>
-        </div>
-      `;
+    async function loadSleep() {
+      renderSleepSkeleton();
+      try {
+        const data = await authFetch('/api/sleep').then(r => r.json());
+        renderSleep(data);
+      } catch (e) {
+        renderSleep({ error: e.message });
+      }
     }
 
     function showFitnessLocked(locked) {
@@ -3534,6 +3514,7 @@
       document.getElementById('logout-btn').style.display = 'block';
       showFitnessLocked(false);
       refreshFitness();
+      loadSleep();
       loadAuthWidgets();
     }
     function handleCredentialResponse(response) {
@@ -3576,7 +3557,7 @@
       // Public widgets (no auth)
       loadWeather();
       renderMeniny();
-      renderSleep();
+      renderSleep(null); // shows locked until login
 
       // Fitness card wires
       document.getElementById('fitCoachBtn').addEventListener('click', getCoachNote);
@@ -3592,6 +3573,7 @@
             document.getElementById('logout-btn').style.display = 'block';
             showFitnessLocked(false);
             refreshFitness();
+            loadSleep();
             loadAuthWidgets();
           }
         } catch { }
