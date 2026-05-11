@@ -1275,7 +1275,7 @@
 
     .sleep-chart {
       margin-top: 18px;
-      border-top: 1px solid rgba(255,255,255,.05);
+      border-top: 1px solid rgba(255, 255, 255, .05);
       padding-top: 14px;
     }
 
@@ -1310,12 +1310,12 @@
       width: 100%;
       border-radius: 4px 4px 2px 2px;
       min-height: 3px;
-      transition: height .4s cubic-bezier(.4,0,.2,1);
+      transition: height .4s cubic-bezier(.4, 0, .2, 1);
       position: relative;
     }
 
     .sleep-bar.is-tonight {
-      box-shadow: 0 0 8px rgba(107,227,164,.35);
+      box-shadow: 0 0 8px rgba(107, 227, 164, .35);
     }
 
     .sleep-bar-day {
@@ -3286,7 +3286,7 @@
     function fmtShortDay(iso) {
       if (!iso) return '?';
       const d = new Date(iso);
-      return ['Ne','Po','Ut','St','Št','Pi','So'][d.getDay()];
+      return ['Ne', 'Po', 'Ut', 'St', 'Št', 'Pi', 'So'][d.getDay()];
     }
 
     function renderSleep(sleep) {
@@ -3310,7 +3310,7 @@
       // 7-night bar chart
       const sessions = sleep.sessions || [];
       const maxMin = sessions.length ? Math.max(...sessions.map(s => s.minutes)) : mins || 480;
-      const DAYS_SK_SHORT = ['Ne','Po','Ut','St','Št','Pi','So'];
+      const DAYS_SK_SHORT = ['Ne', 'Po', 'Ut', 'St', 'Št', 'Pi', 'So'];
 
       const barsHtml = sessions.slice().reverse().map((s, i) => {
         const pct = maxMin ? Math.round((s.minutes / maxMin) * 100) : 0;
