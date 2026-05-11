@@ -580,7 +580,7 @@ async function handleCalendar(req, res) {
     const now = new Date().toISOString();
 
     const response = await fetch(
-      `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${encodeURIComponent(now)}&singleEvents=true&orderBy=startTime&maxResults=5`,
+      `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${encodeURIComponent(now)}&singleEvents=true&orderBy=startTime&maxResults=2`,
       { headers: { Authorization: `Bearer ${token}` } },
     );
     const { items = [] } = await response.json();
