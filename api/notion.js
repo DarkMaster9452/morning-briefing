@@ -1,3 +1,5 @@
+import { requireUser } from './_auth.js';
+
 // Notion database IDs (from Web Project Manager workspace)
 const TASKS_DB_ID    = '3131c3f6-0898-81cf-b96d-edd1a8593e83'; // Tasks & Actions
 const PROJECTS_DB_ID = '3131c3f6-0898-819e-8ad0-dcea1e623f12'; // Projects
@@ -54,7 +56,8 @@ async function queryDatabase(token, dbId, body) {
 }
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const user = await requireUser(req, res);
+  if (!user) return;
 
   const { NOTION_TOKEN } = process.env;
   if (!NOTION_TOKEN) {

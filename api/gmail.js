@@ -1,3 +1,5 @@
+import { requireUser } from './_auth.js';
+
 async function getAccessToken() {
   const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REFRESH_TOKEN } = process.env;
   const r = await fetch('https://oauth2.googleapis.com/token', {
@@ -16,7 +18,8 @@ async function getAccessToken() {
 }
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const user = await requireUser(req, res);
+  if (!user) return;
 
   const { GOOGLE_REFRESH_TOKEN } = process.env;
   if (!GOOGLE_REFRESH_TOKEN) {

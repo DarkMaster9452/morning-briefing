@@ -1,3 +1,5 @@
+import { requireUser } from './_auth.js';
+
 async function getAccessToken() {
   const { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REFRESH_TOKEN } = process.env;
   const basic = Buffer.from(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`).toString('base64');
@@ -27,7 +29,8 @@ function formatTrack(track) {
 }
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const user = await requireUser(req, res);
+  if (!user) return;
 
   const { SPOTIFY_REFRESH_TOKEN } = process.env;
   if (!SPOTIFY_REFRESH_TOKEN) {

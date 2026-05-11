@@ -1,6 +1,6 @@
 ---
 name: daily-news-briefing
-description: Daily morning briefing — scans Gmail, fetches world/AI/tech news, pulls Notion project tasks, and overwrites morning-briefing.html, then pushes to GitHub (DarkMaster9452/morning-briefing).
+description: Daily morning briefing — scans Gmail, fetches world/AI/tech news, pulls Notion project tasks, and overwrites index.html, then pushes to GitHub (DarkMaster9452/morning-briefing).
 ---
 
 You are running the Daily Morning Briefing task. Your job is to gather fresh data, generate a complete HTML dashboard, write it to disk, and push it to GitHub.
@@ -261,9 +261,9 @@ Fill ALL `{placeholder}` values with real data from the searches above.
 ## Step 3 — Write the file
 
 Write the completed HTML to the GitHub repo folder:
-  /sessions/[current-session]/mnt/morning-briefing/morning-briefing.html
+  /sessions/[current-session]/mnt/morning-briefing/index.html
 
-(This maps to C:\Users\stran\Documents\GitHub\morning-briefing\morning-briefing.html)
+(This maps to C:\Users\stran\Documents\GitHub\morning-briefing\index.html)
 
 ---
 
@@ -280,12 +280,12 @@ TMPDIR="/sessions/vibrant-zen-edison/tmp-briefing-push"
 
 rm -rf "$TMPDIR"
 git clone "$MOUNT_PATH" "$TMPDIR" 2>&1
-cp "$MOUNT_PATH/morning-briefing.html" "$TMPDIR/morning-briefing.html"
+cp "$MOUNT_PATH/index.html" "$TMPDIR/index.html"
 cd "$TMPDIR"
 git config user.email "strananekm@gmail.com"
 git config user.name "Martin Strananek"
 git remote set-url origin "$REPO_URL"
-git add morning-briefing.html
+git add index.html
 git commit -m "Morning briefing update — $TODAY"
 git pull --rebase origin main
 git push origin main && echo "✅ Pushed to GitHub successfully" || echo "⚠️ Push failed"

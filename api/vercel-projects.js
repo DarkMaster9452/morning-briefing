@@ -1,5 +1,8 @@
+import { requireUser } from './_auth.js';
+
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const user = await requireUser(req, res);
+  if (!user) return;
 
   const { VERCEL_TOKEN, VERCEL_TEAM_ID } = process.env;
   if (!VERCEL_TOKEN) {

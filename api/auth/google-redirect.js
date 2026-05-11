@@ -7,6 +7,8 @@ export default function handler(req, res) {
   const scope = [
     'https://www.googleapis.com/auth/gmail.readonly',
     'https://www.googleapis.com/auth/calendar.readonly',
+    'https://www.googleapis.com/auth/fitness.sleep.read',
+    'https://www.googleapis.com/auth/fitness.activity.read',
   ].join(' ');
 
   const params = new URLSearchParams({
