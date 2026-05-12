@@ -27,6 +27,7 @@
     html,
     body {
       min-height: 100%;
+      overflow-x: hidden;
     }
 
     body {
@@ -54,14 +55,28 @@
       .card {
         padding: 14px;
         border-radius: 12px;
+        overflow: hidden;
+        max-width: 100%;
+        box-sizing: border-box;
       }
 
       .section {
         margin-bottom: 16px;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
       }
 
       .info-grid {
         gap: 10px;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+      }
+
+      /* Fitness štatistiky — 2 stĺpce namiesto 3 na mobile */
+      .fit-stats {
+        grid-template-columns: repeat(2, 1fr);
       }
 
       /* Schovaj hodinový pruh a 3-dňovú predpoveď na mobile */
