@@ -1,4 +1,5 @@
 import { requireUser } from './_auth.js';
+import { neon } from '@neondatabase/serverless';
 
 const LAT = 49.0889;
 const LON = 18.6372;
@@ -1150,6 +1151,72 @@ async function handleStravaAuthCallback(req, res) {
   `));
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   DASHBOARD SYNC  — NeonDB key-value store
+   Mirrors localStorage keys across devices (phone ↔ PC).
+   Requires DATABASE_URL env var (Neon connection string).
+
+   Keys synced: goals:*, goal_streak_v1, po_water_v1, stack:*, poc_*
+   GET  /api/sync          → { items: [{key, data, updated_at}] }
+   GET  /api/sync?key=xxx  → { key, data, updated_at }
+   POST /api/sync          body: { key, data } → { ok: true }
+   DELETE /api/sync?key=xxx → { ok: true }
+══════════════════════════════════════════════════════════════════ */
+async function handleSync(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  if (req.method === 'OPTIONS') return res.status(200).end();
+
+  if (!process.env.DATABASE_URL) {
+    return res.status(503).json({ error: 'DATABASE_URL not configured' });
+  }
+
+  const sql = neon(process.env.DATABASE_URL);
+
+  try {
+    if (req.method === 'GET') {
+      const key = req.query?.key;
+      if (key) {
+        const rows = await sql`
+          SELECT key, data, updated_at FROM dashboard_sync WHERE key = ${key}
+        `;
+        if (!rows.length) return res.status(200).json({ key, data: null });
+        return res.status(200).json(rows[0]);
+      }
+      // Return all keys
+      const rows = await sql`
+        SELECT key, data, updated_at FROM dashboard_sync ORDER BY updated_at DESC
+      `;
+      return res.status(200).json({ items: rows });
+    }
+
+    if (req.method === 'POST') {
+      const body = req.body || {};
+      const { key, data } = body;
+      if (!key) return res.status(400).json({ error: 'key required' });
+      await sql`
+        INSERT INTO dashboard_sync (key, data, updated_at)
+        VALUES (${key}, ${JSON.stringify(data)}::jsonb, NOW())
+        ON CONFLICT (key) DO UPDATE
+          SET data = ${JSON.stringify(data)}::jsonb,
+              updated_at = NOW()
+      `;
+      return res.status(200).json({ ok: true, key });
+    }
+
+    if (req.method === 'DELETE') {
+      const key = req.query?.key;
+      if (!key) return res.status(400).json({ error: 'key required' });
+      await sql`DELETE FROM dashboard_sync WHERE key = ${key}`;
+      return res.status(200).json({ ok: true, key });
+    }
+
+    return res.status(405).json({ error: 'method_not_allowed' });
+  } catch (e) {
+    console.error('[sync]', e.message);
+    return res.status(500).json({ error: e.message });
+  }
+}
+
 const topLevelHandlers = {
   calendar: handleCalendar,
   coach: handleCoach,
@@ -1160,6 +1227,7 @@ const topLevelHandlers = {
   sleep: handleSleep,
   spotify: handleSpotify,
   strava: handleStrava,
+  sync: handleSync,
   'vercel-projects': handleVercelProjects,
   weather: handleWeather,
 };

@@ -2523,6 +2523,30 @@
     </div>
   </div>
 
+
+  <!-- ── Health Tools section ── -->
+  <div class="info-grid">
+    <div class="section" style="margin-bottom:0">
+      <div class="section-title">Hydrácia</div>
+      <div class="card" id="waterCard">
+        <div id="waterBody" style="font-size:12px;color:var(--text-tertiary)">Načítavam…</div>
+      </div>
+    </div>
+    <div class="section" style="margin-bottom:0">
+      <div class="section-title">Daily Stack</div>
+      <div class="card" id="stackCard">
+        <div id="stackBody" style="font-size:12px;color:var(--text-tertiary)">Načítavam…</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Gym Coach</div>
+    <div class="card" id="gymCard">
+      <div id="gymBody" style="font-size:12px;color:var(--text-tertiary)">Načítavam…</div>
+    </div>
+  </div>
+
   <!-- ── Calendar + Gmail row ── -->
   <div class="info-grid" id="calGmailGrid">
     <div class="section" style="margin-bottom:0">
@@ -3615,6 +3639,7 @@
       loadToday(); loadTomorrow();
       updateDayRing(); setInterval(updateDayRing, 60 * 1000);
       tickerStart();
+      renderHealthWidgets();
 
       // Public widgets (no auth)
       loadWeather();
@@ -4039,7 +4064,230 @@
       loadVercel();
     }
 
+
+    /* ══════════════════════════════════════════════════════════════════
+       WATER WIDGET  (reads same localStorage as water.html)
+    ══════════════════════════════════════════════════════════════════ */
+    function _calDateKey() {
+      const d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    }
+
+    function renderWaterWidget() {
+      const el = document.getElementById('waterBody');
+      if (!el) return;
+      let state = null;
+      try { state = JSON.parse(localStorage.getItem('po_water_v1')); } catch(e) {}
+      const todayKey = _calDateKey();
+      const done = state ? ((state.logs || {})[todayKey] || 0) : 0;
+      let total = 8;
+      if (state) {
+        const p = state.profile || { weightKg: 75 };
+        const wKg = state.weightUnit === 'lb' ? (p.weightKg || 0) / 2.20462 : (p.weightKg || 0);
+        const base = wKg * 35;
+        const exercise = (p.activityHrsPerWeek || 0) / 7 * 500;
+        const caffeine = Math.max(0, (state.caffeineMgPerDay || 200) - 200) * 1.5;
+        let adj = 0;
+        if (p.sex === 'm') adj += 200;
+        if ((p.age || 0) >= 50) adj += 100;
+        const totalMl = base + exercise + caffeine + adj;
+        let unitVol;
+        if (state.unit === 'glass') unitVol = state.glassMl || 250;
+        else if (state.unit === 'oz') unitVol = 30;
+        else if (state.unit === 'ml') unitVol = 1;
+        else unitVol = state.bottleMl || 500;
+        total = Math.max(1, Math.ceil(totalMl / unitVol));
+      }
+      const pct = Math.min(100, Math.round(done / total * 100));
+      const unitLabel = state ? ({glass:'glasses',oz:'oz',ml:'ml'}[state.unit] || 'bottles') : 'bottles';
+      const glow = pct >= 100 ? 'box-shadow:0 0 8px rgba(125,211,252,0.5)' : '';
+      el.innerHTML = `
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px">
+          <div>
+            <div style="font-size:38px;font-weight:700;letter-spacing:-0.04em;line-height:1;color:var(--text-primary);font-variant-numeric:tabular-nums">${done}</div>
+            <div style="font-size:11px;color:var(--text-tertiary);margin-top:3px">/ ${total} ${unitLabel}</div>
+          </div>
+          <div style="flex:1">
+            <div style="height:6px;border-radius:999px;background:rgba(255,255,255,0.06);overflow:hidden;margin-bottom:6px">
+              <div style="height:100%;width:${pct}%;background:#7DD3FC;border-radius:999px;transition:width 0.5s;${glow}"></div>
+            </div>
+            <div style="font-size:11px;color:var(--text-secondary);font-variant-numeric:tabular-nums">${pct}% of daily goal</div>
+          </div>
+          <button id="waterAddBtn" onclick="addWaterFromDash()" style="width:40px;height:40px;border-radius:10px;border:1px solid rgba(125,211,252,0.22);background:rgba(125,211,252,0.08);color:#7DD3FC;font-size:20px;font-weight:700;cursor:pointer;flex-shrink:0;transition:background 0.15s">+</button>
+        </div>
+        <a href="water.html" style="font-size:11px;color:var(--text-tertiary);text-decoration:none;letter-spacing:0.08em;transition:color 0.15s" onmouseover="this.style.color='var(--text-secondary)'" onmouseout="this.style.color='var(--text-tertiary)'">Open Water Coach →</a>
+      `;
+    }
+
+    function addWaterFromDash() {
+      let state = null;
+      try { state = JSON.parse(localStorage.getItem('po_water_v1')); } catch(e) {}
+      if (!state || typeof state !== 'object') state = { unit:'bottle', bottleMl:500, glassMl:250, weightUnit:'kg', profile:{weightKg:75,age:25,sex:'m',activityHrsPerWeek:5}, caffeineMgPerDay:200, substances:[], logs:{} };
+      state.logs = state.logs || {};
+      const k = _calDateKey();
+      state.logs[k] = (state.logs[k] || 0) + 1;
+      try { localStorage.setItem('po_water_v1', JSON.stringify(state)); } catch(e) {}
+      const btn = document.getElementById('waterAddBtn');
+      if (btn) { btn.style.background = 'rgba(125,211,252,0.32)'; setTimeout(() => { btn.style.background = 'rgba(125,211,252,0.08)'; }, 220); }
+      renderWaterWidget();
+    }
+
+    /* ══════════════════════════════════════════════════════════════════
+       DAILY STACK WIDGET  (reads same localStorage as health.html)
+    ══════════════════════════════════════════════════════════════════ */
+    function renderStackWidget() {
+      const el = document.getElementById('stackBody');
+      if (!el) return;
+      let items = [];
+      try { items = JSON.parse(localStorage.getItem('stack:items')) || []; } catch(e) {}
+      const todayKey = _calDateKey();
+      let taken = {};
+      try { taken = JSON.parse(localStorage.getItem('stack:taken:' + todayKey)) || {}; } catch(e) {}
+
+      if (!items.length) {
+        el.innerHTML = `<div style="font-size:12px;color:var(--text-tertiary);padding:4px 0">No supplements configured yet. <a href="health.html" style="color:var(--text-secondary);text-decoration:none">Set up your stack →</a></div>`;
+        return;
+      }
+      const done = items.filter(i => i && taken[i.id]).length;
+      const total = items.length;
+      const pct = Math.round(done / total * 100);
+      const glow = pct >= 100 ? 'box-shadow:0 0 8px rgba(29,158,117,0.5)' : '';
+      const chips = items.slice(0, 7).map(i => {
+        const ok = taken[i.id];
+        return `<span style="font-size:11px;padding:3px 9px;border-radius:999px;background:${ok?'rgba(29,158,117,0.14)':'rgba(255,255,255,0.04)'};color:${ok?'#1D9E75':'var(--text-tertiary)'};border:1px solid ${ok?'rgba(29,158,117,0.28)':'rgba(255,255,255,0.06)'}">${ok?'✓ ':''}${i.name||i.id}</span>`;
+      }).join('');
+      const more = items.length > 7 ? `<span style="font-size:11px;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,0.04);color:var(--text-tertiary)">+${items.length-7} more</span>` : '';
+      el.innerHTML = `
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px">
+          <div>
+            <div style="font-size:38px;font-weight:700;letter-spacing:-0.04em;line-height:1;color:var(--text-primary);font-variant-numeric:tabular-nums">${done}</div>
+            <div style="font-size:11px;color:var(--text-tertiary);margin-top:3px">/ ${total} doplnkov</div>
+          </div>
+          <div style="flex:1">
+            <div style="height:6px;border-radius:999px;background:rgba(255,255,255,0.06);overflow:hidden;margin-bottom:6px">
+              <div style="height:100%;width:${pct}%;background:#1D9E75;border-radius:999px;transition:width 0.5s;${glow}"></div>
+            </div>
+            <div style="font-size:11px;color:var(--text-secondary);font-variant-numeric:tabular-nums">${pct}% dnes</div>
+          </div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">${chips}${more}</div>
+        <a href="health.html" style="font-size:11px;color:var(--text-tertiary);text-decoration:none;letter-spacing:0.08em;transition:color 0.15s" onmouseover="this.style.color='var(--text-secondary)'" onmouseout="this.style.color='var(--text-tertiary)'">Open Daily Stack →</a>
+      `;
+    }
+
+    /* ══════════════════════════════════════════════════════════════════
+       GYM WIDGET  (links to gym.html, reads split from localStorage)
+    ══════════════════════════════════════════════════════════════════ */
+    function renderGymWidget() {
+      const el = document.getElementById('gymBody');
+      if (!el) return;
+      // gym.html stores logs under 'poc_log_v1'
+      let splitLabel = null;
+      try {
+        const cfg = JSON.parse(localStorage.getItem('poc_config_v1'));
+        if (cfg && cfg.splitAnchor && cfg.splitRotation) {
+          const anchor = new Date(cfg.splitAnchor.date);
+          const now = new Date();
+          const dayDiff = Math.floor((now - anchor) / 86400000);
+          const rot = cfg.splitRotation;
+          const anchorIdx = rot.indexOf(cfg.splitAnchor.splitId);
+          const todayIdx = (anchorIdx + dayDiff) % rot.length;
+          const splitId = rot[(todayIdx + rot.length) % rot.length];
+          const day = (cfg.days || []).find(d => d.id === splitId);
+          splitLabel = day ? day.name : splitId;
+        }
+      } catch(e) {}
+
+      const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      const today = new Date();
+      const dayName = dayNames[today.getDay()];
+
+      const splitBadge = splitLabel
+        ? `<div style="font-size:11px;font-family:ui-monospace,monospace;letter-spacing:0.10em;text-transform:uppercase;color:#6BE3A4;margin-top:3px">${splitLabel}</div>`
+        : '';
+
+      el.innerHTML = `
+        <div style="display:flex;align-items:center;gap:16px">
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px">Progressive Overload Coach</div>
+            <div style="font-size:12px;color:var(--text-secondary);margin-bottom:14px">Sleduj zdvihy, progresívne preťaženie a tréningový split.</div>
+            <a href="gym.html" style="display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:10px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);color:var(--text-primary);text-decoration:none;font-size:12px;font-weight:600;letter-spacing:0.02em;transition:background 0.15s" onmouseover="this.style.background='rgba(255,255,255,0.10)'" onmouseout="this.style.background='rgba(255,255,255,0.06)'">Otvoriť Gym Tracker →</a>
+          </div>
+          <div style="text-align:center;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:14px 18px;flex-shrink:0">
+            <div style="font-size:9px;font-family:ui-monospace,monospace;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:4px">DNES</div>
+            <div style="font-size:24px;font-weight:700;color:var(--text-primary)">${dayName}</div>
+            ${splitBadge}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderHealthWidgets() {
+      renderWaterWidget();
+      renderStackWidget();
+      renderGymWidget();
+    }
+
+    /* =====================================================
+       NEONDB SYNC -- keeps all stats identical on every device.
+
+       Keys synced: goals:* | goal_streak_v1 | po_water_v1
+                    stack:* | poc_config_v1  | poc_log_v1
+
+       On boot  -> pull ALL keys from /api/sync, hydrate localStorage,
+                   then re-render widgets so they show the merged state.
+       On write -> any localStorage.setItem() for a sync key is
+                   intercepted and fire-and-forgotten to /api/sync POST.
+    ===================================================== */
+    const _SYNC_PREFIXES = ['goals:', 'goal_streak_v1', 'po_water_v1', 'stack:', 'poc_'];
+
+    function _isSyncKey(key) {
+      return _SYNC_PREFIXES.some(p => key === p || key.startsWith(p));
+    }
+
+    function _dbPush(key, rawValue) {
+      let parsed;
+      try { parsed = JSON.parse(rawValue); } catch (e) { parsed = rawValue; }
+      fetch('/api/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key, data: parsed }),
+      }).catch(() => { /* offline -- local write still succeeded */ });
+    }
+
+    // Intercept ALL localStorage writes -- if it's a sync key, push to Neon
+    (function patchLocalStorage() {
+      const _orig = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (key, value) {
+        _orig.call(this, key, value);
+        if (this === localStorage && _isSyncKey(key)) _dbPush(key, value);
+      };
+    })();
+
+    // Pull all keys from NeonDB, write to localStorage, then re-render
+    async function _dbPull() {
+      try {
+        const res = await fetch('/api/sync');
+        if (!res.ok) return;
+        const { items } = await res.json();
+        if (!Array.isArray(items) || !items.length) return;
+        // Write each key to localStorage without re-triggering the push patch
+        const _orig = Storage.prototype.setItem;
+        const _realSet = (k, v) => Storage.prototype.setItem.call
+          ? Object.getOwnPropertyDescriptor(Storage.prototype, 'setItem')
+          : null;
+        for (const { key, data } of items) {
+          try { localStorage._neonPull = true; _orig.call(localStorage, key, JSON.stringify(data)); } catch (e) { /* quota */ }
+        }
+        // Re-render all localStorage-backed widgets
+        renderHealthWidgets();
+        try { loadToday(); loadTomorrow(); renderStreak(); } catch (e) { /* goals may not be ready */ }
+      } catch (e) { /* offline -- localStorage already has local state */ }
+    }
+
     window.addEventListener('load', boot);
+    // Pull from NeonDB after boot so fresh data from other devices merges in
+    window.addEventListener('load', function() { setTimeout(_dbPull, 400); });
   </script>
 </body>
 

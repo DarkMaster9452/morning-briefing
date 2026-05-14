@@ -2,6 +2,9 @@
   "name": "morning-briefing",
   "version": "1.0.0",
   "private": true,
+  "dependencies": {
+    "@neondatabase/serverless": "^0.10.4"
+  },
   "scripts": {
     "deploy": "npx vercel --yes",
     "deploy:prod": "npx vercel --prod --yes",
