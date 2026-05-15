@@ -4710,6 +4710,12 @@
       var hero = document.getElementById('hero-landing');
       if (!hero) return;
 
+      // Skip hero if already seen this session (e.g. came back from water/gym/health page)
+      if (sessionStorage.getItem('hero_seen')) {
+        hero.style.display = 'none';
+        return;
+      }
+
       // Lock scroll while hero is visible
       document.documentElement.style.overflow = 'hidden';
       document.body.style.overflow = 'hidden';
@@ -4719,6 +4725,9 @@
       function dismissHero() {
         if (dismissed) return;
         dismissed = true;
+
+        // Remember for this session so returning from sub-pages skips the hero
+        sessionStorage.setItem('hero_seen', '1');
 
         // Unlock scroll
         document.documentElement.style.overflow = '';
