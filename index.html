@@ -2333,10 +2333,101 @@
       color: var(--text-primary);
       border-color: rgba(255, 255, 255, 0.22);
     }
+
+    /* ── Dash Top Bar ── */
+    #dashTopBar {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      display: flex;
+      gap: 6px;
+      padding: 10px 0;
+      background: #050506;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      margin-bottom: 16px;
+    }
+
+    .dtb-pill {
+      flex: 1 1 0;
+      min-width: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 11px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 11px;
+      font-size: 11px;
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      font-weight: 700;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .dtb-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      flex-shrink: 0;
+    }
+
+    .dtb-dot.green { background: var(--success); box-shadow: 0 0 6px rgba(107,227,164,0.5); }
+    .dtb-dot.blue  { background: #7DD3FC; box-shadow: 0 0 6px rgba(125,211,252,0.4); }
+    .dtb-dot.teal  { background: #1D9E75; box-shadow: 0 0 6px rgba(29,158,117,0.4); }
+
+    .dtb-label {
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      flex-shrink: 0;
+    }
+
+    .dtb-value {
+      font-size: 12px;
+      color: var(--text-primary);
+    }
+
+    .dtb-add {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 700;
+      color: #7DD3FC;
+      padding: 0 2px;
+      line-height: 1;
+      flex-shrink: 0;
+      transition: transform 0.12s;
+    }
+
+    .dtb-add:active { transform: scale(0.85); }
   </style>
 </head>
 
 <body>
+
+  <!-- ── Sticky Status Bar ── -->
+  <div id="dashTopBar">
+    <div class="dtb-pill" id="dtbGoals">
+      <span class="dtb-dot" id="dtbGoalsDot"></span>
+      <span class="dtb-label">Goals</span>
+      <span class="dtb-value" id="dtbGoalsVal">0/0</span>
+    </div>
+    <div class="dtb-pill" id="dtbWater">
+      <span class="dtb-dot blue" id="dtbWaterDot"></span>
+      <span class="dtb-label">Water</span>
+      <span class="dtb-value" id="dtbWaterVal">0/0</span>
+      <button class="dtb-add" onclick="addWaterFromDash()" title="Add water">+</button>
+    </div>
+    <div class="dtb-pill" id="dtbStack">
+      <span class="dtb-dot teal" id="dtbStackDot"></span>
+      <span class="dtb-label">Stack</span>
+      <span class="dtb-value" id="dtbStackVal">0/0</span>
+    </div>
+  </div>
 
   <button id="logout-btn" onclick="signOut()" style="display:none">Sign out</button>
 
@@ -3640,6 +3731,7 @@
       updateDayRing(); setInterval(updateDayRing, 60 * 1000);
       tickerStart();
       renderHealthWidgets();
+      updateTopBar();
 
       // Public widgets (no auth)
       loadWeather();
@@ -4285,9 +4377,72 @@
       } catch (e) { /* offline -- localStorage already has local state */ }
     }
 
+
+    /* ══════════════════════════════════════════════════════════════════
+       DASH TOP BAR — sticky status pills
+    ══════════════════════════════════════════════════════════════════ */
+    function updateTopBar() {
+      // Goals pill
+      const goals = storeGet('goals:' + getActiveDateString()) || [];
+      const gTotal = goals.length;
+      const gDone  = goals.filter(g => g.done).length;
+      const gtv = document.getElementById('dtbGoalsVal');
+      const gtd = document.getElementById('dtbGoalsDot');
+      if (gtv) gtv.textContent = gDone + '/' + gTotal;
+      if (gtd) {
+        gtd.className = 'dtb-dot' + (gTotal > 0 && gDone === gTotal ? ' green' : '');
+      }
+
+      // Water pill
+      let wState = null;
+      try { wState = JSON.parse(localStorage.getItem('po_water_v1')); } catch(e) {}
+      const wKey = _calDateKey();
+      const wDone = wState ? ((wState.logs || {})[wKey] || 0) : 0;
+      let wTotal = 8;
+      if (wState) {
+        const p = wState.profile || { weightKg: 75 };
+        const wKg = wState.weightUnit === 'lb' ? (p.weightKg || 0) / 2.20462 : (p.weightKg || 0);
+        const base = wKg * 35;
+        const exercise = (p.activityHrsPerWeek || 0) / 7 * 500;
+        const caffeine = Math.max(0, (wState.caffeineMgPerDay || 200) - 200) * 1.5;
+        let adj = 0;
+        if (p.sex === 'm') adj += 200;
+        if ((p.age || 0) >= 50) adj += 100;
+        const totalMl = base + exercise + caffeine + adj;
+        let unitVol;
+        if (wState.unit === 'glass') unitVol = wState.glassMl || 250;
+        else if (wState.unit === 'oz') unitVol = 30;
+        else if (wState.unit === 'ml') unitVol = 1;
+        else unitVol = wState.bottleMl || 500;
+        wTotal = Math.max(1, Math.ceil(totalMl / unitVol));
+      }
+      const wtv = document.getElementById('dtbWaterVal');
+      if (wtv) wtv.textContent = wDone + '/' + wTotal;
+
+      // Stack pill
+      let sItems = [];
+      try { sItems = JSON.parse(localStorage.getItem('stack:items')) || []; } catch(e) {}
+      let sTaken = {};
+      try { sTaken = JSON.parse(localStorage.getItem('stack:taken:' + wKey)) || {}; } catch(e) {}
+      const sDone  = sItems.filter(i => i && sTaken[i.id]).length;
+      const sTotal = sItems.length;
+      const stv = document.getElementById('dtbStackVal');
+      const std = document.getElementById('dtbStackDot');
+      if (stv) stv.textContent = sDone + '/' + sTotal;
+      if (std) {
+        std.className = 'dtb-dot teal' + (sTotal > 0 && sDone === sTotal ? '' : '');
+        if (sTotal > 0 && sDone === sTotal) std.style.boxShadow = '0 0 8px rgba(29,158,117,0.7)';
+        else std.style.boxShadow = '';
+      }
+    }
+
     window.addEventListener('load', boot);
     // Pull from NeonDB after boot so fresh data from other devices merges in
     window.addEventListener('load', function() { setTimeout(_dbPull, 400); });
+    // Top bar refresh: on storage changes + every 30 seconds
+    window.addEventListener('storage', updateTopBar);
+    window.addEventListener('goals-changed', updateTopBar);
+    setInterval(updateTopBar, 30000);
   </script>
 </body>
 
