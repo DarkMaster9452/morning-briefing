@@ -739,9 +739,8 @@ async function handleSleep(req, res) {
 }
 
 async function handleStrava(req, res) {
-  const user = await requireUser(req, res);
-  if (!user) return;
-
+  // No user auth needed — uses app-level env vars (STRAVA_CLIENT_ID, SECRET, REFRESH_TOKEN)
+  res.setHeader('Access-Control-Allow-Origin', '*');
   try {
     const payload = await fetchStravaPayload();
     res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate');
@@ -1251,8 +1250,4 @@ export default async function handler(req, res) {
 
   if (segments.length === 2 && segments[0] === 'auth') {
     const authHandler = authHandlers[segments[1]];
-    if (authHandler) return authHandler(req, res);
-  }
-
-  return res.status(404).json({ error: 'not_found' });
-}
+    if (authHandler) return authHan
